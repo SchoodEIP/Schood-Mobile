@@ -1,10 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 
 class HelpScreen extends StatelessWidget {
-  final User? Userinfo;
-  HelpScreen({required this.Userinfo});
+  /*final User? Userinfo;
+  HelpScreen({required this.Userinfo});*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,7 +11,7 @@ class HelpScreen extends StatelessWidget {
         body: Center(child: Text('Écran d\'aide')),
         bottomNavigationBar: BottomBarApp(
           index_app: 4,
-          Userinfo: Userinfo,
+          //Userinfo: Userinfo,
         ));
   }
 }

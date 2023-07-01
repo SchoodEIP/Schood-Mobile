@@ -1,15 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schood/Connexion_screen.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/utils/BottomBarApp.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeScreen extends StatefulWidget {
-  final User? Userinfo;
+  //final User? Userinfo;
 
-  HomeScreen({required this.Userinfo});
+  //HomeScreen({required this.Userinfo});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -20,13 +18,13 @@ class _HomeScreenState extends State<HomeScreen> {
   String lastName = '';
 
   @override
-  void initState() {
+/*  void initState() {
     super.initState();
     getUserData();
   }
 
   Future<void> getUserData() async {
-    String userId = widget.Userinfo?.uid ?? '';
+    //String userId = widget.Userinfo?.uid ?? '';
 
     try {
       DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
@@ -47,11 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       print('Error retrieving user data: $e');
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
-    String userName = widget.Userinfo?.displayName ?? 'no name';
+    //String userName = widget.Userinfo?.displayName ?? 'no name';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -101,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BottomBarApp(
         index_app: 0,
-        Userinfo: widget.Userinfo,
+/*        Userinfo: widget.Userinfo,*/
       ),
     );
   }

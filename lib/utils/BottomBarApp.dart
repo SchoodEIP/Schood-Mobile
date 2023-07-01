@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:schood/ChatScreen.dart';
 import 'package:schood/DocsScreen.dart';
@@ -8,8 +7,11 @@ import 'package:schood/WeeklyStats.dart';
 
 class BottomBarApp extends StatelessWidget {
   final int index_app;
-  final User? Userinfo;
-  const BottomBarApp({required this.index_app, required this.Userinfo});
+  //final User? Userinfo;
+  const BottomBarApp({
+    required this.index_app,
+    /*required this.Userinfo*/
+  });
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
@@ -22,8 +24,8 @@ class BottomBarApp extends StatelessWidget {
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
                   HomeScreen(
-                Userinfo: Userinfo,
-              ),
+                      //Userinfo: Userinfo,
+                      ),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 return child;
@@ -36,8 +38,8 @@ class BottomBarApp extends StatelessWidget {
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
                   DocsScreen(
-                Userinfo: Userinfo,
-              ),
+                      //  Userinfo: Userinfo,
+                      ),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 return child;
@@ -50,8 +52,8 @@ class BottomBarApp extends StatelessWidget {
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
                   StatsScreen(
-                Userinfo: Userinfo,
-              ),
+                      //  Userinfo: Userinfo,
+                      ),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 return child;
@@ -64,8 +66,8 @@ class BottomBarApp extends StatelessWidget {
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
                   ChatScreen(
-                Userinfo: Userinfo,
-              ),
+                      //Userinfo: Userinfo,
+                      ),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 return child;
@@ -78,8 +80,8 @@ class BottomBarApp extends StatelessWidget {
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
                   HelpScreen(
-                Userinfo: Userinfo,
-              ),
+                      //Userinfo: Userinfo,
+                      ),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 return child;

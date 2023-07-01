@@ -1,13 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 
 class StatsScreen extends StatelessWidget {
-  final User? Userinfo;
+  /*final User? Userinfo;
   StatsScreen({required this.Userinfo});
-
+*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +46,7 @@ class StatsScreen extends StatelessWidget {
       ),
       bottomNavigationBar: BottomBarApp(
         index_app: 2,
-        Userinfo: Userinfo,
+        //Userinfo: Userinfo,
       ),
     );
   }

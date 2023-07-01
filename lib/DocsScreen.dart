@@ -1,12 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 
 class DocsScreen extends StatefulWidget {
-  final User? Userinfo;
-  DocsScreen({required this.Userinfo});
+  /*final User? Userinfo;
+  DocsScreen({required this.Userinfo});*/
 
   @override
   _DocsScreenState createState() => _DocsScreenState();
@@ -205,7 +204,7 @@ class _DocsScreenState extends State<DocsScreen> {
       ),
       bottomNavigationBar: BottomBarApp(
         index_app: 1,
-        Userinfo: widget.Userinfo,
+        //Userinfo: widget.Userinfo,
       ),
     );
   }

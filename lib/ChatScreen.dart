@@ -1,25 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 
 class ChatScreen extends StatelessWidget {
-  final User? Userinfo;
-  final CollectionReference messagesCollection =
-      FirebaseFirestore.instance.collection('messages');
+//  final User? Userinfo;
+/*  final CollectionReference messagesCollection =
+      FirebaseFirestore.instance.collection('messages');*/
   final TextEditingController messageController = TextEditingController();
 
-  ChatScreen({required this.Userinfo});
+  //ChatScreen({required this.Userinfo});
 
-  Future<void> sendMessage(
-      String senderEmail, String recipientEmail, String message) async {
-    await messagesCollection.add({
-      'senderEmail': senderEmail,
-      'recipientEmail': recipientEmail,
-      'message': message,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
-  }
+/*  Future<void> sendMessage(
+      String senderEmail, String recipientEmail, String message) async {}*/
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +22,7 @@ class ChatScreen extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
+            child: /*StreamBuilder<QuerySnapshot>(
               stream: messagesCollection.orderBy('timestamp').snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -60,35 +51,36 @@ class ChatScreen extends StatelessWidget {
                 }
               },
             ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: messageController,
-                    decoration:
-                        InputDecoration(hintText: 'Saisissez votre message'),
+          ),*/
+                Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      //controller: messageController,
+                      decoration:
+                          InputDecoration(hintText: 'Saisissez votre message'),
+                    ),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    final message = messageController.text;
+                  ElevatedButton(
+                    onPressed: () {
+                      /*final message = messageController.text;
                     sendMessage(Userinfo!.email!, 'adresse_email_destinataire',
                         message);
-                    messageController.clear();
-                  },
-                  child: Text('Envoyer'),
-                ),
-              ],
+                    messageController.clear();*/
+                    },
+                    child: Text('Envoyer'),
+                  ),
+                ],
+              ),
             ),
-          ),
+          )
         ],
       ),
       bottomNavigationBar: BottomBarApp(
         index_app: 3,
-        Userinfo: Userinfo,
+        //Userinfo: Userinfo,
       ),
     );
   }
