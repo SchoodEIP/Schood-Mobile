@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/utils/TextFieldForm.dart';
@@ -17,7 +15,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-  Future<void> _createProfile() async {
+  /*Future<void> _createProfile() async {
     if (_formKey.currentState!.validate()) {
       try {
         UserCredential userCredential =
@@ -60,7 +58,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
         );
       }
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +131,8 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                   controller: _passwordController),
               SizedBox(height: 32),
               ElevatedButton(
-                onPressed: _createProfile,
+                onPressed: () {},
+                //onPressed: _createProfile,
                 style: ElevatedButton.styleFrom(
                   primary: AppColors.purpleSchood,
                   shape: RoundedRectangleBorder(
