@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/utils/TextFieldForm.dart';
+import 'package:schood/request/post.dart';
+import 'dart:convert';
+import 'global.dart' as global;
+import 'package:schood/Homepage_screen.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -48,6 +53,34 @@ class _LoginPageState extends State<LoginPage> {
     }
   }*/
 
+  String errorMsg = '';
+
+  changeText(string) {
+
+    setState(() {
+      errorMsg = string;
+    });
+  }
+
+  _login(BuildContext context) async {
+    var data={
+      'email': _emailController.text.trim(),
+      'password': _passwordController.text.trim(),
+    };
+    final postclass = Post_Class();
+    Response reponse = await postclass.postData(context, data, 'user/login');
+    final body = jsonDecode(reponse.body);
+    if (reponse.statusCode==200) {
+      global.globalToken = body['token'];
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return HomeScreen();
+      }));
+    }
+    else {
+      changeText(body['message']);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,7 +120,9 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 20.0),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  _login(context);
+                },
                 //onPressed: signInWithEmailAndPassword,
                 child: Text('Connection'),
                 style: ElevatedButton.styleFrom(
@@ -106,12 +141,16 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 child: Text("Mot de passe oublié"),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/create_account');
-                },
-                child: Text("Vous n'avez pas de compte ?"),
+              Text(
+                errorMsg,
+                style: TextStyle(color: Colors.red),
               ),
+              //TextButton(
+              //  onPressed: () {
+              //    Navigator.pushReplacementNamed(context, '/create_account');
+              //  },
+              //  child: Text("Vous n'avez pas de compte ?"),
+              //),
             ],
           ),
         ),
