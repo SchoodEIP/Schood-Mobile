@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schood/style/AppColors.dart';
@@ -10,7 +9,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+//  final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -19,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
   }
 
-  void signInWithEmailAndPassword() async {
+/*  void signInWithEmailAndPassword() async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
@@ -47,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
         },
       );
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +87,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 20.0),
               ElevatedButton(
-                onPressed: signInWithEmailAndPassword,
+                onPressed: () {},
+                //onPressed: signInWithEmailAndPassword,
                 child: Text('Connection'),
                 style: ElevatedButton.styleFrom(
                   primary: AppColors.purpleSchood,
@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 void signOutAndNavigateToLogin(BuildContext context) async {
-  await FirebaseAuth.instance.signOut();
+  //await FirebaseAuth.instance.signOut();
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(builder: (context) => LoginPage()),
@@ -134,12 +134,12 @@ class ForgetPassword extends StatefulWidget {
 }
 
 class _ForgetPasswordState extends State<ForgetPassword> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  //final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
 
   void resetPassword() async {
     try {
-      await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
+      //await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
       // Email de réinitialisation envoyé avec succès
       showDialog(
         context: context,
