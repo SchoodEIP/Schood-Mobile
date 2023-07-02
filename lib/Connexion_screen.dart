@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
+import 'package:schood/request/get.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/utils/TextFieldForm.dart';
 import 'package:schood/request/post.dart';
@@ -56,27 +57,35 @@ class _LoginPageState extends State<LoginPage> {
   String errorMsg = '';
 
   changeText(string) {
-
     setState(() {
       errorMsg = string;
     });
   }
 
   _login(BuildContext context) async {
-    var data={
+    var data = {
       'email': _emailController.text.trim(),
       'password': _passwordController.text.trim(),
     };
     final postclass = Post_Class();
     Response reponse = await postclass.postData(context, data, 'user/login');
     final body = jsonDecode(reponse.body);
-    if (reponse.statusCode==200) {
+    if (reponse.statusCode == 200) {
+      final getdata = Get_Class();
       global.globalToken = body['token'];
+      Response reponse2 =
+          await getdata.getData(global.globalToken, "user/profile");
+
+      Map<String, dynamic> userData = jsonDecode(reponse2.body);
+      global.name = userData['firstname'];
+      global.email = userData['email'];
+
+      global.role = userData['role'];
+
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return HomeScreen();
       }));
-    }
-    else {
+    } else {
       changeText(body['message']);
     }
   }

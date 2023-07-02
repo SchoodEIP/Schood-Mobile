@@ -18,11 +18,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SCHOOD',
-      initialRoute: '/home',
+      initialRoute: '/',
       routes: {
         '/': (context) => LoginPage(),
         '/create_account': (context) => CreateProfilePage(),
-        '/home': (context) => HomeScreen(/*Userinfo: currentUser*/),
+        '/home': (context) => HomeScreen(),
         '/docs': (context) => DocsScreen(/*Userinfo: currentUser*/),
         '/stats': (context) => StatsScreen(/*Userinfo: currentUser*/),
         '/chat': (context) => ChatScreen(/*Userinfo: currentUser*/),
