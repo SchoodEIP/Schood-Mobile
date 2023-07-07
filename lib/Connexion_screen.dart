@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart';
-import 'package:schood/request/get.dart';
+
+import 'package:schood/style/AppButtons.dart';
 import 'package:schood/style/AppColors.dart';
+import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/TextFieldForm.dart';
-import 'package:schood/request/post.dart';
-import 'dart:convert';
-import 'global.dart' as global;
-import 'package:schood/Homepage_screen.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -15,79 +11,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-//  final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-  }
-
-/*  void signInWithEmailAndPassword() async {
-    try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      print('Connecté avec succès: ${userCredential.user!.email}');
-      Navigator.pushReplacementNamed(context, '/home');
-    } catch (e) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Erreur de connexion'),
-            content: Text('Email ou mot de passe érroné, merci de réessayer.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }*/
-
-  String errorMsg = '';
-
-  changeText(string) {
-    setState(() {
-      errorMsg = string;
-    });
-  }
-
-  _login(BuildContext context) async {
-    var data = {
-      'email': _emailController.text.trim(),
-      'password': _passwordController.text.trim(),
-    };
-    final postclass = Post_Class();
-    Response reponse = await postclass.postData(context, data, 'user/login');
-    final body = jsonDecode(reponse.body);
-    if (reponse.statusCode == 200) {
-      final getdata = Get_Class();
-      global.globalToken = body['token'];
-      Response reponse2 =
-          await getdata.getData(global.globalToken, "user/profile");
-
-      Map<String, dynamic> userData = jsonDecode(reponse2.body);
-      global.name = userData['firstname'];
-      global.email = userData['email'];
-
-      global.role = userData['role'];
-
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return HomeScreen();
-      }));
-    } else {
-      changeText(body['message']);
-    }
   }
 
   @override
@@ -100,66 +29,31 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Center(
-                child: Text(
-                  "Email",
-                  style: GoogleFonts.inter(
-                    color: AppColors.purpleSchood,
-                    fontSize: 22,
-                  ),
-                ),
-              ),
+                  child: H3TextApp(
+                color: AppColors.purple_Schood,
+                text: "Email",
+              )),
               AppTextFieldForm(
                 validator: "email",
                 controller: _emailController,
               ),
               SizedBox(height: 10.0),
               Center(
-                child: Text(
-                  "Password",
-                  style: GoogleFonts.inter(
-                    color: AppColors.purpleSchood,
-                    fontSize: 22,
-                  ),
-                ),
-              ),
+                  child: H3TextApp(
+                color: AppColors.purple_Schood,
+                text: "Mot de passe",
+              )),
               AppTextFieldForm(
                 obs: true,
                 validator: "Password",
                 controller: _passwordController,
               ),
+              ForgottenPasswordButtonApp(),
               SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: () {
-                  _login(context);
-                },
-                //onPressed: signInWithEmailAndPassword,
-                child: Text('Connection'),
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.purpleSchood,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
-                  ),
-                ),
+              loginButton(
+                emailController: _emailController,
+                passwordController: _passwordController,
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ForgetPassword()),
-                  );
-                },
-                child: Text("Mot de passe oublié"),
-              ),
-              Text(
-                errorMsg,
-                style: TextStyle(color: Colors.red),
-              ),
-              //TextButton(
-              //  onPressed: () {
-              //    Navigator.pushReplacementNamed(context, '/create_account');
-              //  },
-              //  child: Text("Vous n'avez pas de compte ?"),
-              //),
             ],
           ),
         ),
@@ -169,7 +63,6 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 void signOutAndNavigateToLogin(BuildContext context) async {
-  //await FirebaseAuth.instance.signOut();
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(builder: (context) => LoginPage()),
@@ -182,13 +75,10 @@ class ForgetPassword extends StatefulWidget {
 }
 
 class _ForgetPasswordState extends State<ForgetPassword> {
-  //final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
 
   void resetPassword() async {
     try {
-      //await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
-      // Email de réinitialisation envoyé avec succès
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -220,7 +110,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
         elevation: 0.0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          color: AppColors.purpleSchood,
+          color: AppColors.purple_Schood,
           onPressed: () {
             Navigator.pushReplacementNamed(context, '/');
           },
@@ -230,28 +120,19 @@ class _ForgetPasswordState extends State<ForgetPassword> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
-            child: Text(
-              "Email",
-              style: GoogleFonts.inter(
-                color: AppColors.purpleSchood,
-                fontSize: 22,
-              ),
+            child: H3TextApp(
+              color: AppColors.purple_Schood,
+              text: "Email",
             ),
           ),
           AppTextFieldForm(
             validator: "email",
             controller: _emailController,
           ),
-          ElevatedButton(
-            onPressed: resetPassword,
-            child: Text("Envoyer"),
-            style: ElevatedButton.styleFrom(
-              primary: AppColors.purpleSchood,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(26),
-              ),
-            ),
-          ),
+          StandardButton(
+            text: "Envoyer",
+            function: resetPassword,
+          )
         ],
       ),
     );

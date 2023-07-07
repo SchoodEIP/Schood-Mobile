@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schood/style/AppColors.dart';
+import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 
 class DocsScreen extends StatefulWidget {
-  /*final User? Userinfo;
-  DocsScreen({required this.Userinfo});*/
-
   @override
   _DocsScreenState createState() => _DocsScreenState();
 }
@@ -22,17 +20,14 @@ class _DocsScreenState extends State<DocsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(automaticallyImplyLeading: false),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "How are you feeling today?",
-              style: GoogleFonts.inter(
-                color: AppColors.purpleSchood,
-                fontSize: 22,
-              ),
-            ),
+            H3TextApp(
+                text: "Comment te sens-tu aujourd'hui ?",
+                color: AppColors.purple_Schood),
             SizedBox(
               height: 30,
             ),
@@ -96,13 +91,9 @@ class _DocsScreenState extends State<DocsScreen> {
               ],
             ),
             SizedBox(height: 30),
-            Text(
-              "Am I in good shape?",
-              style: GoogleFonts.inter(
-                color: AppColors.purpleSchood,
-                fontSize: 22,
-              ),
-            ),
+            H3TextApp(
+                text: "Suis je en bonne forme ?",
+                color: AppColors.purple_Schood),
             Row(
               children: [
                 Radio<bool>(
@@ -114,7 +105,7 @@ class _DocsScreenState extends State<DocsScreen> {
                     });
                   },
                 ),
-                Text("Yes"),
+                H3TextApp(text: "Oui", color: AppColors.purple_Schood),
                 Radio<bool>(
                   value: false,
                   groupValue: amIGoodShape,
@@ -124,17 +115,13 @@ class _DocsScreenState extends State<DocsScreen> {
                     });
                   },
                 ),
-                Text("No"),
+                H3TextApp(text: "Non", color: AppColors.purple_Schood),
               ],
             ),
             SizedBox(height: 30),
-            Text(
-              "Am I satisfied with my week?",
-              style: GoogleFonts.inter(
-                color: AppColors.purpleSchood,
-                fontSize: 22,
-              ),
-            ),
+            H3TextApp(
+                text: "Suis je satisfait de ma semaine ?",
+                color: AppColors.purple_Schood),
             Row(
               children: [
                 Radio<bool>(
@@ -146,7 +133,7 @@ class _DocsScreenState extends State<DocsScreen> {
                     });
                   },
                 ),
-                Text("Yes"),
+                H3TextApp(text: "Oui", color: AppColors.purple_Schood),
                 Radio<bool>(
                   value: false,
                   groupValue: amISatisfied,
@@ -156,36 +143,21 @@ class _DocsScreenState extends State<DocsScreen> {
                     });
                   },
                 ),
-                Text("No"),
+                H3TextApp(text: "Non", color: AppColors.purple_Schood),
               ],
             ),
             SizedBox(height: 30),
-            Text(
-              "Are the classes going well?",
-              style: GoogleFonts.inter(
-                color: AppColors.purpleSchood,
-                fontSize: 22,
-              ),
-            ),
-            // Ajoutez ici les options "Yes" et "No" avec des Radio similaires
+            H3TextApp(
+                text: "Les cours se déroulent-ils bien ?",
+                color: AppColors.purple_Schood),
             SizedBox(height: 30),
-            Text(
-              "Do I feel like I have difficulties?",
-              style: GoogleFonts.inter(
-                color: AppColors.purpleSchood,
-                fontSize: 22,
-              ),
-            ),
-            // Ajoutez ici les options "Yes" et "No" avec des Radio similaires
+            H3TextApp(
+                text: "Ai je l'impression d'avoir des difficultés ?",
+                color: AppColors.purple_Schood),
             SizedBox(height: 30),
-            Text(
-              "Do I have problems with my classmates?",
-              style: GoogleFonts.inter(
-                color: AppColors.purpleSchood,
-                fontSize: 22,
-              ),
-            ),
-            // Ajoutez ici les options "Yes" et "No" avec des Radio similaires
+            H3TextApp(
+                text: "Ai je des problèmes avec mes camarades de classe ?",
+                color: AppColors.purple_Schood),
             SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {

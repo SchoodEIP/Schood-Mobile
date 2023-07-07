@@ -1,8 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-const urlApi = "http://schood.fr:8080/";
+import 'package:schood/global.dart' as global;
 
 class User_Data {
   final String name;
@@ -12,7 +9,7 @@ class User_Data {
 
 class Get_Class {
   getData(token, url) async {
-    var fullUrl = urlApi + url;
+    var fullUrl = global.urlApi + url;
 
     final reponse = await http.get(
       Uri.parse(fullUrl),

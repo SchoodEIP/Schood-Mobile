@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart';
 import 'package:schood/Connexion_screen.dart';
-import 'package:schood/request/get.dart';
 import 'package:schood/style/AppColors.dart';
+import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 import 'global.dart' as global;
 
@@ -14,23 +11,11 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-/*_getData(BuildContext context) async {
-  {
-    final getdata = Get_Class();
-
-    Response reponse =
-        await getdata.getData(global.globalToken, "user/profile");
-
-    print(reponse.body);    
-  }
-}*/
-
 class _HomeScreenState extends State<HomeScreen> {
   String firstName = '';
   String lastName = '';
   @override
   Widget build(BuildContext context) {
-    //String userName = widget.Userinfo?.displayName ?? 'no name';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -38,13 +23,12 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           InkWell(
             onTap: () {
-              signOutAndNavigateToLogin(context); // deconnecte l'user
-              // Montrer le profil
+              signOutAndNavigateToLogin(context);
             },
             child: Padding(
               padding: EdgeInsets.all(8),
               child: CircleAvatar(
-                backgroundColor: AppColors.purpleSchood,
+                backgroundColor: AppColors.purple_Schood,
               ),
             ),
           ),
@@ -55,24 +39,25 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.all(32),
           child: Column(
             children: [
-              Text(
-                'Hi $firstName $lastName' '\nhow are you feeling today?',
-                style: GoogleFonts.inter(fontSize: 30),
+              H1TextApp(
+                text:
+                    'Bonjour $firstName $lastName\nComment te sens tu aujourd\'hui ?',
+                color: AppColors.background_darkMode,
               ),
               WidgetCard(
                 height: 216,
                 width: 401,
-                title: "Weekly Stats",
+                title: "Stats hebdomadaire",
               ),
               WidgetCard(
                 height: 216,
                 width: 401,
-                title: "Surveys",
+                title: "Questionnaires",
               ),
               WidgetCard(
                 height: 216,
                 width: 401,
-                title: "Latest Alerts",
+                title: "Messagerie",
               ),
             ],
           ),
@@ -103,7 +88,7 @@ class WidgetCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(26.0),
       ),
-      color: AppColors.purpleSchood,
+      color: AppColors.purple_Schood,
       child: Container(
         width: width,
         height: height,
@@ -111,13 +96,7 @@ class WidgetCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-              ),
-            ),
+            H2TextApp(text: title, color: AppColors.background_lightMode),
             Spacer(),
             Align(
               alignment: Alignment.topRight,
@@ -128,10 +107,9 @@ class WidgetCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      "See More",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    H4TextApp(
+                        text: "Voir plus",
+                        color: AppColors.background_lightMode),
                     Icon(
                       Icons.forward,
                       color: Colors.white,

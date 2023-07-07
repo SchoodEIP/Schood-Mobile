@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schood/style/AppColors.dart';
+import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 
 class StatsScreen extends StatelessWidget {
@@ -15,13 +16,9 @@ class StatsScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Text(
-            "Weekly Stats",
-            style: GoogleFonts.inter(
-              color: AppColors.purpleSchood,
-              fontSize: 22,
-            ),
-          ),
+          H1TextApp(
+              text: "Stats hebdomadaires",
+              color: AppColors.background_darkMode),
           SizedBox(
             height: 30,
           ),
@@ -37,13 +34,8 @@ class StatsScreen extends StatelessWidget {
               StatsGraph(name: "S", value: 100),
             ],
           ),
-          Text(
-            "Past Weeks",
-            style: GoogleFonts.inter(
-              color: AppColors.purpleSchood,
-              fontSize: 22,
-            ),
-          ),
+          H2TextApp(
+              text: "Semaines passées", color: AppColors.background_darkMode),
         ],
       ),
       bottomNavigationBar: BottomBarApp(
@@ -73,7 +65,7 @@ class StatsGraph extends StatelessWidget {
           height: value,
           width: 10,
           decoration: BoxDecoration(
-            color: AppColors.purpleSchood,
+            color: AppColors.purple_Schood,
             borderRadius: BorderRadius.circular(26),
           ),
         ),

@@ -1,7 +1,6 @@
 library globals;
 
-import 'package:schood/request/get.dart';
-
+const urlApi = "http://schood.fr:8080/";
 String globalToken = '';
 String name = 'test';
 String surname = '';

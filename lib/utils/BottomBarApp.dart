@@ -32,7 +32,7 @@ class BottomBarApp extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: AppColors.purpleSchood,
+            color: AppColors.purple_Schood,
             width: 1.2,
           ),
         ),
@@ -105,40 +105,39 @@ class BottomBarApp extends StatelessWidget {
         },
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: AppColors.purpleSchood),
+            icon: Icon(Icons.home, color: AppColors.purple_Schood),
             label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.description,
-              color: AppColors.purpleSchood,
+              color: AppColors.purple_Schood,
             ),
             label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.show_chart,
-              color: AppColors.purpleSchood,
+              color: AppColors.purple_Schood,
             ),
             label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.chat,
-              color: AppColors.purpleSchood,
+              color: AppColors.purple_Schood,
             ),
             label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.info_rounded,
-              color: AppColors.purpleSchood,
+              color: AppColors.purple_Schood,
             ),
             label: '',
           ),
-        ], // Couleur de fond de la barre
-        selectedItemColor:
-            AppColors.purpleSchood, // Couleur de l'élément sélectionné
+        ],
+        selectedItemColor: AppColors.purple_Schood,
       ),
     );
   }
