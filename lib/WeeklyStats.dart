@@ -1,24 +1,26 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schood/style/AppColors.dart';
-import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 
 class StatsScreen extends StatelessWidget {
-  /*final User? Userinfo;
+  final User? Userinfo;
   StatsScreen({required this.Userinfo});
-*/
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-      ),
+      appBar: AppBar(),
       body: Column(
         children: [
-          H1TextApp(
-              text: "Stats hebdomadaires",
-              color: AppColors.background_darkMode),
+          Text(
+            "Weekly Stats",
+            style: GoogleFonts.inter(
+              color: AppColors.purpleSchood,
+              fontSize: 22,
+            ),
+          ),
           SizedBox(
             height: 30,
           ),
@@ -34,13 +36,18 @@ class StatsScreen extends StatelessWidget {
               StatsGraph(name: "S", value: 100),
             ],
           ),
-          H2TextApp(
-              text: "Semaines passées", color: AppColors.background_darkMode),
+          Text(
+            "Past Weeks",
+            style: GoogleFonts.inter(
+              color: AppColors.purpleSchood,
+              fontSize: 22,
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: BottomBarApp(
         index_app: 2,
-        //Userinfo: Userinfo,
+        Userinfo: Userinfo,
       ),
     );
   }
@@ -65,7 +72,7 @@ class StatsGraph extends StatelessWidget {
           height: value,
           width: 10,
           decoration: BoxDecoration(
-            color: AppColors.purple_Schood,
+            color: AppColors.purpleSchood,
             borderRadius: BorderRadius.circular(26),
           ),
         ),
