@@ -6,3 +6,4 @@ String name = 'test';
 String surname = '';
 String email = '';
 String role = '';
+bool isDarkModeEnabled = true;

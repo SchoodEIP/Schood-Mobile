@@ -30,7 +30,6 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               Center(
                   child: H3TextApp(
-                color: AppColors.purple_Schood,
                 text: "Email",
               )),
               AppTextFieldForm(
@@ -40,7 +39,6 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 10.0),
               Center(
                   child: H3TextApp(
-                color: AppColors.purple_Schood,
                 text: "Mot de passe",
               )),
               AppTextFieldForm(
@@ -121,7 +119,6 @@ class _ForgetPasswordState extends State<ForgetPassword> {
         children: [
           Center(
             child: H3TextApp(
-              color: AppColors.purple_Schood,
               text: "Email",
             ),
           ),

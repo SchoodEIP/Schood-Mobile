@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 import 'package:schood/Connexion_screen.dart';
 import 'package:schood/Homepage_screen.dart';
+import 'package:schood/main.dart';
 import 'package:schood/request/get.dart';
 import 'package:schood/request/post.dart';
 import 'package:schood/style/AppColors.dart';
@@ -122,20 +124,26 @@ class loginButton extends StatelessWidget {
 class ForgottenPasswordButtonApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ForgetPassword()),
-          );
-        },
-        child: Text(
-          "Mot de passe oublié ? Cliquez ici",
-          style: GoogleFonts.inter(
-            color: AppColors.purple_Schood,
-            fontSize: 12,
-          ),
-        ));
+    return Consumer<ThemeProvider>(builder: (context, themeProvider, _) {
+      final textColor = themeProvider.isDarkModeEnabled
+          ? Colors.white
+          : AppColors.purple_Schood;
+
+      return TextButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ForgetPassword()),
+            );
+          },
+          child: Text(
+            "Mot de passe oublié ? Cliquez ici",
+            style: GoogleFonts.inter(
+              color: textColor,
+              fontSize: 12,
+            ),
+          ));
+    });
   }
 }
 
@@ -143,7 +151,9 @@ class logoutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        signOutAndNavigateToLogin(context);
+      },
       child: ButtonTextApp(text: "Deconnexion"),
       style: ElevatedButton.styleFrom(
         primary: AppColors.red_Schood,
@@ -165,9 +175,54 @@ class HelpButton extends StatelessWidget {
       onPressed: () {},
       child: ButtonTextApp(text: text),
       style: ElevatedButton.styleFrom(
-        primary: AppColors.red_Schood,
+        primary: AppColors.purple_Schood,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(26),
+        ),
+      ),
+    );
+  }
+}
+
+class HelpButtonWithArrow extends StatelessWidget {
+  final route;
+  final String text;
+
+  HelpButtonWithArrow({required this.route, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Ink(
+        decoration: BoxDecoration(
+          color: AppColors.purple_Schood,
+          borderRadius: BorderRadius.circular(26),
+        ),
+        child: InkWell(
+          onTap: () {},
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: H3ButtonTextApp(
+                    text: text,
+                  ),
+                ),
+                Row(
+                  children: [
+                    H4TextApp(
+                      text: "Voir plus",
+                      color: AppColors.background_lightMode,
+                    ),
+                    Icon(Icons.arrow_forward),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

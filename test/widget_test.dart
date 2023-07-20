@@ -7,8 +7,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
+import 'package:schood/ChatScreen.dart';
 import 'package:schood/Homepage_screen.dart';
+import 'package:schood/Settings_screen.dart';
+import 'package:schood/main.dart';
 import 'package:schood/utils/BottomBarApp.dart';
+
+import 'tests_helper/GoogleFonts.dart';
 
 void main() {
   testWidgets('Test de redirection de page de Homepage à Homepage',
@@ -58,5 +64,33 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.home));
     await tester.pumpAndSettle();
+  });
+  testWidgets('Test de vérification de normes graphiques',
+      (WidgetTester tester) async {
+    await loadAppFonts();
+    await tester.pumpWidget(MaterialApp(
+      home: HomeScreen(),
+    ));
+    expect(
+        find.byType(HomeScreen), matchesGoldenFile('goldenTests/Homepage.png'));
+  });
+  testWidgets('Test de vérification du darkmode', (WidgetTester tester) async {
+    await loadAppFonts();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ChangeNotifierProvider<ThemeProvider>(
+          create: (context) => ThemeProvider(),
+          child: SettingsScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final Finder switchFinder = find.byType(Switch);
+    final Switch switchWidget = tester.widget(switchFinder);
+    expect(switchWidget.value, false);
+    await tester.tap(switchFinder);
+    await tester.pump();
+    expect(find.byType(SettingsScreen),
+        matchesGoldenFile('goldenTests/DarkMode.png'));
   });
 }

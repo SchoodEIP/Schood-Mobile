@@ -26,8 +26,8 @@ class _DocsScreenState extends State<DocsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             H3TextApp(
-                text: "Comment te sens-tu aujourd'hui ?",
-                color: AppColors.purple_Schood),
+              text: "Comment te sens-tu aujourd'hui ?",
+            ),
             SizedBox(
               height: 30,
             ),
@@ -92,8 +92,8 @@ class _DocsScreenState extends State<DocsScreen> {
             ),
             SizedBox(height: 30),
             H3TextApp(
-                text: "Suis je en bonne forme ?",
-                color: AppColors.purple_Schood),
+              text: "Suis je en bonne forme ?",
+            ),
             Row(
               children: [
                 Radio<bool>(
@@ -105,7 +105,7 @@ class _DocsScreenState extends State<DocsScreen> {
                     });
                   },
                 ),
-                H3TextApp(text: "Oui", color: AppColors.purple_Schood),
+                H3TextApp(text: "Oui"),
                 Radio<bool>(
                   value: false,
                   groupValue: amIGoodShape,
@@ -115,13 +115,13 @@ class _DocsScreenState extends State<DocsScreen> {
                     });
                   },
                 ),
-                H3TextApp(text: "Non", color: AppColors.purple_Schood),
+                H3TextApp(text: "Non"),
               ],
             ),
             SizedBox(height: 30),
             H3TextApp(
-                text: "Suis je satisfait de ma semaine ?",
-                color: AppColors.purple_Schood),
+              text: "Suis je satisfait de ma semaine ?",
+            ),
             Row(
               children: [
                 Radio<bool>(
@@ -133,7 +133,7 @@ class _DocsScreenState extends State<DocsScreen> {
                     });
                   },
                 ),
-                H3TextApp(text: "Oui", color: AppColors.purple_Schood),
+                H3TextApp(text: "Oui"),
                 Radio<bool>(
                   value: false,
                   groupValue: amISatisfied,
@@ -143,21 +143,23 @@ class _DocsScreenState extends State<DocsScreen> {
                     });
                   },
                 ),
-                H3TextApp(text: "Non", color: AppColors.purple_Schood),
+                H3TextApp(
+                  text: "Non",
+                ),
               ],
             ),
             SizedBox(height: 30),
             H3TextApp(
-                text: "Les cours se déroulent-ils bien ?",
-                color: AppColors.purple_Schood),
+              text: "Les cours se déroulent-ils bien ?",
+            ),
             SizedBox(height: 30),
             H3TextApp(
-                text: "Ai je l'impression d'avoir des difficultés ?",
-                color: AppColors.purple_Schood),
+              text: "Ai je l'impression d'avoir des difficultés ?",
+            ),
             SizedBox(height: 30),
             H3TextApp(
-                text: "Ai je des problèmes avec mes camarades de classe ?",
-                color: AppColors.purple_Schood),
+              text: "Ai je des problèmes avec mes camarades de classe ?",
+            ),
             SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
