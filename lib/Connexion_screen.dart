@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
+import 'package:schood/style/AppButtons.dart';
 import 'package:schood/style/AppColors.dart';
+import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/TextFieldForm.dart';
 
 class LoginPage extends StatefulWidget {
@@ -10,43 +11,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-  }
-
-  void signInWithEmailAndPassword() async {
-    try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      print('Connecté avec succès: ${userCredential.user!.email}');
-      Navigator.pushReplacementNamed(context, '/home');
-    } catch (e) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Erreur de connexion'),
-            content: Text('Email ou mot de passe érroné, merci de réessayer.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
   }
 
   @override
@@ -59,58 +29,28 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Center(
-                child: Text(
-                  "Email",
-                  style: GoogleFonts.inter(
-                    color: AppColors.purpleSchood,
-                    fontSize: 22,
-                  ),
-                ),
-              ),
+                  child: H3TextApp(
+                text: "Email",
+              )),
               AppTextFieldForm(
                 validator: "email",
                 controller: _emailController,
               ),
               SizedBox(height: 10.0),
               Center(
-                child: Text(
-                  "Password",
-                  style: GoogleFonts.inter(
-                    color: AppColors.purpleSchood,
-                    fontSize: 22,
-                  ),
-                ),
-              ),
+                  child: H3TextApp(
+                text: "Mot de passe",
+              )),
               AppTextFieldForm(
                 obs: true,
                 validator: "Password",
                 controller: _passwordController,
               ),
+              ForgottenPasswordButtonApp(),
               SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: signInWithEmailAndPassword,
-                child: Text('Connection'),
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.purpleSchood,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ForgetPassword()),
-                  );
-                },
-                child: Text("Mot de passe oublié"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/create_account');
-                },
-                child: Text("Vous n'avez pas de compte ?"),
+              loginButton(
+                emailController: _emailController,
+                passwordController: _passwordController,
               ),
             ],
           ),
@@ -121,7 +61,6 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 void signOutAndNavigateToLogin(BuildContext context) async {
-  await FirebaseAuth.instance.signOut();
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(builder: (context) => LoginPage()),
@@ -134,13 +73,10 @@ class ForgetPassword extends StatefulWidget {
 }
 
 class _ForgetPasswordState extends State<ForgetPassword> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
 
   void resetPassword() async {
     try {
-      await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
-      // Email de réinitialisation envoyé avec succès
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -172,7 +108,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
         elevation: 0.0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          color: AppColors.purpleSchood,
+          color: AppColors.purple_Schood,
           onPressed: () {
             Navigator.pushReplacementNamed(context, '/');
           },
@@ -182,28 +118,18 @@ class _ForgetPasswordState extends State<ForgetPassword> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
-            child: Text(
-              "Email",
-              style: GoogleFonts.inter(
-                color: AppColors.purpleSchood,
-                fontSize: 22,
-              ),
+            child: H3TextApp(
+              text: "Email",
             ),
           ),
           AppTextFieldForm(
             validator: "email",
             controller: _emailController,
           ),
-          ElevatedButton(
-            onPressed: resetPassword,
-            child: Text("Envoyer"),
-            style: ElevatedButton.styleFrom(
-              primary: AppColors.purpleSchood,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(26),
-              ),
-            ),
-          ),
+          StandardButton(
+            text: "Envoyer",
+            function: resetPassword,
+          )
         ],
       ),
     );

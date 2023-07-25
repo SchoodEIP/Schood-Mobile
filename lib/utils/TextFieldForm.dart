@@ -35,7 +35,7 @@ class _AppTextFieldFormState extends State<AppTextFieldForm> {
       width: 300,
       height: 50,
       decoration: BoxDecoration(
-        color: AppColors.pinkSchood,
+        color: AppColors.pink_Schood,
         borderRadius: BorderRadius.circular(26),
       ),
       child: TextFormField(
@@ -61,7 +61,7 @@ class _AppTextFieldFormState extends State<AppTextFieldForm> {
                   },
                   icon: Icon(
                     obscure ? Icons.visibility_off : Icons.visibility,
-                    color: AppColors.purpleSchood,
+                    color: AppColors.purple_Schood,
                   ),
                 )
               : null,
