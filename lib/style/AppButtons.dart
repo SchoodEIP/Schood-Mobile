@@ -34,10 +34,10 @@ class StandardButton extends StatelessWidget {
   }
 }
 
-class loginButton extends StatelessWidget {
+class LoginButton extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
-  loginButton(
+  LoginButton(
       {required this.emailController, required this.passwordController});
   _login(BuildContext context) async {
     var data = {
@@ -147,7 +147,7 @@ class ForgottenPasswordButtonApp extends StatelessWidget {
   }
 }
 
-class logoutButton extends StatelessWidget {
+class LogoutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(

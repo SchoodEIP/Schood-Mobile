@@ -11,8 +11,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailcontroller = TextEditingController();
+  final TextEditingController _passwordcontroller = TextEditingController();
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
               )),
               AppTextFieldForm(
                 validator: "email",
-                controller: _emailController,
+                controller: _emailcontroller,
               ),
               SizedBox(height: 10.0),
               Center(
@@ -44,13 +44,13 @@ class _LoginPageState extends State<LoginPage> {
               AppTextFieldForm(
                 obs: true,
                 validator: "Password",
-                controller: _passwordController,
+                controller: _passwordcontroller,
               ),
               ForgottenPasswordButtonApp(),
               SizedBox(height: 20.0),
-              loginButton(
-                emailController: _emailController,
-                passwordController: _passwordController,
+              LoginButton(
+                emailController: _emailcontroller,
+                passwordController: _passwordcontroller,
               ),
             ],
           ),
@@ -73,7 +73,7 @@ class ForgetPassword extends StatefulWidget {
 }
 
 class _ForgetPasswordState extends State<ForgetPassword> {
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _emailcontroller = TextEditingController();
 
   void resetPassword() async {
     try {
@@ -124,7 +124,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
           ),
           AppTextFieldForm(
             validator: "email",
-            controller: _emailController,
+            controller: _emailcontroller,
           ),
           StandardButton(
             text: "Envoyer",

@@ -11,7 +11,6 @@ class Post_Class {
       headers: _setHeaders(),
       body: jsonEncode(data),
     );
-    //var token = (reponse.body);
     return reponse;
   }
 

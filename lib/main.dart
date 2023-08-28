@@ -27,27 +27,15 @@ class MyApp extends StatelessWidget {
             theme: themeProvider.isDarkModeEnabled
                 ? _buildDarkTheme()
                 : _buildLightTheme(),
-<<<<<<< HEAD
-            initialRoute: '/',
-            routes: {
-              '/a': (context) => LoginPage(),
-=======
-            initialRoute:
-                '/home', // à modifier et remplacer par uniquement '/' pour revenir à la page de connexion
+            initialRoute: '/home',
             routes: {
               '/': (context) => LoginPage(),
->>>>>>> 67005ee10ae07a00b112ea7325ee418eb15f82ef
               '/home': (context) => HomeScreen(),
               '/docs': (context) => DocsScreen(/*Userinfo: currentUser*/),
               '/stats': (context) => StatsScreen(/*Userinfo: currentUser*/),
               '/chat': (context) => ChatScreen(/*Userinfo: currentUser*/),
               '/info': (context) => HelpScreen(/*Userinfo: currentUser*/),
-<<<<<<< HEAD
-              '/': (context) => SettingsScreen(),
-=======
-              '/settings': (context) =>
-                  SettingsScreen(), // à ajouter au bouton du profil
->>>>>>> 67005ee10ae07a00b112ea7325ee418eb15f82ef
+              '/settings': (context) => SettingsScreen(),
             },
           );
         }));
@@ -87,7 +75,6 @@ class ThemeProvider with ChangeNotifier {
   bool get isDarkModeEnabled => _isDarkModeEnabled;
 
   set isDarkModeEnabled(bool value) {
-    print("Value is $value");
     _isDarkModeEnabled = value;
     notifyListeners();
   }

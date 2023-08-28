@@ -64,7 +64,7 @@ class SettingsScreen extends StatelessWidget {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 // Bouton de déconnexion
-                child: logoutButton(),
+                child: LogoutButton(),
               ),
             ),
           ],
