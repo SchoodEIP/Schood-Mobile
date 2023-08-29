@@ -4,8 +4,10 @@ import 'package:schood/ChatScreen.dart';
 import 'package:schood/Connexion_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:schood/DocsScreen.dart';
+import 'package:schood/EmailModifierScreen.dart';
 import 'package:schood/HelpScreen.dart';
 import 'package:schood/Homepage_screen.dart';
+import 'package:schood/ProfileScreen.dart';
 import 'package:schood/Settings_screen.dart';
 import 'package:schood/WeeklyStats.dart';
 import 'package:schood/style/AppColors.dart';
@@ -24,6 +26,7 @@ class MyApp extends StatelessWidget {
         child: Consumer<ThemeProvider>(builder: (context, themeProvider, _) {
           return MaterialApp(
             title: 'SCHOOD',
+            debugShowCheckedModeBanner: false,
             theme: themeProvider.isDarkModeEnabled
                 ? _buildDarkTheme()
                 : _buildLightTheme(),
@@ -36,8 +39,9 @@ class MyApp extends StatelessWidget {
               '/stats': (context) => StatsScreen(/*Userinfo: currentUser*/),
               '/chat': (context) => ChatScreen(/*Userinfo: currentUser*/),
               '/info': (context) => HelpScreen(/*Userinfo: currentUser*/),
-              '/settings': (context) =>
-                  SettingsScreen(), // à ajouter au bouton du profil
+              '/profile': (context) => ProfileScreen(/*Userinfo: currentUser*/),
+              '/settings': (context) => SettingsScreen(),
+              '/emailModifier': (context) => EmailModifier(), // à ajouter au bouton du profil
             },
           );
         }));

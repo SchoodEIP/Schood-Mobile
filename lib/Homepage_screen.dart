@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schood/Connexion_screen.dart';
+import 'package:schood/ProfileScreen.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/BottomBarApp.dart';
@@ -23,13 +24,12 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           InkWell(
             onTap: () {
-              signOutAndNavigateToLogin(context);
+              Navigator.pushReplacementNamed(context, '/profile');
             },
             child: Padding(
               padding: EdgeInsets.all(8),
-              child: CircleAvatar(
-                backgroundColor: AppColors.purple_Schood,
-              ),
+              child: Icon(Icons.account_circle,
+                  size: 40, color: AppColors.purple_Schood),
             ),
           ),
         ],
