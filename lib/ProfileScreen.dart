@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:schood/EmailModifierScreen.dart';
 import 'package:schood/style/AppColors.dart';
 
 class ProfileScreen extends StatelessWidget {
   final String firstName = 'firstname';
   final String lastName = 'lastname';
   final String classe = 'class';
-  final String email = 'OldEmail';
+  final String email = EmailModifier().email;
+  // final String email = 'email';
 
-  const ProfileScreen({super.key});
+  ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,7 @@ class ProfileScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.purple_Schood),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0.0,
