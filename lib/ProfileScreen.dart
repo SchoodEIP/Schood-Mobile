@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:schood/EmailModifierScreen.dart';
+import 'package:schood/Homepage_screen.dart';
 import 'package:schood/style/AppColors.dart';
 
 class ProfileScreen extends StatelessWidget {
   final String firstName = 'firstname';
   final String lastName = 'lastname';
   final String classe = 'class';
-  final String email = EmailModifier().email;
-  // final String email = 'email';
+  final TextEditingController? _textFieldController;
 
-  ProfileScreen({super.key});
+  ProfileScreen(this._textFieldController);
+  // ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,12 @@ class ProfileScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.purple_Schood),
-          onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+              );
+            },
         ),
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -115,7 +121,7 @@ class ProfileScreen extends StatelessWidget {
                   enabled: false,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
-                    hintText: '$email',
+                    hintText: '$_textFieldController',
                     enabledBorder: InputBorder.none,
                     hintStyle: const TextStyle(
                         color: Color.fromARGB(146, 41, 41, 41),
@@ -125,7 +131,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 15.0),
+                padding: const EdgeInsets.only(top: 15.0),
                 child: IconButton(
                   icon:
                       const Icon(Icons.create, color: AppColors.purple_Schood),

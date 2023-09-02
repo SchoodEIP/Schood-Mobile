@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:schood/ProfileScreen.dart';
 import 'package:schood/style/AppColors.dart';
 
+// ignore: must_be_immutable
 class EmailModifier extends StatelessWidget {
-  String email = 'email';
+  // String email = 'email';
   final TextEditingController _textFieldController = TextEditingController();
   EmailModifier({super.key});
 
@@ -12,9 +13,14 @@ class EmailModifier extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.purple_Schood),
-            onPressed: () => Navigator.pop(context, email),
-          ),
+              icon:
+                  const Icon(Icons.arrow_back, color: AppColors.purple_Schood),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen(_textFieldController)),
+                );
+              }),
           backgroundColor: Colors.transparent,
           elevation: 0.0,
         ),
@@ -28,9 +34,8 @@ class EmailModifier extends StatelessWidget {
                 controller: _textFieldController,
                 textAlign: TextAlign.center,
                 cursorColor: AppColors.purple_Schood,
-                decoration: InputDecoration(
-                  hintText: '$email',
-                  hintStyle: const TextStyle(
+                decoration: const InputDecoration(
+                  hintStyle: TextStyle(
                       color: Color.fromARGB(146, 41, 41, 41),
                       fontSize: 22,
                       fontWeight: FontWeight.w600),
@@ -46,11 +51,12 @@ class EmailModifier extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                String textFieldContent = _textFieldController.text;
-                email = textFieldContent;
-                Navigator.pop(context, email);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen(_textFieldController)),
+                );
               },
-              child: Text('Sauvegarder'),
+              child: const Text('Sauvegarder'),
             ),
           ],
         )));

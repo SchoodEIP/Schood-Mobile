@@ -19,6 +19,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  TextEditingController? get _textFieldController => null;
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ThemeProvider>(
@@ -39,7 +41,7 @@ class MyApp extends StatelessWidget {
               '/stats': (context) => StatsScreen(/*Userinfo: currentUser*/),
               '/chat': (context) => ChatScreen(/*Userinfo: currentUser*/),
               '/info': (context) => HelpScreen(/*Userinfo: currentUser*/),
-              '/profile': (context) => ProfileScreen(/*Userinfo: currentUser*/),
+              '/profile': (context) => ProfileScreen(_textFieldController/*Userinfo: currentUser*/),
               '/settings': (context) => SettingsScreen(),
               '/emailModifier': (context) => EmailModifier(), // à ajouter au bouton du profil
             },
