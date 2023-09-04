@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:schood/ProfileScreen.dart';
 import 'package:schood/style/AppColors.dart';
 
-// ignore: must_be_immutable
-class EmailModifier extends StatelessWidget {
-  // String email = 'email';
-  final TextEditingController _textFieldController = TextEditingController();
-  EmailModifier({super.key});
+
+class EmailModifier extends StatefulWidget {
+  const EmailModifier({Key? key}) : super(key: key);
+
+  @override
+  State<EmailModifier> createState() => _EmailModifierState();
+}
+
+class _EmailModifierState extends State<EmailModifier> {
+  TextEditingController _email = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +23,7 @@ class EmailModifier extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProfileScreen(_textFieldController)),
+                  MaterialPageRoute(builder: (context) => ProfileScreen(email: _email.text)),
                 );
               }),
           backgroundColor: Colors.transparent,
@@ -31,7 +36,7 @@ class EmailModifier extends StatelessWidget {
             SizedBox(
               width: 200,
               child: TextField(
-                controller: _textFieldController,
+                controller: _email,
                 textAlign: TextAlign.center,
                 cursorColor: AppColors.purple_Schood,
                 decoration: const InputDecoration(
@@ -51,10 +56,7 @@ class EmailModifier extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfileScreen(_textFieldController)),
-                );
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileScreen(email: _email.text)));
               },
               child: const Text('Sauvegarder'),
             ),

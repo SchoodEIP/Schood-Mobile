@@ -19,7 +19,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  TextEditingController? get _textFieldController => null;
+  final TextEditingController _email = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
               '/stats': (context) => StatsScreen(/*Userinfo: currentUser*/),
               '/chat': (context) => ChatScreen(/*Userinfo: currentUser*/),
               '/info': (context) => HelpScreen(/*Userinfo: currentUser*/),
-              '/profile': (context) => ProfileScreen(_textFieldController/*Userinfo: currentUser*/),
+              '/profile': (context) => ProfileScreen(email: _email.text/*Userinfo: currentUser*/),
               '/settings': (context) => SettingsScreen(),
               '/emailModifier': (context) => EmailModifier(), // à ajouter au bouton du profil
             },

@@ -7,10 +7,9 @@ class ProfileScreen extends StatelessWidget {
   final String firstName = 'firstname';
   final String lastName = 'lastname';
   final String classe = 'class';
-  final TextEditingController? _textFieldController;
+  final String email;
 
-  ProfileScreen(this._textFieldController);
-  // ProfileScreen({super.key});
+  ProfileScreen({Key? key, required this.email}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +65,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
-            child: Text('$firstName',
+            child: Text(firstName,
                 style: const TextStyle(
                     color: AppColors.background_darkMode,
                     fontSize: 22,
@@ -82,7 +81,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
-            child: Text('$lastName',
+            child: Text(lastName,
                 style: const TextStyle(
                     color: AppColors.background_darkMode,
                     fontSize: 22,
@@ -98,7 +97,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
-            child: Text('$classe',
+            child: Text(classe,
                 style: const TextStyle(
                     color: AppColors.background_darkMode,
                     fontSize: 22,
@@ -116,12 +115,12 @@ class ProfileScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                width: 150,
+                width: 200,
                 child: TextField(
                   enabled: false,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
-                    hintText: '$_textFieldController',
+                    labelText: email,
                     enabledBorder: InputBorder.none,
                     hintStyle: const TextStyle(
                         color: Color.fromARGB(146, 41, 41, 41),
