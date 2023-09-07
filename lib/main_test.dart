@@ -14,34 +14,29 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
-    ChangeNotifierProvider<ThemeProvider>(
-      create: (_) => ThemeProvider(),
-      child: MyApp(),
-    ),
+    MyApp(),
   );
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, _) {
-        return MaterialApp(
-          title: 'SCHOOD',
-          theme: themeProvider.isDarkModeEnabled
-              ? _buildDarkTheme()
-              : _buildLightTheme(),
-          initialRoute: '/home',
-          routes: {
-            '/': (context) => LoginPage(),
-            '/home': (context) => HomeScreen(),
-            '/docs': (context) => DocsScreen(),
-            '/stats': (context) => StatsScreen(/*Userinfo: currentUser*/),
-            '/chat': (context) => ChatScreen(/*Userinfo: currentUser*/),
-            '/info': (context) => HelpScreen(/*Userinfo: currentUser*/),
-            '/settings': (context) => SettingsScreen(),
-          },
-        );
+//    return Consumer<ThemeProvider>(
+//      builder: (context, themeProvider, _) {
+    return MaterialApp(
+      title: 'SCHOOD',
+      //theme: themeProvider.isDarkModeEnabled
+      //    ? _buildDarkTheme()
+      //    : _buildLightTheme(),
+      initialRoute: '/home',
+      routes: {
+        '/': (context) => LoginPage(),
+        '/home': (context) => HomeScreen(),
+        '/docs': (context) => DocsScreen(),
+        '/stats': (context) => StatsScreen(/*Userinfo: currentUser*/),
+        '/chat': (context) => ChatScreen(/*Userinfo: currentUser*/),
+        '/info': (context) => HelpScreen(/*Userinfo: currentUser*/),
+        '/settings': (context) => SettingsScreen(),
       },
     );
   }

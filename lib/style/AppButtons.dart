@@ -12,6 +12,7 @@ import 'package:schood/request/post.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/global.dart' as global;
+import 'package:url_launcher/url_launcher.dart';
 
 class StandardButton extends StatelessWidget {
   final String text;
@@ -219,6 +220,51 @@ class HelpButtonWithArrow extends StatelessWidget {
                     ),
                     Icon(Icons.arrow_forward),
                   ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HelpCallButton extends StatelessWidget {
+  final String number;
+  HelpCallButton({required this.number});
+  @override
+  void _callURL() async {
+    final url = 'tel:$number';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Impossible d\'ouvrir l\'URL $url';
+    }
+  }
+
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Ink(
+        decoration: BoxDecoration(
+          color: AppColors.purple_Schood,
+          borderRadius: BorderRadius.circular(26),
+        ),
+        child: InkWell(
+          onTap: () {
+            _callURL();
+          },
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Center(
+                      child: H3ButtonTextApp(
+                    text: "Appeler $number",
+                  )),
                 ),
               ],
             ),

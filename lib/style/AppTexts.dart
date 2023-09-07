@@ -40,20 +40,18 @@ class H3TextApp extends StatelessWidget {
   H3TextApp({required this.text});
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
+    /*return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {
         final textColor = themeProvider.isDarkModeEnabled
             ? Colors.white
-            : AppColors.purple_Schood;
-
-        return Text(
-          text,
-          style: TextStyle(
-            color: textColor,
-            fontSize: 22,
-          ),
-        );
-      },
+            : AppColors.purple_Schood;*/
+    final textColor = Colors.white;
+    return Text(
+      text,
+      style: TextStyle(
+        color: textColor,
+        fontSize: 22,
+      ),
     );
   }
 }

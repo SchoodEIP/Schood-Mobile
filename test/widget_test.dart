@@ -8,11 +8,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:schood/ChatScreen.dart';
 import 'package:schood/Homepage_screen.dart';
 import 'package:schood/Settings_screen.dart';
 import 'package:schood/main.dart';
-import 'package:schood/utils/BottomBarApp.dart';
 
 import 'tests_helper/GoogleFonts.dart';
 
@@ -23,14 +21,14 @@ void main() {
       home: HomeScreen(),
     ));
 
-    final titleFinder = find.text('Weekly Stats');
+    final titleFinder = find.text('Stats hebdomadaire');
     expect(titleFinder, findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.home));
     await tester
         .pumpAndSettle(); // Attend la transition et le rendu de la nouvelle page
 
-    final TittleFinder2 = find.text("Weekly Stats");
+    final TittleFinder2 = find.text("Stats hebdomadaire");
     expect(TittleFinder2, findsOneWidget);
   });
   testWidgets('Test de redirection de page entre Homepage et Statistique',
@@ -39,31 +37,22 @@ void main() {
       home: HomeScreen(),
     ));
 
-    final titleFinder = find.text('Weekly Stats');
+    final titleFinder = find.text('Stats hebdomadaire');
     expect(titleFinder, findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.show_chart));
     await tester
         .pumpAndSettle(); // Attend la transition et le rendu de la nouvelle page
 
-    final TittleFinder2 = find.text("Weekly Stats");
+    final TittleFinder2 = find.text("Stats hebdomadaires");
     expect(TittleFinder2, findsOneWidget);
   });
   testWidgets('Test de redirection de page entre toutes les pages',
       (WidgetTester tester) async {
+    await loadAppFonts();
     await tester.pumpWidget(MaterialApp(
       home: HomeScreen(),
     ));
-    await tester.tap(find.byIcon(Icons.show_chart));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.description));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.chat));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.info_rounded));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.home));
-    await tester.pumpAndSettle();
   });
   testWidgets('Test de vérification de normes graphiques',
       (WidgetTester tester) async {

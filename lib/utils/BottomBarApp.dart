@@ -30,124 +30,121 @@ class BottomBarApp extends StatelessWidget {
 
     int role = check_role();
 
-    return Consumer<ThemeProvider>(builder: (context, themeProvider, _) {
+    /*return Consumer<ThemeProvider>(builder: (context, themeProvider, _) {
       final iconColor = themeProvider.isDarkModeEnabled
           ? Colors.white
-          : AppColors.purple_Schood;
+          : AppColors.purple_Schood;*/
 
-      return Container(
-        width: 120,
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(
-              color: iconColor,
-              width: 1.2,
-            ),
+    return Container(
+      width: 120,
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            //color: iconColor,
+            width: 1.2,
           ),
         ),
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: index_app, // Index de l'élément actif
-          onTap: (int index) {
-            if (index == 0 && role <= 2) {
-              Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      HomeScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return child;
-                  },
-                ),
-              );
-            } else if (index == 1 && role <= 2) {
-              Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      DocsScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return child;
-                  },
-                ),
-              );
-            } else if (index == 2 && role <= 2) {
-              Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      StatsScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return child;
-                  },
-                ),
-              );
-            } else if (index == 3 && role <= 2) {
-              Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      SettingsScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return child;
-                  },
-                ),
-              );
-            } else if (index == 4 && role <= 2) {
-              Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      HelpScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return child;
-                  },
-                ),
-              );
-            }
-          },
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home, color: iconColor),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.description,
-                color: iconColor,
+      ),
+      child: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: index_app, // Index de l'élément actif
+        onTap: (int index) {
+          if (index == 0 && role <= 2) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    HomeScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
               ),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.show_chart,
-                color: iconColor,
+            );
+          } else if (index == 1 && role <= 2) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    DocsScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
               ),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.chat,
-                color: iconColor,
+            );
+          } else if (index == 2 && role <= 2) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    StatsScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
               ),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.info_rounded,
-                color: iconColor,
+            );
+          } else if (index == 3 && role <= 2) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    SettingsScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
               ),
-              label: '',
+            );
+          } else if (index == 4 && role <= 2) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    HelpScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
+              ),
+            );
+          }
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
             ),
-          ],
-          selectedItemColor: iconColor,
-        ),
-      );
-    });
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.description,
+            ),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.show_chart,
+            ),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.chat,
+            ),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.info_rounded,
+            ),
+            label: '',
+          ),
+        ],
+        //selectedItemColor: iconColor,
+      ),
+    );
   }
 }
