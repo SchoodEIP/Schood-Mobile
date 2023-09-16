@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:schood/style/AppColors.dart';
 
@@ -8,6 +10,7 @@ class AppTextFieldForm extends StatefulWidget {
   final TextEditingController controller;
 
   const AppTextFieldForm({
+    super.key,
     this.hinttext,
     required this.validator,
     required this.controller,
@@ -15,6 +18,7 @@ class AppTextFieldForm extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _AppTextFieldFormState createState() => _AppTextFieldFormState();
 }
 
@@ -35,7 +39,7 @@ class _AppTextFieldFormState extends State<AppTextFieldForm> {
       width: 300,
       height: 50,
       decoration: BoxDecoration(
-        color: AppColors.pink_Schood,
+        color: AppColors.pinkSchood,
         borderRadius: BorderRadius.circular(26),
       ),
       child: TextFormField(
@@ -50,8 +54,9 @@ class _AppTextFieldFormState extends State<AppTextFieldForm> {
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: widget.hinttext,
-          hintStyle: TextStyle(color: Colors.white),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          hintStyle: const TextStyle(color: Colors.white),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           suffixIcon: widget.obs != null && widget.obs!
               ? IconButton(
                   onPressed: () {
@@ -61,12 +66,12 @@ class _AppTextFieldFormState extends State<AppTextFieldForm> {
                   },
                   icon: Icon(
                     obscure ? Icons.visibility_off : Icons.visibility,
-                    color: AppColors.purple_Schood,
+                    color: AppColors.purpleSchood,
                   ),
                 )
               : null,
         ),
-        style: TextStyle(color: Colors.black),
+        style: const TextStyle(color: Colors.black),
       ),
     );
   }

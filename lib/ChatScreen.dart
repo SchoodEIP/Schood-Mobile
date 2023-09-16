@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 
@@ -6,6 +8,8 @@ class ChatScreen extends StatelessWidget {
 /*  final CollectionReference messagesCollection =
       FirebaseFirestore.instance.collection('messages');*/
   final TextEditingController messageController = TextEditingController();
+
+  ChatScreen({super.key});
 
   //ChatScreen({required this.Userinfo});
 
@@ -16,7 +20,7 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat'),
+        title: const Text('Chat'),
         automaticallyImplyLeading: false,
       ),
       body: Column(
@@ -53,10 +57,11 @@ class ChatScreen extends StatelessWidget {
             ),
           ),*/
                 Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                     child: TextField(
                       //controller: messageController,
                       decoration:
@@ -70,7 +75,7 @@ class ChatScreen extends StatelessWidget {
                         message);
                     messageController.clear();*/
                     },
-                    child: Text('Envoyer'),
+                    child: const Text('Envoyer'),
                   ),
                 ],
               ),
@@ -78,9 +83,8 @@ class ChatScreen extends StatelessWidget {
           )
         ],
       ),
-      bottomNavigationBar: BottomBarApp(
-        index_app: 3,
-        //Userinfo: Userinfo,
+      bottomNavigationBar: const BottomBarApp(
+        indexapp: 3,
       ),
     );
   }

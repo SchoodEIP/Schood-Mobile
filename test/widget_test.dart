@@ -9,7 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/Homepage_screen.dart';
-import 'package:schood/Settings_screen.dart';
+import 'package:schood/Profile/Settings_screen.dart';
+
 import 'package:schood/main.dart';
 
 import 'tests_helper/GoogleFonts.dart';
@@ -17,7 +18,7 @@ import 'tests_helper/GoogleFonts.dart';
 void main() {
   testWidgets('Test de redirection de page de Homepage à Homepage',
       (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(const MaterialApp(
       home: HomeScreen(),
     ));
 
@@ -28,12 +29,12 @@ void main() {
     await tester
         .pumpAndSettle(); // Attend la transition et le rendu de la nouvelle page
 
-    final TittleFinder2 = find.text("Stats hebdomadaire");
-    expect(TittleFinder2, findsOneWidget);
+    final tittlefinder2 = find.text("Stats hebdomadaire");
+    expect(tittlefinder2, findsOneWidget);
   });
   testWidgets('Test de redirection de page entre Homepage et Statistique',
       (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(const MaterialApp(
       home: HomeScreen(),
     ));
 
@@ -44,20 +45,20 @@ void main() {
     await tester
         .pumpAndSettle(); // Attend la transition et le rendu de la nouvelle page
 
-    final TittleFinder2 = find.text("Stats hebdomadaires");
-    expect(TittleFinder2, findsOneWidget);
+    final tittlefinder2 = find.text("Stats hebdomadaires");
+    expect(tittlefinder2, findsOneWidget);
   });
   testWidgets('Test de redirection de page entre toutes les pages',
       (WidgetTester tester) async {
     await loadAppFonts();
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(const MaterialApp(
       home: HomeScreen(),
     ));
   });
   testWidgets('Test de vérification de normes graphiques',
       (WidgetTester tester) async {
     await loadAppFonts();
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(const MaterialApp(
       home: HomeScreen(),
     ));
     expect(
@@ -69,7 +70,7 @@ void main() {
       MaterialApp(
         home: ChangeNotifierProvider<ThemeProvider>(
           create: (context) => ThemeProvider(),
-          child: SettingsScreen(),
+          child: const SettingsScreen(),
         ),
       ),
     );

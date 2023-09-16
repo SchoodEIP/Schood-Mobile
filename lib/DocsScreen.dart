@@ -1,11 +1,15 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:schood/style/AppColors.dart';
+
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 
 class DocsScreen extends StatefulWidget {
+  const DocsScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _DocsScreenState createState() => _DocsScreenState();
 }
 
@@ -25,10 +29,10 @@ class _DocsScreenState extends State<DocsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            H3TextApp(
+            const H3TextApp(
               text: "Comment te sens-tu aujourd'hui ?",
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             Row(
@@ -36,7 +40,7 @@ class _DocsScreenState extends State<DocsScreen> {
               children: [
                 Column(
                   children: [
-                    IconButton(onPressed: () {}, icon: Icon(Icons.mood)),
+                    IconButton(onPressed: () {}, icon: const Icon(Icons.mood)),
                     MoodOption(
                       mood: 'Good',
                       isSelected: selectedMoods.contains('Good'),
@@ -54,7 +58,7 @@ class _DocsScreenState extends State<DocsScreen> {
                 ),
                 Column(
                   children: [
-                    IconButton(onPressed: () {}, icon: Icon(Icons.face)),
+                    IconButton(onPressed: () {}, icon: const Icon(Icons.face)),
                     MoodOption(
                       mood: 'Neutral',
                       isSelected: selectedMoods.contains('Neutral'),
@@ -72,7 +76,8 @@ class _DocsScreenState extends State<DocsScreen> {
                 ),
                 Column(
                   children: [
-                    IconButton(onPressed: () {}, icon: Icon(Icons.mood_bad)),
+                    IconButton(
+                        onPressed: () {}, icon: const Icon(Icons.mood_bad)),
                     MoodOption(
                       mood: 'Bad',
                       isSelected: selectedMoods.contains('Bad'),
@@ -90,8 +95,8 @@ class _DocsScreenState extends State<DocsScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 30),
-            H3TextApp(
+            const SizedBox(height: 30),
+            const H3TextApp(
               text: "Suis je en bonne forme ?",
             ),
             Row(
@@ -105,7 +110,7 @@ class _DocsScreenState extends State<DocsScreen> {
                     });
                   },
                 ),
-                H3TextApp(text: "Oui"),
+                const H3TextApp(text: "Oui"),
                 Radio<bool>(
                   value: false,
                   groupValue: amIGoodShape,
@@ -115,11 +120,11 @@ class _DocsScreenState extends State<DocsScreen> {
                     });
                   },
                 ),
-                H3TextApp(text: "Non"),
+                const H3TextApp(text: "Non"),
               ],
             ),
-            SizedBox(height: 30),
-            H3TextApp(
+            const SizedBox(height: 30),
+            const H3TextApp(
               text: "Suis je satisfait de ma semaine ?",
             ),
             Row(
@@ -133,7 +138,7 @@ class _DocsScreenState extends State<DocsScreen> {
                     });
                   },
                 ),
-                H3TextApp(text: "Oui"),
+                const H3TextApp(text: "Oui"),
                 Radio<bool>(
                   value: false,
                   groupValue: amISatisfied,
@@ -143,43 +148,38 @@ class _DocsScreenState extends State<DocsScreen> {
                     });
                   },
                 ),
-                H3TextApp(
+                const H3TextApp(
                   text: "Non",
                 ),
               ],
             ),
-            SizedBox(height: 30),
-            H3TextApp(
+            const SizedBox(height: 30),
+            const H3TextApp(
               text: "Les cours se déroulent-ils bien ?",
             ),
-            SizedBox(height: 30),
-            H3TextApp(
+            const SizedBox(height: 30),
+            const H3TextApp(
               text: "Ai je l'impression d'avoir des difficultés ?",
             ),
-            SizedBox(height: 30),
-            H3TextApp(
+            const SizedBox(height: 30),
+            const H3TextApp(
               text: "Ai je des problèmes avec mes camarades de classe ?",
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
                 // Envoyer le formulaire avec les humeurs sélectionnées
                 if (selectedMoods.isNotEmpty) {
-                  print('Selected moods: $selectedMoods');
-                  print('Am I in good shape? $amIGoodShape');
-                  print('Am I satisfied with my week? $amISatisfied');
                   // Ici, vous pouvez envoyer les données du formulaire à une API ou effectuer d'autres actions nécessaires.
-                } else {
-                  print('Please select at least one mood');
-                }
+                } else {}
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomBarApp(
-        index_app: 1,
+      bottomNavigationBar: const BottomBarApp(
+        indexapp: 1,
         //Userinfo: widget.Userinfo,
       ),
     );
@@ -192,12 +192,14 @@ class MoodOption extends StatefulWidget {
   final ValueChanged<bool> onSelected;
 
   const MoodOption({
+    super.key,
     required this.mood,
     required this.isSelected,
     required this.onSelected,
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _MoodOptionState createState() => _MoodOptionState();
 }
 

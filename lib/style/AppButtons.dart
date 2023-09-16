@@ -1,5 +1,6 @@
-import 'dart:convert';
+// ignore_for_file: file_names
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
@@ -18,19 +19,20 @@ class StandardButton extends StatelessWidget {
   final String text;
   final Function? function;
 
-  StandardButton({required this.text, this.function});
+  const StandardButton({super.key, required this.text, this.function});
+  @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
         function;
       },
-      child: ButtonTextApp(text: text),
       style: ElevatedButton.styleFrom(
-        primary: AppColors.purple_Schood,
+        backgroundColor: AppColors.purpleSchood,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(26),
         ),
       ),
+      child: ButtonTextApp(text: text),
     );
   }
 }
@@ -38,20 +40,22 @@ class StandardButton extends StatelessWidget {
 class LoginButton extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
-  LoginButton(
-      {required this.emailController, required this.passwordController});
+  const LoginButton(
+      {super.key,
+      required this.emailController,
+      required this.passwordController});
   _login(BuildContext context) async {
     var data = {
       'email': emailController.text.trim(),
       'password': passwordController.text.trim(),
     };
-    final postclass = Post_Class();
+    final postclass = PostClass();
     try {
       Response response = await postclass.postData(context, data, 'user/login');
       final body = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        final getdata = Get_Class();
+        final getdata = GetClass();
         global.globalToken = body['token'];
         Response response2 =
             await getdata.getData(global.globalToken, "user/profile");
@@ -62,19 +66,21 @@ class LoginButton extends StatelessWidget {
 
         global.role = userData['role'];
 
+        // ignore: use_build_context_synchronously
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return HomeScreen();
+          return const HomeScreen();
         }));
       } else {
+        // ignore: use_build_context_synchronously
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Erreur'),
+              title: const Text('Erreur'),
               content: Text(body['message']),
               actions: [
                 TextButton(
-                  child: Text('OK'),
+                  child: const Text('OK'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -85,15 +91,16 @@ class LoginButton extends StatelessWidget {
         );
       }
     } catch (error) {
+      // ignore: use_build_context_synchronously
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Erreur'),
-            content: Text('Une erreur s\'est produite.'),
+            title: const Text('Erreur'),
+            content: const Text('Une erreur s\'est produite.'),
             actions: [
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -111,30 +118,32 @@ class LoginButton extends StatelessWidget {
       onPressed: () {
         _login(context);
       },
-      child: ButtonTextApp(text: "Connexion"),
       style: ElevatedButton.styleFrom(
-        primary: AppColors.purple_Schood,
+        backgroundColor: AppColors.purpleSchood,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(26),
         ),
       ),
+      child: const ButtonTextApp(text: "Connexion"),
     );
   }
 }
 
 class ForgottenPasswordButtonApp extends StatelessWidget {
+  const ForgottenPasswordButtonApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(builder: (context, themeProvider, _) {
       final textColor = themeProvider.isDarkModeEnabled
           ? Colors.white
-          : AppColors.purple_Schood;
+          : AppColors.purpleSchood;
 
       return TextButton(
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ForgetPassword()),
+              MaterialPageRoute(builder: (context) => const ForgetPassword()),
             );
           },
           child: Text(
@@ -149,61 +158,66 @@ class ForgottenPasswordButtonApp extends StatelessWidget {
 }
 
 class LogoutButton extends StatelessWidget {
+  const LogoutButton({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
         signOutAndNavigateToLogin(context);
       },
-      child: ButtonTextApp(text: "Deconnexion"),
       style: ElevatedButton.styleFrom(
-        primary: AppColors.red_Schood,
+        backgroundColor: AppColors.redSchood,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(26),
         ),
       ),
+      child: const ButtonTextApp(text: "Deconnexion"),
     );
   }
 }
 
 class HelpButton extends StatelessWidget {
+  // ignore: prefer_typing_uninitialized_variables
   final route;
   final String text;
-  HelpButton({required this.route, required this.text});
+  const HelpButton({super.key, required this.route, required this.text});
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {},
-      child: ButtonTextApp(text: text),
       style: ElevatedButton.styleFrom(
-        primary: AppColors.purple_Schood,
+        backgroundColor: AppColors.purpleSchood,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(26),
         ),
       ),
+      child: ButtonTextApp(text: text),
     );
   }
 }
 
 class HelpButtonWithArrow extends StatelessWidget {
+  // ignore: prefer_typing_uninitialized_variables
   final route;
   final String text;
 
-  HelpButtonWithArrow({required this.route, required this.text});
+  const HelpButtonWithArrow(
+      {super.key, required this.route, required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8.0),
       child: Ink(
         decoration: BoxDecoration(
-          color: AppColors.purple_Schood,
+          color: AppColors.purpleSchood,
           borderRadius: BorderRadius.circular(26),
         ),
         child: InkWell(
           onTap: () {},
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -212,11 +226,11 @@ class HelpButtonWithArrow extends StatelessWidget {
                     text: text,
                   ),
                 ),
-                Row(
+                const Row(
                   children: [
                     H4TextApp(
                       text: "Voir plus",
-                      color: AppColors.background_lightMode,
+                      color: AppColors.backgroundLightmode,
                     ),
                     Icon(Icons.arrow_forward),
                   ],
@@ -232,23 +246,25 @@ class HelpButtonWithArrow extends StatelessWidget {
 
 class HelpCallButton extends StatelessWidget {
   final String number;
-  HelpCallButton({required this.number});
-  @override
+  const HelpCallButton({super.key, required this.number});
   void _callURL() async {
     final url = 'tel:$number';
+    // ignore: deprecated_member_use
     if (await canLaunch(url)) {
+      // ignore: deprecated_member_use
       await launch(url);
     } else {
       throw 'Impossible d\'ouvrir l\'URL $url';
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8.0),
       child: Ink(
         decoration: BoxDecoration(
-          color: AppColors.purple_Schood,
+          color: AppColors.purpleSchood,
           borderRadius: BorderRadius.circular(26),
         ),
         child: InkWell(
@@ -256,7 +272,7 @@ class HelpCallButton extends StatelessWidget {
             _callURL();
           },
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
