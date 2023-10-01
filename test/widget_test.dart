@@ -83,4 +83,23 @@ void main() {
     expect(find.byType(SettingsScreen),
         matchesGoldenFile('goldenTests/DarkMode.png'));
   });
+  testWidgets('Test de vérification des aides', (WidgetTester tester) async {
+    await loadAppFonts();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ChangeNotifierProvider<ThemeProvider>(
+          create: (context) => ThemeProvider(),
+          child: const SettingsScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final Finder switchFinder = find.byType(Switch);
+    final Switch switchWidget = tester.widget(switchFinder);
+    expect(switchWidget.value, false);
+    await tester.tap(switchFinder);
+    await tester.pump();
+    expect(find.byType(SettingsScreen),
+        matchesGoldenFile('goldenTests/HelpPage.png'));
+  });
 }

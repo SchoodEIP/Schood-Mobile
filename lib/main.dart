@@ -35,16 +35,14 @@ class MyApp extends StatelessWidget {
       builder: (context, themeProvider, _) {
         return MaterialApp(
           title: 'SCHOOD',
-          theme: themeProvider.isDarkModeEnabled
-              ? _buildDarkTheme()
-              : _buildLightTheme(),
+          themeMode: Provider.of<ThemeProvider>(context).getThemeMode(),
           initialRoute: '/home',
           routes: {
             '/': (context) => const LoginPage(),
             '/home': (context) => const HomeScreen(),
             '/docs': (context) => const DocsScreen(),
             '/stats': (context) => const StatsScreen(),
-            '/chat': (context) => ChatScreen(),
+            '/chat': (context) => const ChatScreen(),
             '/info': (context) => const HelpScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/profile': (context) => ProfileScreen(email: _email.text),
@@ -55,31 +53,35 @@ class MyApp extends StatelessWidget {
       },
     );
   }
-
-  ThemeData _buildLightTheme() {
-    return ThemeData(
-      brightness: Brightness.light,
-      primaryColor: AppColors.purpleSchood,
-      scaffoldBackgroundColor: AppColors.backgroundLightmode,
-    );
-  }
-
-  ThemeData _buildDarkTheme() {
-    return ThemeData(
-      brightness: Brightness.dark,
-      primaryColor: AppColors.purpleSchood,
-      scaffoldBackgroundColor: AppColors.backgroundDarkmode,
-    );
-  }
 }
 
-class ThemeProvider with ChangeNotifier {
-  bool _isDarkModeEnabled = false;
+class ThemeProvider extends ChangeNotifier {
+  bool _isDarkMode = false;
+  Color backgroundDarkMode = AppColors.backgroundDarkmode;
+  Color backgroundLightMode = AppColors.backgroundLightmode;
+  Color textDarkMode = AppColors.textDarkmode;
+  Color textLightMode = AppColors.textLightmode;
+  bool get isDarkMode => _isDarkMode;
 
-  bool get isDarkModeEnabled => _isDarkModeEnabled;
-
-  set isDarkModeEnabled(bool value) {
-    _isDarkModeEnabled = value;
+  set isDarkMode(bool value) {
+    _isDarkMode = value;
     notifyListeners();
+  }
+
+  void toggleTheme() {
+    isDarkMode = !isDarkMode;
+    notifyListeners();
+  }
+
+  ThemeMode getThemeMode() {
+    return isDarkMode ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  Color getBackgroundColor() {
+    return isDarkMode ? backgroundDarkMode : backgroundLightMode;
+  }
+
+  Color getTextColor() {
+    return isDarkMode ? textDarkMode : textLightMode;
   }
 }

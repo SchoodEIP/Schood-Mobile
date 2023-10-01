@@ -59,7 +59,7 @@ class StatsGraph extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         SizedBox(
-          height: 100 - value, // La taille se réduit depuis le haut
+          height: 100 - value,
           width: 10,
         ),
         Container(

@@ -53,7 +53,6 @@ class LoginButton extends StatelessWidget {
     try {
       Response response = await postclass.postData(context, data, 'user/login');
       final body = jsonDecode(response.body);
-
       if (response.statusCode == 200) {
         final getdata = GetClass();
         global.globalToken = body['token'];
@@ -63,9 +62,7 @@ class LoginButton extends StatelessWidget {
         Map<String, dynamic> userData = jsonDecode(response2.body);
         global.name = userData['firstname'];
         global.email = userData['email'];
-
         global.role = userData['role'];
-
         // ignore: use_build_context_synchronously
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return const HomeScreen();
@@ -124,7 +121,10 @@ class LoginButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(26),
         ),
       ),
-      child: const ButtonTextApp(text: "Connexion"),
+      child: const ButtonTextApp(
+        text: "Connexion",
+        color: AppColors.textDarkmode,
+      ),
     );
   }
 }
@@ -134,26 +134,21 @@ class ForgottenPasswordButtonApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(builder: (context, themeProvider, _) {
-      final textColor = themeProvider.isDarkModeEnabled
-          ? Colors.white
-          : AppColors.purpleSchood;
-
-      return TextButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ForgetPassword()),
-            );
-          },
-          child: Text(
-            "Mot de passe oublié ? Cliquez ici",
-            style: GoogleFonts.inter(
-              color: textColor,
-              fontSize: 12,
-            ),
-          ));
-    });
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    return TextButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ForgetPassword()),
+          );
+        },
+        child: Text(
+          "Mot de passe oublié ? Cliquez ici",
+          style: GoogleFonts.inter(
+            color: themeProvider.getTextColor(),
+            fontSize: 12,
+          ),
+        ));
   }
 }
 
@@ -162,6 +157,7 @@ class LogoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return ElevatedButton(
       onPressed: () {
         signOutAndNavigateToLogin(context);
@@ -172,7 +168,10 @@ class LogoutButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(26),
         ),
       ),
-      child: const ButtonTextApp(text: "Deconnexion"),
+      child: ButtonTextApp(
+        text: "Deconnexion",
+        color: themeProvider.textDarkMode,
+      ),
     );
   }
 }
@@ -185,14 +184,19 @@ class HelpButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => route));
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.purpleSchood,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(26),
         ),
       ),
-      child: ButtonTextApp(text: text),
+      child: ButtonTextApp(
+        text: text,
+        color: AppColors.backgroundLightmode,
+      ),
     );
   }
 }
@@ -209,13 +213,16 @@ class HelpButtonWithArrow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Ink(
+      child: Container(
         decoration: BoxDecoration(
           color: AppColors.purpleSchood,
           borderRadius: BorderRadius.circular(26),
         ),
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => route));
+          },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -224,6 +231,7 @@ class HelpButtonWithArrow extends StatelessWidget {
                 Flexible(
                   child: H3ButtonTextApp(
                     text: text,
+                    color: AppColors.textDarkmode,
                   ),
                 ),
                 const Row(
@@ -280,6 +288,7 @@ class HelpCallButton extends StatelessWidget {
                   child: Center(
                       child: H3ButtonTextApp(
                     text: "Appeler $number",
+                    color: AppColors.textDarkmode,
                   )),
                 ),
               ],
