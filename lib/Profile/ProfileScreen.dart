@@ -14,23 +14,8 @@ class ProfileScreen extends StatelessWidget {
   final String lastName = 'lastname';
   final String classe = 'class';
   final String email;
-  File? image;
 
   ProfileScreen({Key? key, required this.email}) : super(key: key);
-
-  Future getImage() async {
-    try {
-       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-       if (image == null) return;
-
-        final imageTemp = File(image.path);
-
-        setState(() => this.image = imageTemp);
-    } on PlatformException catch (e) {
-      print('Failed to pick image: $e');
-    } 
-  }
 
   @override
   Widget build(BuildContext context) {
