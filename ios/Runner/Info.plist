@@ -5,6 +5,12 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
+	<string>Photo access permission</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Camera access permission</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Microphone access permission</string>
+	<key>NSMicrophoneUsageDescription</key>
 	<string>Schood Mobile</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>

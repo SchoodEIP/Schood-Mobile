@@ -1,6 +1,10 @@
 // ignore_for_file: file_names
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:schood/Homepage_screen.dart';
 import 'package:schood/style/AppColors.dart';
@@ -10,8 +14,23 @@ class ProfileScreen extends StatelessWidget {
   final String lastName = 'lastname';
   final String classe = 'class';
   final String email;
+  File? image;
 
-  const ProfileScreen({Key? key, required this.email}) : super(key: key);
+  ProfileScreen({Key? key, required this.email}) : super(key: key);
+
+  Future getImage() async {
+    try {
+       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+       if (image == null) return;
+
+        final imageTemp = File(image.path);
+
+        setState(() => this.image = imageTemp);
+    } on PlatformException catch (e) {
+      print('Failed to pick image: $e');
+    } 
+  }
 
   @override
   Widget build(BuildContext context) {
