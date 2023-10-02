@@ -56,10 +56,9 @@ class ChatScreenState extends State<ChatScreen> {
 
   Future<void> sendDataWithFile(BuildContext context) async {
     try {
-      // Ouvrez le sélecteur de fichiers
       FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom, // Spécifiez le type de fichier autorisé
-        allowedExtensions: ['pdf', 'png', 'jpeg'], // Extensions autorisées
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'png', 'jpeg'],
       );
 
       if (result != null) {
@@ -71,46 +70,20 @@ class ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> pickAndUploadFile(BuildContext context) async {
+    final postclass = PostClass();
     try {
-      // Ouvrez le sélecteur de fichiers
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom, // Spécifiez le type de fichier autorisé
         allowedExtensions: ['pdf', 'png', 'jpeg'], // Extensions autorisées
       );
-
       if (result != null) {
         PlatformFile file = result.files.first;
-
-        // Créez une demande multipartie
-        var request = http.MultipartRequest(
-          'POST',
-          Uri.parse(
-              'https://votre-serveur/upload'), // Remplacez par l'URL de votre serveur
-        );
-
-        // Ajoutez le fichier
-        var stream = http.ByteStream(DelegatingStream.typed(file.readStream!));
-        var length = file
-            .size; // Utilisez directement file.size pour obtenir la taille du fichier
-        var multipartFile = http.MultipartFile(
-          'file', // Nom du champ sur le serveur
-          stream,
-          length,
-          filename: basename(file.name), // Nom du fichier
-          contentType:
-              MediaType('application', 'octet-stream'), // Type de contenu
-        );
-
-        request.files.add(multipartFile);
-
-        // Envoyez la demande
-        var response = await http.Response.fromStream(await request.send());
-
+        Response response =
+            await postclass.postData(context, file, 'user/chat/file');
+        final body = jsonDecode(response.body);
         if (response.statusCode == 200) {
-          // Traitement de la réponse réussie
           print('Fichier envoyé avec succès');
         } else {
-          // Traitement des erreurs
           print('Erreur lors de l\'envoi du fichier : ${response.statusCode}');
         }
       }
@@ -120,15 +93,16 @@ class ChatScreenState extends State<ChatScreen> {
   }
 
   _messagesend(BuildContext context) async {
+    var time = DateTime.now();
     var data = {
       'mailer': 'axou@test.fr',
       'receiver': 'axel2@test2.fr',
       'message': messageController.text.trim(),
-      'time': DateTime.now()
+      'time': time,
     };
     final postclass = PostClass();
     try {
-      postclass.postData(context, data, 'user/chat');
+      postclass.postData(context, data, '/user/chat/:$id/newMessage');
       print("nice you send something");
     } catch (e) {
       // ignore: use_build_context_synchronously
@@ -163,15 +137,14 @@ class ChatScreenState extends State<ChatScreen> {
     global.globalToken;
     Response response = await getdata.getData(global.globalToken, "user/chat");
 
-    print(response.body);
-    id = response.body;
+    //id = response.body;
   }
 
   _getmessage(BuildContext context) async {
     final getdata = GetClass();
-    global.globalToken;
+    final token = global.globalToken;
     Response response2 =
-        await getdata.getData(global.globalToken, "/user/chat/+$id");
+        await getdata.getData(global.globalToken, "/user/chat/+$token/message");
     print(response2.body);
 
     Array<dynamic> userData = jsonDecode(response2.body);
@@ -181,7 +154,7 @@ class ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     _getchat(context);
-    //_getmessage(context);
+    _getmessage(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       backgroundColor: themeProvider.getBackgroundColor(),

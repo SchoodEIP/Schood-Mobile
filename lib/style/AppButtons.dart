@@ -62,7 +62,7 @@ class LoginButton extends StatelessWidget {
         Map<String, dynamic> userData = jsonDecode(response2.body);
         global.name = userData['firstname'];
         global.email = userData['email'];
-        global.role = userData['role'];
+//        global.role = userData['role'];
         // ignore: use_build_context_synchronously
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return const HomeScreen();

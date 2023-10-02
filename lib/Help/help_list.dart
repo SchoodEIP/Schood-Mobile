@@ -18,12 +18,15 @@ class HelpList extends StatelessWidget {
 
   _gethelp(BuildContext context) async {
     final getdata = GetClass();
-    global.globalToken;
-    Response response = await getdata.getData(global.globalToken, "user/chat");
+    var id = global.globalToken;
+    Response response =
+        await getdata.getData(global.globalToken, "user/helpNumbers/:+$id");
+    print(response.body);
   }
 
   @override
   Widget build(BuildContext context) {
+    //_gethelp(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       backgroundColor: themeProvider.getBackgroundColor(),

@@ -46,16 +46,31 @@ class MyApp extends StatelessWidget {
             '/info': (context) => const HelpScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/profile': (context) => ProfileScreen(email: _email.text),
-            '/emailModifier': (context) =>
-                const EmailModifier(), // à ajouter au bouton du profil
+            '/emailModifier': (context) => const EmailModifier(),
           },
         );
       },
     );
   }
+
+  ThemeData _buildLightTheme() {
+    return ThemeData(
+      brightness: Brightness.light,
+      primaryColor: AppColors.purpleSchood,
+      scaffoldBackgroundColor: AppColors.backgroundLightmode,
+    );
+  }
+
+  ThemeData _buildDarkTheme() {
+    return ThemeData(
+      brightness: Brightness.dark,
+      primaryColor: AppColors.purpleSchood,
+      scaffoldBackgroundColor: AppColors.backgroundDarkmode,
+    );
+  }
 }
 
-class ThemeProvider extends ChangeNotifier {
+class ThemeProvider with ChangeNotifier {
   bool _isDarkMode = false;
   Color backgroundDarkMode = AppColors.backgroundDarkmode;
   Color backgroundLightMode = AppColors.backgroundLightmode;
