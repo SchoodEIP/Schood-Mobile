@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:schood/Help/HelpScreen.dart';
 import 'package:schood/Homepage_screen.dart';
 import 'package:schood/Profile/Settings_screen.dart';
 
@@ -101,5 +102,36 @@ void main() {
     await tester.pump();
     expect(find.byType(SettingsScreen),
         matchesGoldenFile('goldenTests/HelpPage.png'));
+  });
+
+  testWidgets('Test de redirection pour l\'appel', (WidgetTester tester) async {
+    await loadAppFonts();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ChangeNotifierProvider<ThemeProvider>(
+          create: (context) => ThemeProvider(),
+          child: const HelpScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    
+    final Finder textFinder = find.text('Numéro gratuit');
+    expect(textFinder, findsWidgets);
+    await tester.tap(textFinder);
+    await tester.pump();
+    
+    final Finder textFinder2 = find.text('Drogues Info services');
+    expect(textFinder2, findsWidgets);
+    await tester.tap(textFinder2);
+    await tester.pump();
+    
+    final Finder numberFinder = find.text('Appeler');
+    expect(numberFinder, findsWidgets);
+    await tester.tap(numberFinder);
+    await tester.pump();
+
+    expect(find.byType(HelpScreen),
+        matchesGoldenFile('goldenTests/CallRedirection.png'));
   });
 }
