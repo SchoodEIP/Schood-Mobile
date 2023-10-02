@@ -121,12 +121,12 @@ void main() {
     await tester.tap(textFinder);
     await tester.pump();
     
-    final Finder textFinder2 = find.text('Drogues Info services');
+    final Finder textFinder2 = find.text('Drogue Info services');
     expect(textFinder2, findsWidgets);
     await tester.tap(textFinder2);
     await tester.pump();
     
-    final Finder numberFinder = find.text('Appeler');
+    final Finder numberFinder = find.text('Appeler 0800231313');
     expect(numberFinder, findsWidgets);
     await tester.tap(numberFinder);
     await tester.pump();
