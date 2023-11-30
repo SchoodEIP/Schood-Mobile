@@ -18,11 +18,11 @@ import 'package:path/path.dart';
 import 'package:async/async.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:schood/utils/BottomBarApp.dart';
-import 'global.dart' as global;
+import '../global.dart' as global;
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key}) : super(key: key);
-
+  const ChatScreen({Key? key, required this.id}) : super(key: key);
+  final String id;
   @override
   ChatScreenState createState() => ChatScreenState();
 }
@@ -69,7 +69,7 @@ class ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Future<void> pickAndUploadFile(BuildContext context) async {
+  /* Future<void> pickAndUploadFile(BuildContext context) async {
     final postclass = PostClass();
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -90,7 +90,7 @@ class ChatScreenState extends State<ChatScreen> {
     } catch (e) {
       print('Erreur lors de la sélection du fichier : $e');
     }
-  }
+  }*/
 
   _messagesend(BuildContext context) async {
     var time = DateTime.now();
@@ -102,7 +102,7 @@ class ChatScreenState extends State<ChatScreen> {
     };
     final postclass = PostClass();
     try {
-      postclass.postData(context, data, '/user/chat/:$id/newMessage');
+      postclass.postData(context, data, '/user/chat/$id/newMessage');
       print("nice you send something");
     } catch (e) {
       // ignore: use_build_context_synchronously
@@ -135,7 +135,7 @@ class ChatScreenState extends State<ChatScreen> {
   _getchat(BuildContext context) async {
     final getdata = GetClass();
     global.globalToken;
-    Response response = await getdata.getData(global.globalToken, "user/chat");
+    // Response response = await getdata.getData(global.globalToken, "user/chat");
 
     //id = response.body;
   }
@@ -143,11 +143,13 @@ class ChatScreenState extends State<ChatScreen> {
   _getmessage(BuildContext context) async {
     final getdata = GetClass();
     final token = global.globalToken;
-    Response response2 =
-        await getdata.getData(global.globalToken, "/user/chat/+$token/message");
+    //print(widget.id);
+
+    Response response2 = await getdata.getData(
+        global.globalToken, "/user/chat/$widget.$id/messages");
     print(response2.body);
 
-    Array<dynamic> userData = jsonDecode(response2.body);
+    //Array<dynamic> userData = jsonDecode(response2.body);
     {}
   }
 

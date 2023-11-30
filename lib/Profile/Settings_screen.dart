@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:schood/Profile/AboutUs.dart';
 import 'package:schood/main.dart';
 import 'package:schood/style/AppButtons.dart';
 import 'package:schood/style/AppColors.dart';
@@ -49,6 +50,12 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ],
             ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => AboutUs()));
+                },
+                child: Text("About us")),
             const Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,

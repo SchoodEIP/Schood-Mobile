@@ -32,7 +32,10 @@ class StandardButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(26),
         ),
       ),
-      child: ButtonTextApp(text: text),
+      child: ButtonTextApp(
+        text: text,
+        color: AppColors.textDarkmode,
+      ),
     );
   }
 }

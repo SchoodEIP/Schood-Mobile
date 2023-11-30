@@ -69,7 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: const BottomBarApp(
         indexapp: 0,
-/*        Userinfo: widget.Userinfo,*/
       ),
     );
   }
