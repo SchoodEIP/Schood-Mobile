@@ -3,7 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/ChatScreen.dart';
-import 'package:schood/DocsScreen.dart';
+import 'package:schood/Survey/SurveyScreen.dart';
+import 'package:schood/Survey/SurveyScreen.dart';
 import 'package:schood/Help/HelpScreen.dart';
 import 'package:schood/Homepage_screen.dart';
 import 'package:schood/WeeklyStats.dart';
@@ -66,7 +67,7 @@ class BottomBarApp extends StatelessWidget {
               context,
               PageRouteBuilder(
                 pageBuilder: (context, animation, secondaryAnimation) =>
-                    const DocsScreen(),
+                    const SurveyScreen(),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) {
                   return child;
