@@ -22,14 +22,9 @@ class SurveyScreen extends StatefulWidget {
 
 class _SurveyState extends State<SurveyScreen> {
   List<String> selectedMoods = [];
-  bool? amIGoodShape;
-  bool? amISatisfied;
-  bool? areClassesGoingWell;
-  bool? doIFeelDifficulties;
-  bool? doIHaveProblemsWithClassmates;
   String id = global.globalToken;
 
- Future<List<Map<String, dynamic>>?> _getSurveyData(BuildContext context) async {
+ Future<Map<String, dynamic>?> _getSurveyData(BuildContext context) async {
     final getdata = GetClass();
     final response = await getdata.getData(global.globalToken, "shared/questionnaire");
 
@@ -37,6 +32,7 @@ class _SurveyState extends State<SurveyScreen> {
       try {
         final surveyData = jsonDecode(response.body);
         print(surveyData);
+        return surveyData.isNotEmpty ? surveyData[0] : null;
       } catch (e) {
         print('Erreur lors du décodage du JSON : $e');
       }
@@ -77,32 +73,48 @@ class _SurveyState extends State<SurveyScreen> {
             ),
           ),
         ],
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.purpleSchood),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       backgroundColor: themeProvider.getBackgroundColor(),
       body: SingleChildScrollView(
-          child: FutureBuilder<List<Map<String, dynamic>>?> (
-            future: _getSurveyData(context),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  // DISPLAY QUESTIONS
-                  return ListView(
-                    shrinkWrap: true,
-                    children: const [
-                      H3TextApp(
-                        text: "Comment te sens-tu aujourd'hui ?",
-                      ),
-                    ]
-                  );
-                }
-          ),
+        child: FutureBuilder<Map<String, dynamic>?> (
+          future: _getSurveyData(context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+  
+            if (snapshot.hasError) {
+              return const Center(child: Text('Error loading data'));
+            }
+  
+            if (snapshot.hasData) {
+              Map<String, dynamic> surveyData = snapshot.data!;
+              List<Map<String, dynamic>> classes = (surveyData['classes'] as List<dynamic>).cast<Map<String, dynamic>>();
+  
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  H3TextApp(
+                    text: surveyData['title'] ?? '',
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Survey ID: ${surveyData['_id']}',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Classes:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  for (var classInfo in classes)
+                    Text(classInfo['name'] ?? ''),
+                ],
+              );
+            }
+            return const Center(child: Text('No survey data available'));
+          },
+        ),
       ),
       bottomNavigationBar: const BottomBarApp(
         indexapp: 1,
