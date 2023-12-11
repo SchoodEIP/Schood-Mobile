@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/ChatScreen.dart';
 import 'package:schood/Connexion_screen.dart';
-import 'package:schood/DocsScreen.dart';
+import 'package:schood/Survey/SurveySummaryScreen.dart';
 import 'package:schood/Help/HelpScreen.dart';
 
 import 'package:schood/Homepage_screen.dart';
 import 'package:schood/Profile/EmailModifierScreen.dart';
 import 'package:schood/Profile/ProfileScreen.dart';
 import 'package:schood/Profile/Settings_screen.dart';
+import 'package:schood/Survey/SurveySummaryScreen.dart';
 
 import 'package:schood/WeeklyStats.dart';
 import 'package:schood/style/AppColors.dart';
@@ -34,22 +35,20 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'SCHOOD',
-          theme: themeProvider.isDarkModeEnabled
-              ? _buildDarkTheme()
-              : _buildLightTheme(),
-          initialRoute: '/home',
+          themeMode: Provider.of<ThemeProvider>(context).getThemeMode(),
+          initialRoute: '/',
           routes: {
             '/': (context) => const LoginPage(),
             '/home': (context) => const HomeScreen(),
-            '/docs': (context) => const DocsScreen(),
+            '/docs': (context) => const SurveyScreen(),
             '/stats': (context) => const StatsScreen(),
-            '/chat': (context) => ChatScreen(),
+            '/chat': (context) => const ChatScreen(),
             '/info': (context) => const HelpScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/profile': (context) => ProfileScreen(email: _email.text),
-            '/emailModifier': (context) =>
-                const EmailModifier(), // à ajouter au bouton du profil
+            '/emailModifier': (context) => const EmailModifier(),
           },
         );
       },
@@ -74,12 +73,32 @@ class MyApp extends StatelessWidget {
 }
 
 class ThemeProvider with ChangeNotifier {
-  bool _isDarkModeEnabled = false;
+  bool _isDarkMode = false;
+  Color backgroundDarkMode = AppColors.backgroundDarkmode;
+  Color backgroundLightMode = AppColors.backgroundLightmode;
+  Color textDarkMode = AppColors.textDarkmode;
+  Color textLightMode = AppColors.textLightmode;
+  bool get isDarkMode => _isDarkMode;
 
-  bool get isDarkModeEnabled => _isDarkModeEnabled;
-
-  set isDarkModeEnabled(bool value) {
-    _isDarkModeEnabled = value;
+  set isDarkMode(bool value) {
+    _isDarkMode = value;
     notifyListeners();
+  }
+
+  void toggleTheme() {
+    isDarkMode = !isDarkMode;
+    notifyListeners();
+  }
+
+  ThemeMode getThemeMode() {
+    return isDarkMode ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  Color getBackgroundColor() {
+    return isDarkMode ? backgroundDarkMode : backgroundLightMode;
+  }
+
+  Color getTextColor() {
+    return isDarkMode ? textDarkMode : textLightMode;
   }
 }

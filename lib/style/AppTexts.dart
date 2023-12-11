@@ -2,17 +2,21 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:schood/style/AppColors.dart';
+import 'package:provider/provider.dart';
+import 'package:schood/main.dart';
 
 class H1TextApp extends StatelessWidget {
   final String text;
-  final Color color;
-  const H1TextApp({super.key, required this.text, required this.color});
+  final Color? color;
+  const H1TextApp({super.key, required this.text, this.color});
+
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Text(
       text,
       style: GoogleFonts.inter(
+        color: color ?? themeProvider.getTextColor(),
         fontSize: 30,
       ),
     );
@@ -21,14 +25,15 @@ class H1TextApp extends StatelessWidget {
 
 class H2TextApp extends StatelessWidget {
   final String text;
-  final Color color;
-  const H2TextApp({super.key, required this.text, required this.color});
+  final Color? color;
+  const H2TextApp({super.key, required this.text, this.color});
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Text(
       text,
       style: GoogleFonts.inter(
-        color: color,
+        color: color ?? themeProvider.getTextColor(),
         fontSize: 24,
       ),
     );
@@ -37,19 +42,15 @@ class H2TextApp extends StatelessWidget {
 
 class H3TextApp extends StatelessWidget {
   final String text;
-  const H3TextApp({super.key, required this.text});
+  final Color? color;
+  const H3TextApp({super.key, required this.text, this.color});
   @override
   Widget build(BuildContext context) {
-    /*return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, _) {
-        final textColor = themeProvider.isDarkModeEnabled
-            ? Colors.white
-            : AppColors.purpleSchood;*/
-    const textColor = Colors.white;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Text(
       text,
-      style: const TextStyle(
-        color: textColor,
+      style: TextStyle(
+        color: color ?? themeProvider.getTextColor(),
         fontSize: 22,
       ),
     );
@@ -58,14 +59,15 @@ class H3TextApp extends StatelessWidget {
 
 class H3ButtonTextApp extends StatelessWidget {
   final String text;
-
-  const H3ButtonTextApp({super.key, required this.text});
+  final Color? color;
+  const H3ButtonTextApp({super.key, required this.text, this.color});
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Text(
       text,
       style: GoogleFonts.inter(
-        color: Colors.white,
+        color: color ?? themeProvider.getTextColor(),
         fontSize: 22,
       ),
     );
@@ -74,14 +76,15 @@ class H3ButtonTextApp extends StatelessWidget {
 
 class H4TextApp extends StatelessWidget {
   final String text;
-  final Color color;
-  const H4TextApp({super.key, required this.text, required this.color});
+  final Color? color;
+  const H4TextApp({super.key, required this.text, this.color});
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Text(
       text,
       style: GoogleFonts.inter(
-        color: color,
+        color: color ?? themeProvider.getTextColor(),
         fontSize: 18,
       ),
     );
@@ -90,17 +93,15 @@ class H4TextApp extends StatelessWidget {
 
 class ConversationTextApp extends StatelessWidget {
   final String text;
-
-  const ConversationTextApp({
-    super.key,
-    required this.text,
-  });
+  final Color? color;
+  const ConversationTextApp({super.key, required this.text, this.color});
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Text(
       text,
       style: GoogleFonts.inter(
-        color: Colors.white,
+        color: color ?? themeProvider.getTextColor(),
         fontSize: 16,
       ),
     );
@@ -109,12 +110,14 @@ class ConversationTextApp extends StatelessWidget {
 
 class ButtonTextApp extends StatelessWidget {
   final String text;
-  const ButtonTextApp({super.key, required this.text});
+  final Color? color;
+  const ButtonTextApp({super.key, required this.text, this.color});
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Text(text,
         style: GoogleFonts.inter(
-          color: AppColors.backgroundLightmode,
+          color: color ?? themeProvider.getTextColor(),
           fontSize: 22,
         ));
   }

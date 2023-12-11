@@ -1,7 +1,9 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:schood/Profile/ProfileScreen.dart';
+import 'package:schood/main.dart';
 
 import 'package:schood/style/AppColors.dart';
 
@@ -17,7 +19,9 @@ class _EmailModifierState extends State<EmailModifier> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
+        backgroundColor: themeProvider.getBackgroundColor(),
         appBar: AppBar(
           leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: AppColors.purpleSchood),
@@ -38,12 +42,13 @@ class _EmailModifierState extends State<EmailModifier> {
             SizedBox(
               width: 200,
               child: TextField(
+                style: TextStyle(color: themeProvider.getTextColor()),
                 controller: _email,
                 textAlign: TextAlign.center,
                 cursorColor: AppColors.purpleSchood,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintStyle: TextStyle(
-                      color: Color.fromARGB(146, 41, 41, 41),
+                      color: themeProvider.getTextColor(),
                       fontSize: 22,
                       fontWeight: FontWeight.w600),
                 ),
