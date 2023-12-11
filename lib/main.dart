@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/ChatScreen.dart';
 import 'package:schood/Connexion_screen.dart';
-import 'package:schood/Survey/SurveyScreen.dart';
+import 'package:schood/Survey/SurveySummaryScreen.dart';
 import 'package:schood/Help/HelpScreen.dart';
 
 import 'package:schood/Homepage_screen.dart';
 import 'package:schood/Profile/EmailModifierScreen.dart';
 import 'package:schood/Profile/ProfileScreen.dart';
 import 'package:schood/Profile/Settings_screen.dart';
-import 'package:schood/Survey/SurveyScreen.dart';
+import 'package:schood/Survey/SurveySummaryScreen.dart';
 
 import 'package:schood/WeeklyStats.dart';
 import 'package:schood/style/AppColors.dart';
