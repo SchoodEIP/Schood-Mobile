@@ -10,6 +10,7 @@ import 'package:schood/Profile/EmailModifierScreen.dart';
 import 'package:schood/Profile/ProfileScreen.dart';
 import 'package:schood/Profile/Settings_screen.dart';
 import 'package:schood/Survey/SurveySummaryScreen.dart';
+import 'package:schood/Survey/SurveyQuestionScreen.dart';
 
 import 'package:schood/WeeklyStats.dart';
 import 'package:schood/style/AppColors.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
             '/': (context) => const LoginPage(),
             '/home': (context) => const HomeScreen(),
             '/docs': (context) => const SurveyScreen(),
+            '/smmary': (context) => const SurveyQuestionsScreen(),
             '/stats': (context) => const StatsScreen(),
             '/chat': (context) => const ChatScreen(),
             '/info': (context) => const HelpScreen(),

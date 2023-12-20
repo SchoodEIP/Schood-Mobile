@@ -1,9 +1,11 @@
 // ignore_for_file: file_names
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:schood/Survey/SurveyQuestionScreen.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
@@ -89,6 +91,8 @@ class _SurveyState extends State<SurveyScreen> {
             if (snapshot.hasData) {
               List<Map<String, dynamic>> surveyList = snapshot.data!;
   
+              // print('${surveyData['_id']}');
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -96,9 +100,17 @@ class _SurveyState extends State<SurveyScreen> {
                   for (var surveyData in surveyList) ...[
                     TextButton(
                       onPressed: () {
-                        // Handle button press if needed
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SurveyQuestionsScreen(), // Use SurveyQuestionScreen
+                          ),
+                        );
                       },
                       child: Text(
+
+                        /// TODO: USE ${surveyData['_id']} TO DISPLAY THE RIGHT ID
+                        
                         'Survey ID: ${surveyData['_id']} A Compléter', // You can customize the button text
                         style: const TextStyle(color: AppColors.purpleSchood, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
