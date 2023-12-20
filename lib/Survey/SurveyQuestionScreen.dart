@@ -79,22 +79,27 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
             } else if (snapshot.hasData) {
               final surveyData = snapshot.data!;
               return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   
                   // Display questions
                   Column(
                     children: (surveyData['questions'] as List<dynamic>).map((question) {
                       return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('Title: ${question['title']}'),
+                          Text('${question['title']}',
+                          style: const TextStyle(color: AppColors.purpleSchood, fontSize: 25, fontWeight: FontWeight.bold)
+                          ),
                           
                           // Display answers for each question
-                          Text('Answers:'),
-                          Column(
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: (question['answers'] as List<dynamic>).map((answer) {
-                              return Text('Title: ${answer['title']}');
+                              return Text('${answer['title']}    ',
+                              style: const TextStyle(color: AppColors.purpleSchood, fontSize: 22, fontWeight: FontWeight.bold)
+                              );
                             }).toList(),
                           ),
                         ],

@@ -108,9 +108,6 @@ class _SurveyState extends State<SurveyScreen> {
                         );
                       },
                       child: Text(
-
-                        /// TODO: USE ${surveyData['_id']} TO DISPLAY THE RIGHT ID
-                        
                         'Survey ID: ${surveyData['_id']} A Compléter', // You can customize the button text
                         style: const TextStyle(color: AppColors.purpleSchood, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
