@@ -8,19 +8,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:schood/Help/HelpScreen.dart';
+import 'package:schood/Help/help_issues.dart';
+import 'package:schood/Help/help_list.dart';
 import 'package:schood/Homepage_screen.dart';
 import 'package:schood/Profile/Settings_screen.dart';
 
 import 'package:schood/main.dart';
+import 'package:schood/style/AppButtons.dart';
 
 import 'tests_helper/GoogleFonts.dart';
+
+class MockThemeProvider extends ThemeProvider {
+  @override
+  bool get isDarkMode =>
+      false; // Utilisez les valeurs appropriées pour votre test
+
+  // Ajoutez d'autres méthodes ou propriétés simulées au besoin
+}
 
 void main() {
   testWidgets('Test de redirection de page de Homepage à Homepage',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(
-      home: HomeScreen(),
-    ));
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ThemeProvider>.value(
+            value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
+          ),
+        ],
+        child: MaterialApp(
+          home: HomeScreen(),
+        ),
+      ),
+    );
 
     final titleFinder = find.text('Stats hebdomadaire');
     expect(titleFinder, findsOneWidget);
@@ -34,9 +55,15 @@ void main() {
   });
   testWidgets('Test de redirection de page entre Homepage et Statistique',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(
-      home: HomeScreen(),
-    ));
+    await tester.pumpWidget(MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ThemeProvider>.value(
+            value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
+          ),
+        ],
+        child: MaterialApp(
+          home: HomeScreen(),
+        )));
 
     final titleFinder = find.text('Stats hebdomadaire');
     expect(titleFinder, findsOneWidget);
@@ -51,26 +78,42 @@ void main() {
   testWidgets('Test de redirection de page entre toutes les pages',
       (WidgetTester tester) async {
     await loadAppFonts();
-    await tester.pumpWidget(const MaterialApp(
-      home: HomeScreen(),
-    ));
+    await tester.pumpWidget(MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ThemeProvider>.value(
+            value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
+          ),
+        ],
+        child: MaterialApp(
+          home: HomeScreen(),
+        )));
   });
   testWidgets('Test de vérification de normes graphiques',
       (WidgetTester tester) async {
     await loadAppFonts();
-    await tester.pumpWidget(const MaterialApp(
-      home: HomeScreen(),
-    ));
+    await tester.pumpWidget(MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ThemeProvider>.value(
+            value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
+          ),
+        ],
+        child: MaterialApp(
+          home: HomeScreen(),
+        )));
     expect(
         find.byType(HomeScreen), matchesGoldenFile('goldenTests/Homepage.png'));
   });
   testWidgets('Test de vérification du darkmode', (WidgetTester tester) async {
     await loadAppFonts();
     await tester.pumpWidget(
-      MaterialApp(
-        home: ChangeNotifierProvider<ThemeProvider>(
-          create: (context) => ThemeProvider(),
-          child: const SettingsScreen(),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ThemeProvider>.value(
+            value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
+          ),
+        ],
+        child: MaterialApp(
+          home: const SettingsScreen(),
         ),
       ),
     );
@@ -82,5 +125,46 @@ void main() {
     await tester.pump();
     expect(find.byType(SettingsScreen),
         matchesGoldenFile('goldenTests/DarkMode.png'));
+  });
+  testWidgets('Test de vérification des aides', (WidgetTester tester) async {
+    await loadAppFonts();
+    await tester.pumpWidget(MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeProvider>.value(
+          value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
+        ),
+      ],
+      child: MaterialApp(
+        home: const HomeScreen(),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.info_rounded));
+    await tester.pumpAndSettle();
+    await tester.pump();
+    expect(
+        find.byType(HelpScreen), matchesGoldenFile('goldenTests/HelpPage.png'));
+  });
+  testWidgets('Test de redirection pour appel', (WidgetTester tester) async {
+    await loadAppFonts();
+    await tester.pumpWidget(MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeProvider>.value(
+          value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
+        ),
+      ],
+      child: MaterialApp(
+        home: const HelpList(),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(HelpButton, 'Drogue Info services'));
+    await tester.pumpAndSettle();
+    //await tester.tap(find.widgetWithText(HelpCallButton, '0800231313'));
+    await tester.pump();
+    final titleFinder = find.text('Drogue Info services');
+    expect(titleFinder, findsOneWidget);
+    //expect(
+    //    find.byType(HelpScreen), matchesGoldenFile('goldenTests/HelpPage.png'));
   });
 }

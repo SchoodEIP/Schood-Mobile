@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import 'package:schood/main.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/BottomBarApp.dart';
@@ -19,7 +19,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String lastName = '';
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
+      backgroundColor: themeProvider.getBackgroundColor(),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
@@ -45,7 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
               H1TextApp(
                 text:
                     'Bonjour $firstName $lastName\nComment te sens tu aujourd\'hui ?',
-                color: AppColors.backgroundDarkmode,
               ),
               const WidgetCard(
                 height: 216,

@@ -1,8 +1,10 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:schood/Homepage_screen.dart';
+import 'package:schood/main.dart';
 import 'package:schood/style/AppColors.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -15,6 +17,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -41,6 +44,7 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
+      backgroundColor: themeProvider.getBackgroundColor(),
       body: Column(
         children: [
           Container(
@@ -68,8 +72,8 @@ class ProfileScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
             child: Text(firstName,
-                style: const TextStyle(
-                    color: AppColors.backgroundDarkmode,
+                style: TextStyle(
+                    color: themeProvider.getTextColor(),
                     fontSize: 22,
                     fontWeight: FontWeight.w600)),
           ),
@@ -84,8 +88,8 @@ class ProfileScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
             child: Text(lastName,
-                style: const TextStyle(
-                    color: AppColors.backgroundDarkmode,
+                style: TextStyle(
+                    color: themeProvider.getTextColor(),
                     fontSize: 22,
                     fontWeight: FontWeight.w600)),
           ),
@@ -100,8 +104,8 @@ class ProfileScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
             child: Text(classe,
-                style: const TextStyle(
-                    color: AppColors.backgroundDarkmode,
+                style: TextStyle(
+                    color: themeProvider.getTextColor(),
                     fontSize: 22,
                     fontWeight: FontWeight.w600)),
           ),
