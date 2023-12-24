@@ -1,4 +1,3 @@
-// ignore_for_file: file_names
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,9 +19,9 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
   late Future<Map<String, dynamic>?> userDataFuture;
   Map<String, bool> isCheckedMap = {};
   String id = global.globalToken;
+  late PostClass postClass;
 
-  Future<Map<String, dynamic>?> _getSurveyQuestionData(
-      BuildContext context) async {
+  Future<Map<String, dynamic>?> _getSurveyQuestionData(BuildContext context) async {
     final getdata = GetClass();
     final response = await getdata.getData(
         global.globalToken, "shared/questionnaire/651add2c68a7c93a70fae29a");
@@ -44,13 +43,13 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
   @override
   void initState() {
     userDataFuture = _getSurveyQuestionData(context);
+    postClass = PostClass(); // Initialize the PostClass
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final postClass = PostClass();
 
     return Scaffold(
       appBar: AppBar(
@@ -87,88 +86,76 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
               final surveyData = snapshot.data!;
               return Column(
                 children: [
-                  // Display questions
-                  
-
-                          // Display answers for each question
+                  Column(
+                    children: [
+                      for (var question
+                          in (surveyData['questions'] as List<dynamic>))
+                        if (question != null)
                           Column(
                             children: [
-                              for (var question
-                                  in (surveyData['questions'] as List<dynamic>))
-                                if (question != null)
-                                  Column(
-                                    children: [
-                                      Text(
-                                        '${question['title']}',
-                                        style: const TextStyle(
-                                            color: AppColors.purpleSchood,
-                                            fontSize: 25,
-                                            fontWeight: FontWeight.bold),
+                              Text(
+                                '${question['title']}',
+                                style: const TextStyle(
+                                    color: AppColors.purpleSchood,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Column(
+                                children: [
+                                  for (var answer
+                                      in (question['answers'] as List<dynamic>))
+                                    if (answer != null)
+                                      CheckboxListTile(
+                                        title: Text(
+                                          '${answer['title']}    ',
+                                          style: const TextStyle(
+                                              color: AppColors.purpleSchood,
+                                              fontSize: 22,
+                                              fontWeight:
+                                                  FontWeight.bold),
+                                        ),
+                                        value: isCheckedMap[
+                                                '${answer['title']}'] ??
+                                            false,
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            isCheckedMap[
+                                                    '${answer['title']}'] =
+                                                newValue!;
+                                          });
+                                        },
                                       ),
-
-                                      // Display answers for each question
-                                      Column(
-                                        children: [
-                                          for (var answer
-                                              in (question['answers']
-                                                  as List<dynamic>))
-                                            if (answer != null)
-                                              CheckboxListTile(
-                                                title: Text(
-                                                  '${answer['title']}    ',
-                                                  style: const TextStyle(
-                                                      color: AppColors
-                                                          .purpleSchood,
-                                                      fontSize: 22,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                value: isCheckedMap[
-                                                        '${answer['title']}'] ??
-                                                    false,
-                                                onChanged: (newValue) {
-                                                  setState(() {
-                                                    isCheckedMap[
-                                                            '${answer['title']}'] =
-                                                        newValue!;
-                                                  });
-                                                },
-                                              ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                ],
+                              ),
                             ],
                           ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      List<dynamic> selectedAnswers = [];
+                      for (var question in (surveyData['questions']
+                          as List<dynamic>)) {
+                        for (var answer in (question['answers']
+                            as List<dynamic>)) {
+                          if (isCheckedMap['${answer['title']}'] == true) {
+                            selectedAnswers.add(answer);
+                          }
+                        }
+                      }
 
-                          ElevatedButton(
-                            onPressed: () {
-                              // Perform actions based on the selected checkboxes
-                              List<dynamic> selectedAnswers = [];
-
-                              for (var question in (surveyData['questions']
-                                  as List<dynamic>)) {
-                                for (var answer
-                                    in (question['answers'] as List<dynamic>)) {
-                                  if (isCheckedMap['${answer['title']}'] ==
-                                      true) {
-                                    selectedAnswers.add(answer);
-                                  }
-                                }
-                              }
-
-                              // You can use the selectedAnswers list for further processing or API calls
-                              print('Selected Answers: $selectedAnswers');
-                            },
-                            style: ElevatedButton.styleFrom(
-                              primary: AppColors.purpleSchood,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(26),
-                              ),
-                            ),
-                            child: Text('Envoyer les réponses'),
-                          ),
-                        ],
+                      // Post the selected data using the PostClass
+                      postClass.postData(context, selectedAnswers, 'student/questionnaire/654841872805a359ff24ccdb');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.purpleSchood,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(26),
+                      ),
+                    ),
+                    child: Text('Envoyer les réponses'),
+                  ),
+                ],
               );
             } else {
               return Text('No data available');
