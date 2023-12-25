@@ -9,7 +9,9 @@ import '../global.dart' as global;
 import 'package:schood/main.dart';
 
 class SurveyQuestionsScreen extends StatefulWidget {
-  const SurveyQuestionsScreen({super.key});
+  final String id; // Add id parameter to the constructor
+
+  const SurveyQuestionsScreen({super.key, required this.id}); // Require id in the constructor
 
   @override
   _SurveyQuestionScreenState createState() => _SurveyQuestionScreenState();
@@ -24,12 +26,12 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
   Future<Map<String, dynamic>?> _getSurveyQuestionData(BuildContext context) async {
     final getdata = GetClass();
     final response = await getdata.getData(
-        global.globalToken, "shared/questionnaire/651add2c68a7c93a70fae29a");
+        global.globalToken, "shared/questionnaire/${widget.id}"); // Use widget.id
 
     if (response.statusCode == 200) {
       try {
         final surveyMap = jsonDecode(response.body);
-        print(surveyMap);
+        print('HERE IS THE DATA: $surveyMap');
         return surveyMap.cast<String, dynamic>();
       } catch (e) {
         print('Error decoding JSON: $e');
@@ -145,7 +147,8 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
                       }
 
                       // Post the selected data using the PostClass
-                      postClass.postData(context, selectedAnswers, 'student/questionnaire/654841872805a359ff24ccdb');
+                      postClass.postData(context, selectedAnswers, 'student/questionnaire/${widget.id}');
+                      print(selectedAnswers);
                     },
                     style: ElevatedButton.styleFrom(
                       primary: AppColors.purpleSchood,

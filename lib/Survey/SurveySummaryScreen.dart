@@ -91,8 +91,6 @@ class _SurveyState extends State<SurveyScreen> {
             if (snapshot.hasData) {
               List<Map<String, dynamic>> surveyList = snapshot.data!;
   
-              // print('${surveyData['_id']}');
-
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -103,12 +101,12 @@ class _SurveyState extends State<SurveyScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SurveyQuestionsScreen(), // Use SurveyQuestionScreen
+                            builder: (context) => SurveyQuestionsScreen(id: "${surveyData['_id']}"),
                           ),
                         );
                       },
                       child: Text(
-                        'Survey ID: ${surveyData['_id']} A Compléter', // You can customize the button text
+                        'Survey ID: ${surveyData['_id']} A Compléter',
                         style: const TextStyle(color: AppColors.purpleSchood, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),

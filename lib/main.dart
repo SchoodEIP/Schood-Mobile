@@ -44,7 +44,6 @@ class MyApp extends StatelessWidget {
             '/': (context) => const LoginPage(),
             '/home': (context) => const HomeScreen(),
             '/docs': (context) => const SurveyScreen(),
-            '/smmary': (context) => const SurveyQuestionsScreen(),
             '/stats': (context) => const StatsScreen(),
             '/chat': (context) => const ChatScreen(),
             '/info': (context) => const HelpScreen(),
