@@ -1,7 +1,6 @@
 // ignore_for_file: file_names
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -10,19 +9,18 @@ import 'package:schood/utils/BottomBarApp.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/request/get.dart';
-import 'package:schood/request/post.dart';
 import '../global.dart' as global;
 import 'package:schood/main.dart';
 
-class SurveyScreen extends StatefulWidget {
-  const SurveyScreen({super.key});
+class SurveySummaryScreen extends StatefulWidget {
+  const SurveySummaryScreen({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
-  _SurveyState createState() => _SurveyState();
+  _SurveySummaryState createState() => _SurveySummaryState();
 }
 
-class _SurveyState extends State<SurveyScreen> {
+class _SurveySummaryState extends State<SurveySummaryScreen> {
   List<String> selectedMoods = [];
   String id = global.globalToken;
 

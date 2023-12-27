@@ -66,7 +66,7 @@ class BottomBarApp extends StatelessWidget {
               context,
               PageRouteBuilder(
                 pageBuilder: (context, animation, secondaryAnimation) =>
-                    const SurveyScreen(),
+                    const SurveySummaryScreen(),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) {
                   return child;

@@ -8,10 +8,11 @@ import 'package:schood/request/get.dart';
 import '../global.dart' as global;
 import 'package:schood/main.dart';
 
-class SurveyQuestionsScreen extends StatefulWidget {
-  final String id; // Add id parameter to the constructor
 
-  const SurveyQuestionsScreen({super.key, required this.id}); // Require id in the constructor
+class SurveyQuestionsScreen extends StatefulWidget {
+  final String id;
+
+  const SurveyQuestionsScreen({super.key, required this.id});
 
   @override
   _SurveyQuestionScreenState createState() => _SurveyQuestionScreenState();
@@ -23,21 +24,22 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
   String id = global.globalToken;
   late PostClass postClass;
 
-  Future<Map<String, dynamic>?> _getSurveyQuestionData(BuildContext context) async {
+  Future<Map<String, dynamic>?> _getSurveyQuestionData(
+      BuildContext context) async {
     final getdata = GetClass();
-    final response = await getdata.getData(
-        global.globalToken, "shared/questionnaire/${widget.id}"); // Use widget.id
+    final emptySurveyResponse = await getdata.getData(
+        global.globalToken, "shared/questionnaire/${widget.id}");
 
-    if (response.statusCode == 200) {
+    if (emptySurveyResponse.statusCode == 200) {
       try {
-        final surveyMap = jsonDecode(response.body);
-        print('HERE IS THE DATA: $surveyMap');
-        return surveyMap.cast<String, dynamic>();
+        final emptySurveyMap = jsonDecode(emptySurveyResponse.body);
+        print('HERE IS THE DATA: $emptySurveyMap');
+        return emptySurveyMap.cast<String, dynamic>();
       } catch (e) {
         print('Error decoding JSON: $e');
       }
     } else {
-      print('Error fetching data: ${response.statusCode}');
+      print('Error fetching data: ${emptySurveyResponse.statusCode}');
     }
     return null;
   }
@@ -45,7 +47,7 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
   @override
   void initState() {
     userDataFuture = _getSurveyQuestionData(context);
-    postClass = PostClass(); // Initialize the PostClass
+    postClass = PostClass();
     super.initState();
   }
 
@@ -53,117 +55,147 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const H1TextApp(
-          text: "Questionnaires",
-          color: AppColors.backgroundDarkmode,
-        ),
-        backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        elevation: 0.0,
-        actions: [
-          InkWell(
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/profile');
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context); // Go back to the previous page
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.purpleSchood),
+            onPressed: () {
+              Navigator.pop(context); // Go back to the previous page
             },
-            child: const Padding(
-              padding: EdgeInsets.all(8),
-              child: Icon(Icons.account_circle,
-                  size: 40, color: AppColors.purpleSchood),
-            ),
           ),
-        ],
-      ),
-      backgroundColor: themeProvider.getBackgroundColor(),
-      body: SingleChildScrollView(
-        child: FutureBuilder<Map<String, dynamic>?>(
-          future: userDataFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else if (snapshot.hasData) {
-              final surveyData = snapshot.data!;
-              return Column(
-                children: [
-                  Column(
-                    children: [
-                      for (var question
-                          in (surveyData['questions'] as List<dynamic>))
-                        if (question != null)
-                          Column(
-                            children: [
-                              Text(
-                                '${question['title']}',
-                                style: const TextStyle(
-                                    color: AppColors.purpleSchood,
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Column(
-                                children: [
-                                  for (var answer
-                                      in (question['answers'] as List<dynamic>))
-                                    if (answer != null)
-                                      CheckboxListTile(
-                                        title: Text(
-                                          '${answer['title']}    ',
-                                          style: const TextStyle(
-                                              color: AppColors.purpleSchood,
-                                              fontSize: 22,
-                                              fontWeight:
-                                                  FontWeight.bold),
+          title: const H1TextApp(
+            text: "Questionnaires",
+            color: AppColors.backgroundDarkmode,
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          actions: [
+            InkWell(
+              onTap: () {
+                Navigator.pushReplacementNamed(context, '/profile');
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(8),
+                child: Icon(Icons.account_circle,
+                    size: 40, color: AppColors.purpleSchood),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: themeProvider.getBackgroundColor(),
+        body: SingleChildScrollView(
+          child: FutureBuilder<Map<String, dynamic>?>(
+            future: userDataFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (snapshot.hasData) {
+                final surveyData = snapshot.data!;
+                return Column(
+                  children: [
+                    Column(
+                      children: [
+                        for (var question
+                            in (surveyData['questions'] as List<dynamic>))
+                          if (question != null)
+                            Column(
+                              children: [
+                                Text(
+                                  '${question['title']}',
+                                  style: const TextStyle(
+                                      color: AppColors.purpleSchood,
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Column(
+                                  children: [
+                                    for (var answer in (question['answers']
+                                        as List<dynamic>))
+                                      if (answer != null)
+                                        CheckboxListTile(
+                                          title: Text(
+                                            '${answer['title']}    ',
+                                            style: const TextStyle(
+                                                color: AppColors.purpleSchood,
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          value: isCheckedMap[
+                                                  '${answer['title']}'] ??
+                                              false,
+                                          onChanged: (newValue) {
+                                            setState(() {
+                                              isCheckedMap[
+                                                      '${answer['title']}'] =
+                                                  newValue!;
+                                            });
+                                          },
                                         ),
-                                        value: isCheckedMap[
-                                                '${answer['title']}'] ??
-                                            false,
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            isCheckedMap[
-                                                    '${answer['title']}'] =
-                                                newValue!;
-                                          });
-                                        },
-                                      ),
-                                ],
-                              ),
-                            ],
-                          ),
-                    ],
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      List<dynamic> selectedAnswers = [];
-                      for (var question in (surveyData['questions']
-                          as List<dynamic>)) {
-                        for (var answer in (question['answers']
-                            as List<dynamic>)) {
-                          if (isCheckedMap['${answer['title']}'] == true) {
-                            selectedAnswers.add(answer);
+                                  ],
+                                ),
+                              ],
+                            ),
+                      ],
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        List<dynamic> selectedAnswers = [];
+                        for (var question
+                            in (surveyData['questions'] as List<dynamic>)) {
+                          for (var answer
+                              in (question['answers'] as List<dynamic>)) {
+                            if (isCheckedMap['${answer['title']}'] == true) {
+                              selectedAnswers.add(answer);
+                            }
                           }
                         }
-                      }
 
-                      // Post the selected data using the PostClass
-                      postClass.postData(context, selectedAnswers, 'student/questionnaire/${widget.id}');
-                      print(selectedAnswers);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColors.purpleSchood,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(26),
+                        // Post the selected data using the PostClass
+                        postClass.postData(context, selectedAnswers,
+                            'student/questionnaire/${widget.id}');
+
+                        // Display alert
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Réponses envoyées avec succès!'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pushReplacementNamed(context, '/surveySummary');
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
+                        print('DATA SENT: $selectedAnswers');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: AppColors.purpleSchood,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(26),
+                        ),
                       ),
+                      child: Text('Envoyer les réponses'),
                     ),
-                    child: Text('Envoyer les réponses'),
-                  ),
-                ],
-              );
-            } else {
-              return Text('No data available');
-            }
-          },
+                  ],
+                );
+              } else {
+                return Text('No data available');
+              }
+            },
+          ),
         ),
       ),
     );
