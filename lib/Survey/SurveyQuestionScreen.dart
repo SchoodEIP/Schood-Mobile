@@ -8,11 +8,10 @@ import 'package:schood/request/get.dart';
 import '../global.dart' as global;
 import 'package:schood/main.dart';
 
-
 class SurveyQuestionsScreen extends StatefulWidget {
   final String id;
 
-  const SurveyQuestionsScreen({super.key, required this.id});
+  const SurveyQuestionsScreen({Key? key, required this.id}) : super(key: key);
 
   @override
   _SurveyQuestionScreenState createState() => _SurveyQuestionScreenState();
@@ -29,17 +28,25 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
     final getdata = GetClass();
     final emptySurveyResponse = await getdata.getData(
         global.globalToken, "shared/questionnaire/${widget.id}");
+    final filledSurveyResponse = await getdata.getData(
+        global.globalToken, "shared/questionnaire/${widget.id}");
 
-    if (emptySurveyResponse.statusCode == 200) {
-      try {
-        final emptySurveyMap = jsonDecode(emptySurveyResponse.body);
-        print('HERE IS THE DATA: $emptySurveyMap');
-        return emptySurveyMap.cast<String, dynamic>();
-      } catch (e) {
-        print('Error decoding JSON: $e');
-      }
+    if (filledSurveyResponse.statusCode == 200) {
+      final filledSurveyMap = jsonDecode(filledSurveyResponse.body);
+      print('HERE IS THE FILLED DATA: $filledSurveyMap');
+      return filledSurveyMap.cast<String, dynamic>();
     } else {
-      print('Error fetching data: ${emptySurveyResponse.statusCode}');
+      if (emptySurveyResponse.statusCode == 200) {
+        try {
+          final emptySurveyMap = jsonDecode(emptySurveyResponse.body);
+          print('HERE IS THE EMPTY DATA: $emptySurveyMap');
+          return emptySurveyMap.cast<String, dynamic>();
+        } catch (e) {
+          print('Error decoding JSON: $e');
+        }
+      } else {
+        print('Error fetching data: ${emptySurveyResponse.statusCode}');
+      }
     }
     return null;
   }
@@ -69,7 +76,7 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
             },
           ),
           title: const H1TextApp(
-            text: "Questionnaires",
+            text: "Questions",
             color: AppColors.backgroundDarkmode,
           ),
           backgroundColor: Colors.transparent,
@@ -110,9 +117,10 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
                                 Text(
                                   '${question['title']}',
                                   style: const TextStyle(
-                                      color: AppColors.purpleSchood,
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold),
+                                    color: AppColors.purpleSchood,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 Column(
                                   children: [
@@ -123,9 +131,10 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
                                           title: Text(
                                             '${answer['title']}    ',
                                             style: const TextStyle(
-                                                color: AppColors.purpleSchood,
-                                                fontSize: 22,
-                                                fontWeight: FontWeight.bold),
+                                              color: AppColors.purpleSchood,
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                           value: isCheckedMap[
                                                   '${answer['title']}'] ??
@@ -158,8 +167,11 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
                         }
 
                         // Post the selected data using the PostClass
-                        postClass.postData(context, selectedAnswers,
-                            'student/questionnaire/${widget.id}');
+                        postClass.postData(
+                          context,
+                          selectedAnswers,
+                          'student/questionnaire/${widget.id}',
+                        );
 
                         // Display alert
                         showDialog(
@@ -170,7 +182,10 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.pushReplacementNamed(context, '/surveySummary');
+                                    Navigator.pushReplacementNamed(
+                                      context,
+                                      '/surveySummary',
+                                    );
                                   },
                                   child: Text('OK'),
                                 ),
