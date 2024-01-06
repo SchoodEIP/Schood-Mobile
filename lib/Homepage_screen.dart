@@ -52,16 +52,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 216,
                 width: 401,
                 title: "Stats hebdomadaire",
+                link: '/stats'
               ),
               const WidgetCard(
                 height: 216,
                 width: 401,
                 title: "Questionnaires",
+                link: '/surveySummary'
               ),
               const WidgetCard(
                 height: 216,
                 width: 401,
                 title: "Messagerie",
+                link: '/chat'
               ),
             ],
           ),
@@ -79,12 +82,14 @@ class WidgetCard extends StatelessWidget {
   final double width;
   final double height;
   final String title;
+  final String link;
 
   const WidgetCard({
     super.key,
     required this.width,
     required this.height,
     required this.title,
+    required this.link,
   });
 
   @override
@@ -107,7 +112,7 @@ class WidgetCard extends StatelessWidget {
               alignment: Alignment.topRight,
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/stats');
+                  Navigator.pushReplacementNamed(context, link);
                 },
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
