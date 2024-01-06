@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/request/post.dart';
+import 'package:schood/request/patch.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/request/get.dart';
@@ -22,6 +23,7 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
   Map<String, bool> isCheckedMap = {};
   String id = global.globalToken;
   late PostClass postClass;
+  late PatchClass patchClass;
 
   Future<Map<String, dynamic>?> _getSurveyQuestionData(
       BuildContext context) async {
@@ -43,9 +45,30 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
           return emptySurveyMap.cast<String, dynamic>();
         } catch (e) {
           print('Error decoding JSON: $e');
+          throw e; // Propagate the error to trigger the error handling below
         }
       } else {
         print('Error fetching data: ${emptySurveyResponse.statusCode}');
+
+        // Display alert for content couldn't be retrieved
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('Content could not be retrieved.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(); // Pop the current screen
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
       }
     }
     return null;
@@ -55,6 +78,7 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
   void initState() {
     userDataFuture = _getSurveyQuestionData(context);
     postClass = PostClass();
+    patchClass = PatchClass();
     super.initState();
   }
 
@@ -100,9 +124,25 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
             future: userDataFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
               } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Error: ${snapshot.error}'),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Retry fetching data
+                        setState(() {
+                          userDataFuture = _getSurveyQuestionData(context);
+                        });
+                      },
+                      child: Text('Retry'),
+                    ),
+                  ],
+                );
               } else if (snapshot.hasData) {
                 final surveyData = snapshot.data!;
                 return Column(
