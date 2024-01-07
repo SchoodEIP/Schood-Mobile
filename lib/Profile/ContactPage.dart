@@ -46,7 +46,7 @@ class ContactPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 20), // Ajoutez un espace vertical
+            SizedBox(height: 20),
             H1TextApp(
               text: "About us",
             ),
@@ -57,74 +57,10 @@ class ContactPage extends StatelessWidget {
                   for (var i in problems) ...[
                     ProblemCard(problem: i),
                     if (i == problems.last) ...[
-                      SizedBox(height: 20), // Ajoutez un espace vertical
-                      ElevatedButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (context) {
-                              return Container(
-                                  child: Padding(
-                                padding: const EdgeInsets.all(32),
-                                child: Column(children: [
-                                  H1TextApp(
-                                    text: "Votre ticket",
-                                  ),
-                                  SizedBox(height: 16),
-                                  TextField(
-                                    decoration: InputDecoration(
-                                      counterStyle: TextStyle(
-                                          color: themeProvider.getTextColor()),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: themeProvider
-                                                .getTextColor()), // Couleur de la bordure quand le champ n'est pas en focus
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: themeProvider
-                                                .getTextColor()), // Couleur de la bordure quand le champ est en focus
-                                        borderRadius:
-                                            BorderRadius.circular(25.0),
-                                      ),
-                                      hintText: 'Saisissez votre message',
-                                      hintStyle:
-                                          const TextStyle(color: Colors.grey),
-                                    ),
-                                    style: GoogleFonts.inter(
-                                        fontSize: 18,
-                                        color: themeProvider.getTextColor()),
-                                    controller: _messagecontroller,
-                                    maxLength: 325,
-                                    maxLines: 5,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            sendEmail(_messagecontroller.text,
-                                                global.email);
-                                            /*Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        EmailValidation()));*/
-                                          },
-                                          child: Text("Envoyé"))
-                                    ],
-                                  )
-                                ]),
-                              ));
-                            },
-                          );
-                        },
-                        child: Text("Ouvrir un ticket"),
-                      ),
+                      SizedBox(height: 20),
+                      EmailButton(
+                        messagecontroller: _messagecontroller,
+                      )
                     ],
                   ],
                 ],

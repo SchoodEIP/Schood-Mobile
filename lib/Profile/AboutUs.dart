@@ -31,22 +31,12 @@ class AboutUs extends StatelessWidget {
               text: "About us",
             ),
             Padding(
-              padding:
-                  const EdgeInsets.all(16), // Ajoutez le padding souhaité ici
+              padding: const EdgeInsets.all(16),
               child: H4TextApp(
                 text:
                     "Bienvenue chez Schood! Nous sommes une équipe de 6 développeurs qui avons pour but de venir en aide aux élèves en difficulté et de les mettre en relation avec les personnes appropriées.",
               ),
             ),
-            Center(
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ContactPage()));
-                    },
-                    child: Text("Contactez-nous !"))),
           ],
         ),
       ),

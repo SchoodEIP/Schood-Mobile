@@ -21,7 +21,7 @@ class HelpList extends StatelessWidget {
     var id = global.globalToken;
     print(id);
     Response response =
-        await getdata.getData(global.globalToken, "user/helpNumbers/:+$id");
+        await getdata.getData(global.globalToken, "user/helpNumbers");
     print(response.body);
   }
 

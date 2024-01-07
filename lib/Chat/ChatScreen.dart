@@ -1,8 +1,5 @@
 // ignore_for_file: file_names
 import 'dart:convert';
-import 'dart:ffi';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
@@ -13,16 +10,17 @@ import 'package:schood/request/get.dart';
 import 'package:schood/request/post.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
-import 'package:http/http.dart' as http;
-import 'package:path/path.dart';
-import 'package:async/async.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 import '../global.dart' as global;
 
+// ...
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key, required this.id}) : super(key: key);
+  const ChatScreen({Key? key, required this.id, required this.participants})
+      : super(key: key);
+
   final String id;
+  final List<dynamic> participants;
+
   @override
   ChatScreenState createState() => ChatScreenState();
 }
@@ -31,16 +29,8 @@ class ChatScreenState extends State<ChatScreen> {
   final TextEditingController messageController = TextEditingController();
   bool isTextFieldEmpty = true;
   String id = global.globalToken;
-  List<List<dynamic>> data = [
-    ['Salut', 'User 1', '2023-09-16 10:00:00'],
-    ['Salut à tous', 'User 1', '2024-09-16 10:00:00'],
-    ['Salut', 'User 2', '2023-09-16 10:00:00'],
-    ['Salut', 'User 2', '2023-09-16 10:00:00'],
-    ['Salut', 'User 2', '2023-09-16 10:00:00'],
-    ['Salut', 'User 2', '2023-09-16 10:00:00'],
-    ['Tu vas bien ?', 'User 1', '2023-09-16 20:30:00'],
-    ['Je suis à Auchan', 'User 1', '2023-09-16 23:30:00'],
-  ];
+  List<Map<String, dynamic>> messages = [];
+
   @override
   void initState() {
     super.initState();
@@ -49,80 +39,26 @@ class ChatScreenState extends State<ChatScreen> {
         isTextFieldEmpty = messageController.text.isEmpty;
       });
     });
-    data.sort((a, b) => DateTime.parse(a[2]).compareTo(DateTime.parse(b[2])));
   }
 
-  PostFileClass postClass = PostFileClass();
-
-  Future<void> sendDataWithFile(BuildContext context) async {
+  //PostFileClass postClass = PostFileClass();
+  void _sendMessage(String message, BuildContext context) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['pdf', 'png', 'jpeg'],
-      );
-
-      if (result != null) {
-        PlatformFile file = result.files.first;
+      var id = widget.id;
+      var route = "user/chat/$id/newMessage";
+      var data = {
+        'content': message,
+      };
+      final postclass = PostClass();
+      Response response = await postclass.postDataAuth(context, data, route);
+      if (response.statusCode == 200) {
+        messageController.clear();
+        _getmessage(context);
+      } else {
+        print("Erreur lors de l'envoi du message - ${response.statusCode}");
       }
-    } catch (e) {
-      print('Erreur lors de la sélection du fichier : $e');
-    }
-  }
-
-  /* Future<void> pickAndUploadFile(BuildContext context) async {
-    final postclass = PostClass();
-    try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom, // Spécifiez le type de fichier autorisé
-        allowedExtensions: ['pdf', 'png', 'jpeg'], // Extensions autorisées
-      );
-      if (result != null) {
-        PlatformFile file = result.files.first;
-        Response response =
-            await postclass.postData(context, file, 'user/chat/file');
-        final body = jsonDecode(response.body);
-        if (response.statusCode == 200) {
-          print('Fichier envoyé avec succès');
-        } else {
-          print('Erreur lors de l\'envoi du fichier : ${response.statusCode}');
-        }
-      }
-    } catch (e) {
-      print('Erreur lors de la sélection du fichier : $e');
-    }
-  }*/
-
-  _messagesend(BuildContext context) async {
-    var time = DateTime.now();
-    var data = {
-      'mailer': 'axou@test.fr',
-      'receiver': 'axel2@test2.fr',
-      'message': messageController.text.trim(),
-      'time': time,
-    };
-    final postclass = PostClass();
-    try {
-      postclass.postData(context, data, '/user/chat/$id/newMessage');
-      print("nice you send something");
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Erreur'),
-            content: const Text('Une erreur s\'est produite.'),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+    } catch (error) {
+      print("Erreur lors de l'envoi du message - $error");
     }
   }
 
@@ -132,30 +68,52 @@ class ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  _getchat(BuildContext context) async {
+  _getfile(BuildContext context) async {
     final getdata = GetClass();
-    global.globalToken;
-    // Response response = await getdata.getData(global.globalToken, "user/chat");
-
-    //id = response.body;
+    var id = widget.id;
+    var route = "user/file/$id";
   }
 
   _getmessage(BuildContext context) async {
     final getdata = GetClass();
-    final token = global.globalToken;
-    //print(widget.id);
 
-    Response response2 = await getdata.getData(
-        global.globalToken, "/user/chat/$widget.$id/messages");
-    print(response2.body);
+    var id = widget.id;
+    //print(widget.participants);
+    var route = "user/chat/$id/messages";
+    Response response2 = await getdata.getData(global.globalToken, route);
 
-    //Array<dynamic> userData = jsonDecode(response2.body);
-    {}
+    List<dynamic> messageData = jsonDecode(response2.body);
+
+    List<Map<String, dynamic>?> messagesList = messageData
+        .map((dynamic item) {
+          if (item is Map<String, dynamic>) {
+            return Map<String, dynamic>.from(item);
+          } else {
+            return null;
+          }
+        })
+        .where((element) => element != null)
+        .toList();
+    messagesList.sort((a, b) {
+      if (a?['date'] != null && b?['date'] != null) {
+        return DateTime.parse(a!['date']!)
+            .compareTo(DateTime.parse(b!['date']!));
+      } else {
+        return 0;
+      }
+    });
+
+    setState(() {
+      messages = messagesList
+          .where((element) => element != null)
+          .cast<Map<String, dynamic>>()
+          .toList();
+    });
+    //print(messages);
   }
 
   @override
   Widget build(BuildContext context) {
-    _getchat(context);
     _getmessage(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
@@ -163,12 +121,24 @@ class ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: const H1TextApp(
-          text: "M.Math",
-          color: AppColors.backgroundDarkmode,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Avec ',
+              style: TextStyle(color: Colors.white),
+            ),
+            Text(
+              widget.participants
+                  .map<String>((participant) =>
+                      '${participant['firstname']} ${participant['lastname']}')
+                  .join(', '),
+              style: TextStyle(color: Colors.black),
+            ),
+          ],
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.purpleSchood),
+          icon: Icon(Icons.arrow_back, color: AppColors.purpleSchood),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -176,68 +146,69 @@ class ChatScreenState extends State<ChatScreen> {
       ),
       body: GestureDetector(
         onTap: () {
-          // Masquer le clavier lorsque l'utilisateur appuie en dehors du TextField
           FocusScope.of(context).unfocus();
         },
         child: Column(
           children: [
             Expanded(
-                child: SingleChildScrollView(
-                    child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        child: Column(
-                          children: data.map((messageData) {
-                            String message = messageData[0];
-                            String user = messageData[1];
-                            String time = messageData[2];
+              child: SingleChildScrollView(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: Column(
+                    children: messages.map((message) {
+                      if (message == null) {
+                        return Container();
+                      }
 
-                            AlignmentDirectional alignment = user == 'User 2'
-                                ? AlignmentDirectional.centerStart
-                                : AlignmentDirectional.centerEnd;
+                      String content = message['content'] ?? '';
+                      String time = message['date'] ?? '';
+                      String userId = message['user'] ?? '';
 
-                            Color messageColor = user == 'User 2'
-                                ? AppColors.purpleSchood
-                                : AppColors.pinkSchood;
-                            Color textColor = user == 'User 2'
-                                ? AppColors.backgroundLightmode
-                                : themeProvider.getBackgroundColor();
-                            DateTime dateTime = DateTime.parse(time);
-                            String mois = DateFormat('MMMM').format(dateTime);
-                            String heure = '${dateTime.day} '
-                                '$mois '
-                                '${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}'; // Format HH:mm
+                      DateTime dateTime =
+                          DateTime.tryParse(time) ?? DateTime.now();
+                      String mois = DateFormat('MMMM').format(dateTime);
+                      String heure =
+                          '${dateTime.day} $mois ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
 
-                            // Créer un Container pour chaque message
-                            return Align(
-                              alignment: alignment,
-                              child: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 4.0),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        messageColor, // Couleur de fond du message
-                                    borderRadius: BorderRadius.circular(
-                                        8.0), // Bords arrondis
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '$message',
-                                        style: TextStyle(color: textColor),
-                                      ),
-                                      Text(
-                                        '$heure',
-                                        style: TextStyle(color: textColor),
-                                      ),
-                                    ],
-                                  )),
-                            );
-                          }).toList(),
-                        )))),
+                      // Alignement en fonction de l'utilisateur du message
+
+                      AlignmentDirectional alignment = userId == global.idtoken
+                          ? AlignmentDirectional.centerEnd
+                          : AlignmentDirectional.centerStart;
+
+                      return Align(
+                        alignment: alignment,
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          margin: const EdgeInsets.symmetric(vertical: 4.0),
+                          decoration: BoxDecoration(
+                            color: userId == global.idtoken
+                                ? Colors.black
+                                : Colors
+                                    .blue, // Utilisez différentes couleurs ou styles si nécessaire
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('$content',
+                                  style: TextStyle(
+                                      color: Colors
+                                          .white)), // Utilisez une couleur différente pour le texte si nécessaire
+                              Text('$heure',
+                                  style: TextStyle(
+                                      color: Colors
+                                          .white)), // Utilisez une couleur différente pour le texte si nécessaire
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ),
             Container(height: 1, color: themeProvider.getTextColor()),
             Container(
               padding:
@@ -279,7 +250,8 @@ class ChatScreenState extends State<ChatScreen> {
                       color: isTextFieldEmpty ? Colors.grey : Colors.green,
                     ),
                     onPressed: () {
-                      if (!isTextFieldEmpty) _messagesend(context);
+                      if (!isTextFieldEmpty)
+                        _sendMessage(messageController.text, context);
                     },
                   ),
                   IconButton(
@@ -289,7 +261,7 @@ class ChatScreenState extends State<ChatScreen> {
                         color: isTextFieldEmpty ? Colors.grey : Colors.green,
                       ),
                       onPressed: () {
-                        sendDataWithFile(context);
+                        //sendDataWithFile(context);
                       })
                 ],
               ),
