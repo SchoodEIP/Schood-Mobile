@@ -75,3 +75,43 @@ class StatsGraph extends StatelessWidget {
     );
   }
 }
+
+class StatsGraphHomePage extends StatelessWidget {
+  final String name;
+  final double value;
+
+  const StatsGraphHomePage({super.key, required this.name, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Container(
+          height: 100,
+          width: 10,
+          color: Colors.transparent, // Set your desired background color here
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(
+                height: 100 - value,
+                width: 10,
+              ),
+              Container(
+                height: value,
+                width: 10,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(26),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Text(name, style: TextStyle(color: Colors.white)),
+      ],
+    );
+  }
+}
+
