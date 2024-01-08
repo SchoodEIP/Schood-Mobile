@@ -102,14 +102,14 @@ class StatsGraphHomePage extends StatelessWidget {
                 height: value,
                 width: 10,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.purpleSchood,
                   borderRadius: BorderRadius.circular(26),
                 ),
               ),
             ],
           ),
         ),
-        Text(name, style: TextStyle(color: Colors.white)),
+        Text(name, style: TextStyle(color: AppColors.purpleSchood)),
       ],
     );
   }
