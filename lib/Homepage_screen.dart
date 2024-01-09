@@ -8,9 +8,11 @@ import 'package:schood/utils/BottomBarApp.dart';
 import 'package:schood/WeeklyStats.dart';
 
 class HomeScreen extends StatefulWidget {
+  // ignore: use_key_in_widget_constructors
   const HomeScreen({Key? key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -43,14 +45,14 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Padding(
         padding: const EdgeInsets.all(32),
         child: ListView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           children: [
             H1TextApp(
               text:
                   'Bonjour $firstName $lastName\nComment te sens tu aujourd\'hui ?',
             ),
             const WidgetCard(
-              height: 216 + 96 + 16 + 16,
+              height: 344,
               width: 401,
               title: "Stats hebdomadaire",
               link: '/stats',
@@ -66,6 +68,12 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 401,
               title: "Messagerie",
               link: '/chat',
+            ),
+            const WidgetCard(
+              height: 286,
+              width: 401,
+              title: "Numéros d'aides",
+              link: '/info',
             ),
           ],
         ),
@@ -94,13 +102,16 @@ class WidgetCard extends StatelessWidget {
   Widget getContentWidget() {
     if (link == '/stats') {
       // Return widget specific to '/stats'
-      return Expanded(child: StatsWidget());
+      return const Expanded(child: StatsWidget());
     } else if (link == '/surveySummary') {
       // Return widget specific to '/surveySummary'
-      return Expanded(child: SurveySummaryWidget());
+      return const Expanded(child: SurveySummaryWidget());
     } else if (link == '/chat') {
       // Return widget specific to '/chat'
-      return Expanded(child: ChatWidget());
+      return const Expanded(child: ChatWidget());
+    } else if (link == '/info') {
+      // Return widget specific to '/chat'
+      return const Expanded(child: HelpWidget());
     } else {
       // Default case or handle other links if needed
       return Container();
@@ -115,12 +126,6 @@ class WidgetCard extends StatelessWidget {
       ),
       color: AppColors.purpleSchood,
       child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.red, // Set your desired border color here
-            width: 2.0, // Set the border width
-          ),
-        ),
         width: width,
         height: height / 1.45,
         padding: const EdgeInsets.all(16.0),
@@ -130,7 +135,7 @@ class WidgetCard extends StatelessWidget {
             H2TextApp(text: title, color: AppColors.backgroundLightmode),
             // const Spacer(),
             getContentWidget(),
-            
+
             Align(
               alignment: Alignment.topRight,
               child: TextButton(
@@ -159,10 +164,12 @@ class WidgetCard extends StatelessWidget {
 }
 
 class StatsWidget extends StatelessWidget {
+  const StatsWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: const Column(
+    return const Scaffold(
+      body: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -183,6 +190,8 @@ class StatsWidget extends StatelessWidget {
 }
 
 class SurveySummaryWidget extends StatelessWidget {
+  const SurveySummaryWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -195,6 +204,8 @@ class SurveySummaryWidget extends StatelessWidget {
 }
 
 class ChatWidget extends StatelessWidget {
+  const ChatWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -203,5 +214,31 @@ class ChatWidget extends StatelessWidget {
         style: TextStyle(color: Colors.white),
       ),
     );
+  }
+}
+
+class HelpWidget extends StatelessWidget {
+  const HelpWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Spacer(),
+          Text(
+            'Numéro gratuit',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          Text(
+            'Professionnels de la santé',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          Text(
+            'Numéro d\'urgence',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        ],
+      );
   }
 }
