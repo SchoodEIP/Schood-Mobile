@@ -213,7 +213,7 @@ class SurveySummaryWidget extends StatelessWidget {
 
         return Container(
           child: Text(
-            'Stored Survey ID: $surveyId',
+            'Survey $surveyId A Compléter',
             style: const TextStyle(color: Colors.white),
           ),
         );
