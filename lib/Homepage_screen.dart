@@ -1,6 +1,10 @@
 // ignore_for_file: file_names
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:schood/main.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
@@ -8,11 +12,9 @@ import 'package:schood/utils/BottomBarApp.dart';
 import 'package:schood/WeeklyStats.dart';
 
 class HomeScreen extends StatefulWidget {
-  // ignore: use_key_in_widget_constructors
   const HomeScreen({Key? key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -34,10 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               Navigator.pushReplacementNamed(context, '/profile');
             },
-            child: const Padding(
-              padding: EdgeInsets.all(8),
-              child: Icon(Icons.account_circle,
-                  size: 40, color: AppColors.purpleSchood),
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Icon(Icons.account_circle, size: 40, color: AppColors.purpleSchood),
             ),
           ),
         ],
@@ -48,8 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
           physics: const BouncingScrollPhysics(),
           children: [
             H1TextApp(
-              text:
-                  'Bonjour $firstName $lastName\nComment te sens tu aujourd\'hui ?',
+              text: 'Bonjour $firstName $lastName\nComment te sens tu aujourd\'hui ?',
             ),
             const WidgetCard(
               height: 344,
@@ -92,7 +92,7 @@ class WidgetCard extends StatelessWidget {
   final String link;
 
   const WidgetCard({
-    super.key,
+    Key? key,
     required this.width,
     required this.height,
     required this.title,
@@ -101,19 +101,14 @@ class WidgetCard extends StatelessWidget {
 
   Widget getContentWidget() {
     if (link == '/stats') {
-      // Return widget specific to '/stats'
       return const Expanded(child: StatsWidget());
     } else if (link == '/surveySummary') {
-      // Return widget specific to '/surveySummary'
       return const Expanded(child: SurveySummaryWidget());
     } else if (link == '/chat') {
-      // Return widget specific to '/chat'
       return const Expanded(child: ChatWidget());
     } else if (link == '/info') {
-      // Return widget specific to '/chat'
       return const Expanded(child: HelpWidget());
     } else {
-      // Default case or handle other links if needed
       return Container();
     }
   }
@@ -133,21 +128,20 @@ class WidgetCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             H2TextApp(text: title, color: AppColors.backgroundLightmode),
-            // const Spacer(),
             getContentWidget(),
-
             Align(
               alignment: Alignment.topRight,
               child: TextButton(
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, link);
                 },
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     H4TextApp(
-                        text: "Voir plus",
-                        color: AppColors.backgroundLightmode),
+                      text: "Voir plus",
+                      color: AppColors.backgroundLightmode,
+                    ),
                     Icon(
                       Icons.forward,
                       color: Colors.white,
@@ -164,7 +158,7 @@ class WidgetCard extends StatelessWidget {
 }
 
 class StatsWidget extends StatelessWidget {
-  const StatsWidget({super.key});
+  const StatsWidget({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -190,26 +184,51 @@ class StatsWidget extends StatelessWidget {
 }
 
 class SurveySummaryWidget extends StatelessWidget {
-  const SurveySummaryWidget({super.key});
+  const SurveySummaryWidget({Key? key});
+
+  Future<String?> _getStoredSurveyId() async {
+    final cacheManager = DefaultCacheManager();
+    FileInfo? fileInfo = await cacheManager.getFileFromCache('survey_id');
+    if (fileInfo != null && fileInfo.file != null) {
+      List<int> bytes = await fileInfo.file!.readAsBytes();
+      return utf8.decode(bytes);
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text(
-        'a',
-        style: TextStyle(color: Colors.white),
-      ),
+    return FutureBuilder<String?>(
+      future: _getStoredSurveyId(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+
+        if (snapshot.hasError) {
+          return Text('Error loading survey ID: ${snapshot.error}');
+        }
+
+        String? surveyId = snapshot.data;
+
+        return Container(
+          child: Text(
+            'Stored Survey ID: $surveyId',
+            style: const TextStyle(color: Colors.white),
+          ),
+        );
+      },
     );
   }
 }
 
 class ChatWidget extends StatelessWidget {
-  const ChatWidget({super.key});
+  const ChatWidget({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text(
+      child: const Text(
         'a',
         style: TextStyle(color: Colors.white),
       ),
@@ -218,27 +237,27 @@ class ChatWidget extends StatelessWidget {
 }
 
 class HelpWidget extends StatelessWidget {
-  const HelpWidget({super.key});
+  const HelpWidget({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Spacer(),
-          Text(
-            'Numéro gratuit',
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-          Text(
-            'Professionnels de la santé',
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-          Text(
-            'Numéro d\'urgence',
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-        ],
-      );
+      children: [
+        Spacer(),
+        Text(
+          'Numéro gratuit',
+          style: TextStyle(color: Colors.white, fontSize: 20),
+        ),
+        Text(
+          'Professionnels de la santé',
+          style: TextStyle(color: Colors.white, fontSize: 20),
+        ),
+        Text(
+          'Numéro d\'urgence',
+          style: TextStyle(color: Colors.white, fontSize: 20),
+        ),
+      ],
+    );
   }
 }

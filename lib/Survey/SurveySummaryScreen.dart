@@ -11,12 +11,13 @@ import 'package:schood/style/AppTexts.dart';
 import 'package:schood/request/get.dart';
 import '../global.dart' as global;
 import 'package:schood/main.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'dart:typed_data';
 
 class SurveySummaryScreen extends StatefulWidget {
-  const SurveySummaryScreen({super.key});
+  const SurveySummaryScreen({Key? key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _SurveySummaryState createState() => _SurveySummaryState();
 }
 
@@ -24,9 +25,11 @@ class _SurveySummaryState extends State<SurveySummaryScreen> {
   List<String> selectedMoods = [];
   String id = global.globalToken;
 
- Future<List<Map<String, dynamic>>?> _getSurveyData(BuildContext context) async {
+  Future<List<Map<String, dynamic>>?> _getSurveyData(
+      BuildContext context) async {
     final getdata = GetClass();
-    final response = await getdata.getData(global.globalToken, "shared/questionnaire");
+    final response =
+        await getdata.getData(global.globalToken, "shared/questionnaire");
 
     if (response.statusCode == 200) {
       try {
@@ -40,6 +43,16 @@ class _SurveySummaryState extends State<SurveySummaryScreen> {
       print('Error fetching data: ${response.statusCode}');
     }
     return null;
+  }
+
+  Future<void> _storeIdInCache(String id) async {
+    final cacheManager = DefaultCacheManager();
+    await cacheManager.putFile(
+      'survey_id',
+      Uint8List.fromList(
+          utf8.encode(id)),
+      fileExtension: '.txt', 
+    );
   }
 
   @override
@@ -75,37 +88,42 @@ class _SurveySummaryState extends State<SurveySummaryScreen> {
       ),
       backgroundColor: themeProvider.getBackgroundColor(),
       body: SingleChildScrollView(
-        child: FutureBuilder<List<Map<String, dynamic>>?> (
+        child: FutureBuilder<List<Map<String, dynamic>>?>(
           future: _getSurveyData(context),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-  
+
             if (snapshot.hasError) {
               return const Center(child: Text('Error loading data'));
             }
-  
+
             if (snapshot.hasData) {
               List<Map<String, dynamic>> surveyList = snapshot.data!;
-  
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
                   for (var surveyData in surveyList) ...[
                     TextButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        await _storeIdInCache("${surveyData['_id']}");
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SurveyQuestionsScreen(id: "${surveyData['_id']}"),
+                            builder: (context) => SurveyQuestionsScreen(
+                                id: "${surveyData['_id']}"),
                           ),
                         );
                       },
                       child: Text(
                         'Survey ID: ${surveyData['_id']} A Compléter',
-                        style: const TextStyle(color: AppColors.purpleSchood, fontSize: 18, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            color: AppColors.purpleSchood,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                     const SizedBox(height: 20),
