@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:schood/Profile/AboutUs.dart';
+import 'package:schood/Profile/ContactPage.dart';
 import 'package:schood/main.dart';
 import 'package:schood/style/AppButtons.dart';
 import 'package:schood/style/AppColors.dart';
@@ -49,6 +51,39 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ],
             ),
+            Center(
+                child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.purpleSchood,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(26),
+                  )),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AboutUs()));
+              },
+              child: ButtonTextApp(
+                text: "About us",
+                color: AppColors.textDarkmode,
+              ),
+            )),
+            Center(
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.purpleSchood,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(26),
+                        )),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ContactPage()));
+                    },
+                    child: ButtonTextApp(
+                      text: "Contactez-nous !",
+                      color: AppColors.textDarkmode,
+                    ))),
             const Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,

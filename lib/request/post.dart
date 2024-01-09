@@ -17,6 +17,18 @@ class PostClass {
     return reponse;
   }
 
+  postDataAuth(context, data, url) async {
+    var fullUrl = global.urlApi + url;
+    print(data);
+    final response = await http.post(Uri.parse(fullUrl),
+        headers: {
+          'x-auth-token': global.globalToken,
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(data));
+    return response;
+  }
+
   _setHeaders() => {
         'Content-type': 'application/json',
         'Accept': 'application/json',

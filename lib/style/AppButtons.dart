@@ -7,12 +7,14 @@ import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/Connexion_screen.dart';
 import 'package:schood/Homepage_screen.dart';
+import 'package:schood/Profile/EmailValidationPage.dart';
 import 'package:schood/main.dart';
 import 'package:schood/request/get.dart';
 import 'package:schood/request/post.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/global.dart' as global;
+import 'package:schood/utils/SendEmail.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StandardButton extends StatelessWidget {
@@ -32,7 +34,10 @@ class StandardButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(26),
         ),
       ),
-      child: ButtonTextApp(text: text),
+      child: ButtonTextApp(
+        text: text,
+        color: AppColors.textDarkmode,
+      ),
     );
   }
 }
@@ -62,6 +67,7 @@ class LoginButton extends StatelessWidget {
         Map<String, dynamic> userData = jsonDecode(response2.body);
         global.name = userData['firstname'];
         global.email = userData['email'];
+        global.idtoken = userData['_id'];
 //        global.role = userData['role'];
         // ignore: use_build_context_synchronously
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -149,6 +155,87 @@ class ForgottenPasswordButtonApp extends StatelessWidget {
             fontSize: 12,
           ),
         ));
+  }
+}
+
+class EmailButton extends StatelessWidget {
+  final TextEditingController messagecontroller;
+
+  const EmailButton({super.key, required this.messagecontroller});
+
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    return ElevatedButton(
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return Container(
+                child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(children: [
+                H1TextApp(
+                  text: "Votre ticket",
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  decoration: InputDecoration(
+                    counterStyle:
+                        TextStyle(color: themeProvider.getTextColor()),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          width: 1,
+                          color: themeProvider
+                              .getTextColor()), // Couleur de la bordure quand le champ n'est pas en focus
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          width: 1,
+                          color: themeProvider
+                              .getTextColor()), // Couleur de la bordure quand le champ est en focus
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                    hintText: 'Saisissez votre message',
+                    hintStyle: const TextStyle(color: Colors.grey),
+                  ),
+                  style: GoogleFonts.inter(
+                      fontSize: 18, color: themeProvider.getTextColor()),
+                  controller: messagecontroller,
+                  maxLength: 325,
+                  maxLines: 5,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          sendEmail(messagecontroller.text, global.email);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EmailValidation()));
+                        },
+                        child: Text("Envoyé"))
+                  ],
+                )
+              ]),
+            ));
+          },
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.purpleSchood,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(26),
+        ),
+      ),
+      child: ButtonTextApp(
+        text: "Ouvrir un ticket",
+        color: themeProvider.textDarkMode,
+      ),
+    );
   }
 }
 

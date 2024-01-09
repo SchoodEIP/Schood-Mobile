@@ -21,7 +21,7 @@ class HelpIssues extends StatelessWidget {
         backgroundColor: themeProvider.getBackgroundColor(),
         appBar: AppBar(
             backgroundColor: Colors.transparent,
-            elevation: 0, // Pas d'ombre sous la barre
+            elevation: 0,
             automaticallyImplyLeading: false,
             title: InkWell(
               onTap: () {
@@ -43,8 +43,7 @@ class HelpIssues extends StatelessWidget {
             child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.center, // Alignement à gauche
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       H1TextApp(text: title, color: AppColors.purpleSchood),
                       const SizedBox(height: 60.0),
