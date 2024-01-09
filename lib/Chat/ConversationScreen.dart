@@ -40,10 +40,8 @@ class ConversationScreen extends StatefulWidget {
 }
 
 class _ConversationScreenState extends State<ConversationScreen> {
-  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
   List<Map<String, dynamic>> conversations = [];
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   List<Person> persons = [];
   List<String>? selectedPersons = [];
@@ -58,9 +56,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   _createconversation(String message) async {
-    print(selectedPersons);
     selectedPersons?.insert(0, global.idtoken);
-    print(selectedPersons);
 
     try {
       var route = "user/chat";
@@ -130,7 +126,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
     if (response.statusCode == 200) {
       try {
         final chatData = jsonDecode(response.body);
-        print(chatData);
 
         if (chatData is List) {
           List<Map<String, dynamic>> chatList = [];
@@ -208,7 +203,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               future: _getChatData(context),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 return ListView.builder(
@@ -233,15 +228,15 @@ class _ConversationScreenState extends State<ConversationScreen> {
                           color: AppColors.purpleSchood,
                           borderRadius: BorderRadius.circular(26),
                         ),
-                        margin: EdgeInsets.all(16),
-                        padding: EdgeInsets.all(16),
+                        margin: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Row(
                               children: <Widget>[
-                                CircleAvatar(),
-                                SizedBox(width: 16),
+                                const CircleAvatar(),
+                                const SizedBox(width: 16),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
@@ -269,7 +264,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                                 },
                                 itemBuilder: (BuildContext context) {
                                   return [
-                                    PopupMenuItem(
+                                    const PopupMenuItem(
                                       value: 'delete',
                                       child: Text('Supprimer la conversation'),
                                     ),

@@ -237,7 +237,7 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
                         print('DATA SENT: $selectedAnswers');
                       },
                       style: ElevatedButton.styleFrom(
-                        primary: AppColors.purpleSchood,
+                        backgroundColor: AppColors.purpleSchood,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(26),
                         ),

@@ -9,7 +9,6 @@ import 'package:schood/main.dart';
 import 'package:schood/request/get.dart';
 import 'package:schood/request/post.dart';
 import 'package:schood/style/AppColors.dart';
-import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 import '../global.dart' as global;
 
@@ -53,6 +52,7 @@ class ChatScreenState extends State<ChatScreen> {
       Response response = await postclass.postDataAuth(context, data, route);
       if (response.statusCode == 200) {
         messageController.clear();
+        // ignore: use_build_context_synchronously
         _getmessage(context);
       } else {
         print("Erreur lors de l'envoi du message - ${response.statusCode}");
@@ -78,7 +78,6 @@ class ChatScreenState extends State<ChatScreen> {
     final getdata = GetClass();
 
     var id = widget.id;
-    //print(widget.participants);
     var route = "user/chat/$id/messages";
     Response response2 = await getdata.getData(global.globalToken, route);
 
@@ -109,7 +108,6 @@ class ChatScreenState extends State<ChatScreen> {
           .cast<Map<String, dynamic>>()
           .toList();
     });
-    //print(messages);
   }
 
   @override
@@ -124,7 +122,7 @@ class ChatScreenState extends State<ChatScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Avec ',
               style: TextStyle(color: Colors.white),
             ),
@@ -157,10 +155,6 @@ class ChatScreenState extends State<ChatScreen> {
                       horizontal: 16.0, vertical: 8.0),
                   child: Column(
                     children: messages.map((message) {
-                      if (message == null) {
-                        return Container();
-                      }
-
                       String content = message['content'] ?? '';
                       String time = message['date'] ?? '';
                       String userId = message['user'] ?? '';

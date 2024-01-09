@@ -166,64 +166,16 @@ class EmailButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final Uri _emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: global.email,
+      queryParameters: {
+        'subject': "[NOUVEAU TICKET] Problème avec l'application",
+      },
+    );
     return ElevatedButton(
       onPressed: () {
-        showModalBottomSheet(
-          context: context,
-          builder: (context) {
-            return Container(
-                child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(children: [
-                H1TextApp(
-                  text: "Votre ticket",
-                ),
-                SizedBox(height: 16),
-                TextField(
-                  decoration: InputDecoration(
-                    counterStyle:
-                        TextStyle(color: themeProvider.getTextColor()),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          width: 1,
-                          color: themeProvider
-                              .getTextColor()), // Couleur de la bordure quand le champ n'est pas en focus
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          width: 1,
-                          color: themeProvider
-                              .getTextColor()), // Couleur de la bordure quand le champ est en focus
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                    hintText: 'Saisissez votre message',
-                    hintStyle: const TextStyle(color: Colors.grey),
-                  ),
-                  style: GoogleFonts.inter(
-                      fontSize: 18, color: themeProvider.getTextColor()),
-                  controller: messagecontroller,
-                  maxLength: 325,
-                  maxLines: 5,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                        onPressed: () {
-                          sendEmail(messagecontroller.text, global.email);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => EmailValidation()));
-                        },
-                        child: Text("Envoyé"))
-                  ],
-                )
-              ]),
-            ));
-          },
-        );
+        launch(_emailLaunchUri.toString());
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.purpleSchood,

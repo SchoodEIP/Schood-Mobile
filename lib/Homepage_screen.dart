@@ -38,7 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Icon(Icons.account_circle, size: 40, color: AppColors.purpleSchood),
+              child: Icon(Icons.account_circle,
+                  size: 40, color: AppColors.purpleSchood),
             ),
           ),
         ],
@@ -49,7 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
           physics: const BouncingScrollPhysics(),
           children: [
             H1TextApp(
-              text: 'Bonjour $firstName $lastName\nComment te sens tu aujourd\'hui ?',
+              text:
+                  'Bonjour $firstName $lastName\nComment te sens tu aujourd\'hui ?',
             ),
             const WidgetCard(
               height: 344,
@@ -247,15 +249,15 @@ class HelpWidget extends StatelessWidget {
         Spacer(),
         Text(
           'Numéro gratuit',
-          style: TextStyle(color: Colors.white, fontSize: 20),
+          style: TextStyle(color: Colors.white, fontSize: 18),
         ),
         Text(
           'Professionnels de la santé',
-          style: TextStyle(color: Colors.white, fontSize: 20),
+          style: TextStyle(color: Colors.white, fontSize: 18),
         ),
         Text(
           'Numéro d\'urgence',
-          style: TextStyle(color: Colors.white, fontSize: 20),
+          style: TextStyle(color: Colors.white, fontSize: 18),
         ),
       ],
     );
