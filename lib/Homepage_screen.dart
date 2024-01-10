@@ -234,15 +234,15 @@ class ChatWidget extends StatelessWidget {
       children: [
         Spacer(),
         Text(
-          'Numéro gratuit',
+          'Professeur Math',
           style: TextStyle(color: Colors.white, fontSize: 18),
         ),
         Text(
-          'Professionnels de la santé',
+          'Professeur Anglais',
           style: TextStyle(color: Colors.white, fontSize: 18),
         ),
         Text(
-          'Numéro d\'urgence',
+          'Professeur Histoire',
           style: TextStyle(color: Colors.white, fontSize: 18),
         ),
       ],
