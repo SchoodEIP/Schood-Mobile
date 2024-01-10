@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:schood/Chat/ChatScreen.dart';
+import 'package:schood/Chat/ConversationScreen.dart';
 import 'package:schood/Connexion_screen.dart';
 import 'package:schood/Survey/SurveySummaryScreen.dart';
 import 'package:schood/Help/HelpScreen.dart';
@@ -42,6 +42,7 @@ class MyApp extends StatelessWidget {
             '/surveySummary': (context) => const SurveySummaryScreen(),
             '/stats': (context) => const StatsScreen(),
             '/info': (context) => const HelpScreen(),
+            '/chat': (context) =>  ConversationScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/profile': (context) => ProfileScreen(email: _email.text),
             '/emailModifier': (context) => const EmailModifier(),

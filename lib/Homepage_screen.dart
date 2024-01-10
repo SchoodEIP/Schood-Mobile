@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
               link: '/surveySummary',
             ),
             const WidgetCard(
-              height: 216,
+              height: 286,
               width: 401,
               title: "Messagerie",
               link: '/chat',
@@ -229,11 +229,23 @@ class ChatWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: const Text(
-        'a',
-        style: TextStyle(color: Colors.white),
-      ),
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Spacer(),
+        Text(
+          'Numéro gratuit',
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
+        Text(
+          'Professionnels de la santé',
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
+        Text(
+          'Numéro d\'urgence',
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
+      ],
     );
   }
 }
