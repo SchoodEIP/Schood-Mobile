@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:schood/Homepage_screen.dart';
 import 'package:schood/style/AppColors.dart';
@@ -16,6 +17,33 @@ class ProfileScreen extends StatelessWidget {
   final String email;
 
   ProfileScreen({Key? key, required this.email}) : super(key: key);
+
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      // Handle the selected image as needed
+      // For example, set it as the profile picture or perform any other action
+    }
+  }
+
+  Future<void> _requestPermissionAndPickImage() async {
+    const permission = Permission.photos;
+
+    if (await permission.isDenied) {
+      final result = await permission.request();
+
+      if (result.isGranted) {
+        // Permission is granted
+        await _pickImage();
+      } else if (result.isDenied) {
+        // Permission is denied
+      } else if (result.isPermanentlyDenied) {
+        // Permission is permanently denied
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +84,11 @@ class ProfileScreen extends StatelessWidget {
                     fontSize: 30,
                     fontWeight: FontWeight.w600)),
           ),
-          const Padding(
-            padding: EdgeInsets.only(top: 15.0),
-            child: Icon(Icons.account_circle,
+          InkWell(
+            onTap: () {
+              _requestPermissionAndPickImage();
+            },
+            child: const Icon(Icons.account_circle,
                 size: 200, color: AppColors.purpleSchood),
           ),
           const Padding(
