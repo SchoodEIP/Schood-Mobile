@@ -40,6 +40,12 @@ dependencies:
 
   google_fonts: ^5.1.0
   golden_toolkit: ^0.15.0
+  intl: ^0.18.1
+  file_picker: ^5.5.0 
+  syncfusion_flutter_pdfviewer: ^23.1.36
+  mailer: ^6.0.1
+  flutter_native_splash: ^2.3.5
+  flutter_cache_manager: ^3.3.1
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +63,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+      - lib/assets/
   fonts:
     - family: Inter
       fonts:

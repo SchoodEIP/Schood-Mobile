@@ -6,26 +6,14 @@ import 'package:async/async.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:schood/global.dart' as global;
 
-class PostClass {
-  postData(context, data, url) async {
+class PatchClass {
+  patchData(context, data, url) async {
     var fullUrl = global.urlApi + url;
-    final reponse = await http.post(
+    final response = await http.patch(
       Uri.parse(fullUrl),
       headers: _setHeaders(),
       body: jsonEncode(data),
     );
-    return reponse;
-  }
-
-  postDataAuth(context, data, url) async {
-    var fullUrl = global.urlApi + url;
-    print(data);
-    final response = await http.post(Uri.parse(fullUrl),
-        headers: {
-          'x-auth-token': global.globalToken,
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(data));
     return response;
   }
 
@@ -35,12 +23,12 @@ class PostClass {
       };
 }
 
-class PostFileClass {
-  Future<http.Response> postDataWithFile(
+class PatchFileClass {
+  Future<http.Response> patchDataWithFile(
       Map<String, dynamic> data, String url, File file) async {
     var fullUrl = global.urlApi + url;
 
-    var request = http.MultipartRequest('POST', Uri.parse(fullUrl));
+    var request = http.MultipartRequest('PATCH', Uri.parse(fullUrl));
 
     data.forEach((key, value) {
       request.fields[key] = value.toString();
@@ -57,7 +45,7 @@ class PostFileClass {
     );
     request.files.add(multipartFile);
 
-    // Envoyez la demande
+    // Send the request
     var response = await http.Response.fromStream(await request.send());
 
     return response;
