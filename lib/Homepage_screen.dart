@@ -36,8 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               Navigator.pushReplacementNamed(context, '/profile');
             },
-            child: Padding(
-              padding: const EdgeInsets.all(8),
+            child: const Padding(
+              padding: EdgeInsets.all(8),
               child: Icon(Icons.account_circle,
                   size: 40, color: AppColors.purpleSchood),
             ),

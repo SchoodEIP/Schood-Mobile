@@ -15,7 +15,6 @@ import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/global.dart' as global;
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
@@ -106,15 +105,23 @@ class LoginButton extends StatelessWidget {
 
         final writtenToken = await TokenFileManager.readTokenFromFile();
         if (writtenToken == global.globalToken) {
-          print('Token successfully written to the file!');
+          if (kDebugMode) {
+            print('Token successfully written to the file!');
+          }
 
           final fileContent = await TokenFileManager.readTokenFromFile();
-          print('Content of the file: $fileContent');
+          if (kDebugMode) {
+            print('Content of the file: $fileContent');
+          }
 
           final filePath = await TokenFileManager._localPath;
-          print('Location of the file: $filePath/$TokenFileManager.fileName');
+          if (kDebugMode) {
+            print('Location of the file: $filePath/$TokenFileManager.fileName');
+          }
         } else {
-          print('Error writing token to the file!');
+          if (kDebugMode) {
+            print('Error writing token to the file!');
+          }
         }
 
         Response response2 =
