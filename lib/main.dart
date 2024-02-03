@@ -120,23 +120,17 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
     _checkTokenAndNavigate();
-    //   _controller.addStatusListener((status) {
-    //     if (status == AnimationStatus.completed) {
-    //       Navigator.pushReplacement(
-    //         context,
-    //         MaterialPageRoute(builder: (context) => const LoginPage()),
-    //       );
-    //     }
-    //   });
   }
 
   // ignore: no_leading_underscores_for_local_identifiers
   Future<void> _checkTokenAndNavigate() async {
     String? tokenContent = await TokenFileManager.readTokenFromFile();
+    // TODO: add get request to check if token exists
 
-    if (tokenContent == null) {
+
+    if (tokenContent == null || isConnected == false) {
       if (kDebugMode) {
-        print('Token content from file: $tokenContent');
+        print('No token content found or error reading the file.');
       }
 
       _controller.addStatusListener((status) {
@@ -149,7 +143,7 @@ class _SplashScreenState extends State<SplashScreen>
       });
     } else {
       if (kDebugMode) {
-        print('No token content found or error reading the file.');
+        print('Token content from file: $tokenContent');
       }
       // ignore: use_build_context_synchronously
       Navigator.pushReplacement(

@@ -137,7 +137,7 @@ class WidgetCard extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, link);
                 },
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     H4TextApp(

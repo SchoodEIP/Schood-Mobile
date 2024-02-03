@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                 emailController: _emailcontroller,
                 passwordController: _passwordcontroller,
               ),
-              const KeepConnectedButton(),
+              const StayConnectedButton(),
             ],
           ),
         ),

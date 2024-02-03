@@ -18,6 +18,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
+bool isConnected = false;
+
 class StandardButton extends StatelessWidget {
   final String text;
   final Function? function;
@@ -198,16 +200,15 @@ class LoginButton extends StatelessWidget {
   }
 }
 
-class KeepConnectedButton extends StatefulWidget {
-  const KeepConnectedButton({super.key});
+class StayConnectedButton extends StatefulWidget {
+  const StayConnectedButton({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
-  _KeepConnectedButtonState createState() => _KeepConnectedButtonState();
+  _StayConnectedButtonState createState() => _StayConnectedButtonState();
 }
 
-class _KeepConnectedButtonState extends State<KeepConnectedButton> {
-  bool isConnected = false;
+class _StayConnectedButtonState extends State<StayConnectedButton> {
 
   @override
   Widget build(BuildContext context) {
@@ -217,11 +218,11 @@ class _KeepConnectedButtonState extends State<KeepConnectedButton> {
           isConnected = !isConnected;
           if (isConnected) {
             if (kDebugMode) {
-              print('Connection established!');
+              print('Stay connected activated');
             }
           } else {
             if (kDebugMode) {
-              print('Connection disconnected!');
+              print('Stay connected disabled');
             }
           }
         });
