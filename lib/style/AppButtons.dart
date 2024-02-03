@@ -15,6 +15,9 @@ import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/global.dart' as global;
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class StandardButton extends StatelessWidget {
   final String text;
@@ -41,6 +44,44 @@ class StandardButton extends StatelessWidget {
   }
 }
 
+class TokenFileManager {
+  static Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  static const String fileName = 'token_file.txt';
+
+  static Future<void> writeTokenToFile(String token) async {
+    try {
+      final path = await _localPath;
+      final file = File('$path/$fileName');
+      await file.writeAsString(token);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error writing token to file: $e');
+      }
+    }
+  }
+
+  static Future<String?> readTokenFromFile() async {
+    try {
+      final path = await _localPath;
+      final file = File('$path/$fileName');
+      final exists = await file.exists();
+      if (exists) {
+        final contents = await file.readAsString();
+        return contents;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error reading token from file: $e');
+      }
+    }
+    return null;
+  }
+}
+
 class LoginButton extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
@@ -48,6 +89,7 @@ class LoginButton extends StatelessWidget {
       {super.key,
       required this.emailController,
       required this.passwordController});
+
   _login(BuildContext context) async {
     var data = {
       'email': emailController.text.trim(),
@@ -60,6 +102,21 @@ class LoginButton extends StatelessWidget {
       if (response.statusCode == 200) {
         final getdata = GetClass();
         global.globalToken = body['token'];
+        await TokenFileManager.writeTokenToFile(global.globalToken);
+
+        final writtenToken = await TokenFileManager.readTokenFromFile();
+        if (writtenToken == global.globalToken) {
+          print('Token successfully written to the file!');
+
+          final fileContent = await TokenFileManager.readTokenFromFile();
+          print('Content of the file: $fileContent');
+
+          final filePath = await TokenFileManager._localPath;
+          print('Location of the file: $filePath/$TokenFileManager.fileName');
+        } else {
+          print('Error writing token to the file!');
+        }
+
         Response response2 =
             await getdata.getData(global.globalToken, "user/profile");
 
@@ -180,8 +237,6 @@ class _KeepConnectedButtonState extends State<KeepConnectedButton> {
     );
   }
 }
-
-
 
 class ForgottenPasswordButtonApp extends StatelessWidget {
   const ForgottenPasswordButtonApp({super.key});
