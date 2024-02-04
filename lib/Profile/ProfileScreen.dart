@@ -2,46 +2,81 @@
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import 'package:schood/Homepage_screen.dart';
 import 'package:schood/style/AppColors.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+
+class ProfileScreen extends StatefulWidget {
   final String firstName = 'firstname';
   final String lastName = 'lastname';
   final String classe = 'class';
   final String email;
 
-  ProfileScreen({Key? key, required this.email}) : super(key: key);
+  const ProfileScreen({Key? key, required this.email}) : super(key: key);
+
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+    Uint8List? _pickedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedImage();
+  }
+
+  Future<void> _loadSavedImage() async {
+    final Directory cacheDir = await getTemporaryDirectory();
+    final String fileName = 'picked_image.jpg';
+    final File savedImage = File('${cacheDir.path}/$fileName');
+
+    if (savedImage.existsSync()) {
+      final Uint8List bytes = await savedImage.readAsBytes();
+      setState(() {
+        _pickedImage = bytes;
+      });
+    }
+  }
 
   Future<void> _pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      // Handle the selected image as needed
-      // For example, set it as the profile picture or perform any other action
+      final Uint8List bytes = await pickedFile.readAsBytes();
+      await _saveImageToFile(bytes);
+      await _loadSavedImage(); // Load the newly chosen image
     }
+  }
+
+  Future<void> _saveImageToFile(Uint8List bytes) async {
+    final Directory cacheDir = await getTemporaryDirectory();
+    final String fileName = 'picked_image.jpg';
+    final File imageFile = File('${cacheDir.path}/$fileName');
+    await imageFile.writeAsBytes(bytes);
+
+    // If you want to retrieve the path where the image is saved, you can print it
+    print('Image saved to: ${imageFile.path}');
   }
 
   Future<void> _requestPermissionAndPickImage() async {
     const permission = Permission.photos;
+    var status = await Permission.photos.status;
+    var permissionStatus = await permission.request();
 
-    if (await permission.isDenied) {
-      final result = await permission.request();
-
-      if (result.isGranted) {
-        // Permission is granted
-        await _pickImage();
-      } else if (result.isDenied) {
-        // Permission is denied
-      } else if (result.isPermanentlyDenied) {
-        // Permission is permanently denied
-      }
+    if (status.isDenied) {
+      print('Permission denied. You cannot pick an image.');
+    } else {
+      await _pickImage();
+      print('Permission granted. You can pick an image now.');
     }
   }
 
@@ -88,8 +123,20 @@ class ProfileScreen extends StatelessWidget {
             onTap: () {
               _requestPermissionAndPickImage();
             },
-            child: const Icon(Icons.account_circle,
-                size: 200, color: AppColors.purpleSchood),
+            child: _pickedImage != null
+                ? ClipOval(
+                    child: Image.memory(
+                      _pickedImage!,
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : const Icon(
+                    Icons.account_circle,
+                    size: 200,
+                    color: AppColors.purpleSchood,
+                  ),
           ),
           const Padding(
             padding: EdgeInsets.only(top: 15.0),
@@ -101,7 +148,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
-            child: Text(firstName,
+            child: Text(widget.firstName,
                 style: const TextStyle(
                     color: AppColors.backgroundDarkmode,
                     fontSize: 22,
@@ -117,7 +164,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
-            child: Text(lastName,
+            child: Text(widget.lastName,
                 style: const TextStyle(
                     color: AppColors.backgroundDarkmode,
                     fontSize: 22,
@@ -133,7 +180,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
-            child: Text(classe,
+            child: Text(widget.classe,
                 style: const TextStyle(
                     color: AppColors.backgroundDarkmode,
                     fontSize: 22,
@@ -156,7 +203,7 @@ class ProfileScreen extends StatelessWidget {
                   enabled: false,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
-                    labelText: email,
+                    labelText: widget.email,
                     enabledBorder: InputBorder.none,
                     hintStyle: const TextStyle(
                         color: Color.fromARGB(146, 41, 41, 41),

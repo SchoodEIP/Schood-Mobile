@@ -55,6 +55,6 @@
     <string>You need to allow camera permission to use this feature</string>
     <!-- Permission options for the `photos` group -->
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>You need to allow photos permission to use this feature</string>
+	<string>We need Photos access to allow you to update Profile Picture.</string>
 </dict>
 </plist>
