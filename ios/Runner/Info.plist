@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Photo access permission</string>
+	<string>Schood Mobile</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Camera access permission</string>
 	<key>NSCameraUsageDescription</key>

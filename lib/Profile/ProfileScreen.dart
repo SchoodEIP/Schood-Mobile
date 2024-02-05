@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:schood/Homepage_screen.dart';
@@ -65,7 +66,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _requestPermissionAndPickImage() async {
+    const permission = Permission.photos;
     var status = await Permission.photos.status;
+    var permissionStatus = await permission.request();
 
     if (status.isDenied) {
       print('Permission denied. You cannot pick an image.');
