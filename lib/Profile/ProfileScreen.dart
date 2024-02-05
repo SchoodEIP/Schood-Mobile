@@ -1,16 +1,13 @@
 // ignore_for_file: file_names
 
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:schood/Homepage_screen.dart';
 import 'package:schood/style/AppColors.dart';
-import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-
 
 class ProfileScreen extends StatefulWidget {
   final String firstName = 'firstname';
@@ -35,7 +32,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadSavedImage() async {
     final Directory cacheDir = await getTemporaryDirectory();
-    final String fileName = 'picked_image.jpg';
+    const String fileName = 'picked_image.jpg';
     final File savedImage = File('${cacheDir.path}/$fileName');
 
     if (savedImage.existsSync()) {
@@ -53,24 +50,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (pickedFile != null) {
       final Uint8List bytes = await pickedFile.readAsBytes();
       await _saveImageToFile(bytes);
-      await _loadSavedImage(); // Load the newly chosen image
+      await _loadSavedImage();
     }
   }
 
   Future<void> _saveImageToFile(Uint8List bytes) async {
     final Directory cacheDir = await getTemporaryDirectory();
-    final String fileName = 'picked_image.jpg';
+    const String fileName = 'picked_image.jpg';
     final File imageFile = File('${cacheDir.path}/$fileName');
     await imageFile.writeAsBytes(bytes);
 
-    // If you want to retrieve the path where the image is saved, you can print it
     print('Image saved to: ${imageFile.path}');
   }
 
   Future<void> _requestPermissionAndPickImage() async {
-    const permission = Permission.photos;
     var status = await Permission.photos.status;
-    var permissionStatus = await permission.request();
 
     if (status.isDenied) {
       print('Permission denied. You cannot pick an image.');
