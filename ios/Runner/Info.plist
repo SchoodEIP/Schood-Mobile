@@ -7,6 +7,12 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
+	<string>Photo access permission</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Camera access permission</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Microphone access permission</string>
+	<key>NSMicrophoneUsageDescription</key>
 	<string>Schood Mobile</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
@@ -45,5 +51,14 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>NSCameraUsageDescription</key>
+    <string>You need to allow camera permission to use this feature</string>
+    <!-- Permission options for the `photos` group -->
+    <key>NSPhotoLibraryUsageDescription</key>
+	<string>We need Photos access to allow you to update Profile Picture.</string>
 </dict>
 </plist>
