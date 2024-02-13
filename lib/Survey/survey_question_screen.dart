@@ -1,10 +1,12 @@
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/request/post.dart';
 import 'package:schood/request/patch.dart';
-import 'package:schood/style/AppColors.dart';
-import 'package:schood/style/AppTexts.dart';
+import 'package:schood/style/app_colors.dart';
+import 'package:schood/style/app_texts.dart';
 import 'package:schood/request/get.dart';
 import '../global.dart' as global;
 import 'package:schood/main.dart';
@@ -45,7 +47,7 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
           return emptySurveyMap.cast<String, dynamic>();
         } catch (e) {
           print('Error decoding JSON: $e');
-          throw e; // Propagate the error to trigger the error handling below
+          rethrow; // Propagate the error to trigger the error handling below
         }
       } else {
         print('Error fetching data: ${emptySurveyResponse.statusCode}');
@@ -55,15 +57,15 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Error'),
-              content: Text('Content could not be retrieved.'),
+              title: const Text('Error'),
+              content: const Text('Content could not be retrieved.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop(); // Pop the current screen
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -124,7 +126,7 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
             future: userDataFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasError) {
@@ -139,7 +141,7 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
                           userDataFuture = _getSurveyQuestionData(context);
                         });
                       },
-                      child: Text('Retry'),
+                      child: const Text('Retry'),
                     ),
                   ],
                 );
@@ -218,7 +220,7 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text('Réponses envoyées avec succès!'),
+                              title: const Text('Réponses envoyées avec succès!'),
                               actions: [
                                 TextButton(
                                   onPressed: () {
@@ -227,7 +229,7 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
                                       '/surveySummary',
                                     );
                                   },
-                                  child: Text('OK'),
+                                  child: const Text('OK'),
                                 ),
                               ],
                             );
@@ -242,12 +244,12 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
                           borderRadius: BorderRadius.circular(26),
                         ),
                       ),
-                      child: Text('Envoyer les réponses'),
+                      child: const Text('Envoyer les réponses'),
                     ),
                   ],
                 );
               } else {
-                return Text('No data available');
+                return const Text('No data available');
               }
             },
           ),

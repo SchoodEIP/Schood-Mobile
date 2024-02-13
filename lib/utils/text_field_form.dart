@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:schood/style/AppColors.dart';
+import 'package:schood/style/app_colors.dart';
 
 class AppTextFieldForm extends StatefulWidget {
   final String validator;

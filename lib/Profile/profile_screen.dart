@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, unused_local_variable, library_private_types_in_public_api
 
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:schood/Homepage_screen.dart';
+import 'package:schood/homepage_screen.dart';
 import 'package:schood/main.dart';
-import 'package:schood/style/AppColors.dart';
+import 'package:schood/style/app_colors.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ProfileScreen extends StatefulWidget {

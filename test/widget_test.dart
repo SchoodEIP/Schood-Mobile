@@ -8,14 +8,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:schood/Help/HelpScreen.dart';
-import 'package:schood/Help/help_issues.dart';
+import 'package:schood/Help/help_screen.dart';
 import 'package:schood/Help/help_list.dart';
-import 'package:schood/Homepage_screen.dart';
-import 'package:schood/Profile/Settings_screen.dart';
+import 'package:schood/homepage_screen.dart';
+import 'package:schood/Profile/settings_screen.dart';
 
 import 'package:schood/main.dart';
-import 'package:schood/style/AppButtons.dart';
+import 'package:schood/style/app_buttons.dart';
 
 import 'tests_helper/GoogleFonts.dart';
 
@@ -37,7 +36,7 @@ void main() {
             value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
           ),
         ],
-        child: MaterialApp(
+        child: const  MaterialApp(
           home: HomeScreen(),
         ),
       ),
@@ -61,7 +60,7 @@ void main() {
             value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
           ),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           home: HomeScreen(),
         )));
 
@@ -84,7 +83,7 @@ void main() {
             value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
           ),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           home: HomeScreen(),
         )));
   });
@@ -97,7 +96,7 @@ void main() {
             value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
           ),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           home: HomeScreen(),
         )));
     expect(
@@ -112,8 +111,8 @@ void main() {
             value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
           ),
         ],
-        child: MaterialApp(
-          home: const SettingsScreen(),
+        child: const MaterialApp(
+          home: SettingsScreen(),
         ),
       ),
     );
@@ -134,8 +133,8 @@ void main() {
           value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
         ),
       ],
-      child: MaterialApp(
-        home: const HomeScreen(),
+      child: const MaterialApp(
+        home: HomeScreen(),
       ),
     ));
     await tester.pumpAndSettle();
@@ -153,8 +152,8 @@ void main() {
           value: MockThemeProvider(), // Utilisez un simulateur ou un mock ici
         ),
       ],
-      child: MaterialApp(
-        home: const HelpList(),
+      child: const MaterialApp(
+        home: HelpList(),
       ),
     ));
     await tester.pumpAndSettle();

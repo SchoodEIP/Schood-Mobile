@@ -6,9 +6,9 @@ import 'package:schood/Help/help_issues.dart';
 
 import 'package:schood/main.dart';
 import 'package:schood/request/get.dart';
-import 'package:schood/style/AppButtons.dart';
-import 'package:schood/style/AppColors.dart';
-import 'package:schood/style/AppTexts.dart';
+import 'package:schood/style/app_buttons.dart';
+import 'package:schood/style/app_colors.dart';
+import 'package:schood/style/app_texts.dart';
 
 import '../utils/text_helps.dart' as text_help;
 import 'package:schood/global.dart' as global;

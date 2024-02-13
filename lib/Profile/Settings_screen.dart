@@ -2,12 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:schood/Profile/AboutUs.dart';
-import 'package:schood/Profile/ContactPage.dart';
+import 'package:schood/Profile/about_us.dart';
+import 'package:schood/Profile/contact_screen.dart';
 import 'package:schood/main.dart';
-import 'package:schood/style/AppButtons.dart';
-import 'package:schood/style/AppColors.dart';
-import 'package:schood/style/AppTexts.dart';
+import 'package:schood/style/app_buttons.dart';
+import 'package:schood/style/app_colors.dart';
+import 'package:schood/style/app_texts.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -60,9 +60,9 @@ class SettingsScreen extends StatelessWidget {
                   )),
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => AboutUs()));
+                    MaterialPageRoute(builder: (context) => const AboutUs()));
               },
-              child: ButtonTextApp(
+              child: const ButtonTextApp(
                 text: "About us",
                 color: AppColors.textDarkmode,
               ),
@@ -78,9 +78,9 @@ class SettingsScreen extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ContactPage()));
+                              builder: (context) => const ContactPage()));
                     },
-                    child: ButtonTextApp(
+                    child: const ButtonTextApp(
                       text: "Contactez-nous !",
                       color: AppColors.textDarkmode,
                     ))),

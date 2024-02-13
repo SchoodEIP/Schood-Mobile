@@ -1,9 +1,9 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:schood/style/AppColors.dart';
-import 'package:schood/style/AppTexts.dart';
-import 'package:schood/utils/BottomBarApp.dart';
+import 'package:schood/style/app_colors.dart';
+import 'package:schood/style/app_texts.dart';
+import 'package:schood/utils/bottom_bar_app.dart';
 
 class StatsScreen extends StatelessWidget {
   const StatsScreen({super.key});
@@ -109,7 +109,7 @@ class StatsGraphHomePage extends StatelessWidget {
             ],
           ),
         ),
-        Text(name, style: TextStyle(color: AppColors.purpleSchood)),
+        Text(name, style: const TextStyle(color: AppColors.purpleSchood)),
       ],
     );
   }

@@ -1,20 +1,18 @@
-// ignore_for_file: file_names
+// ignore_for_file: deprecated_member_use
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
-import 'package:schood/Connexion_screen.dart';
-import 'package:schood/Homepage_screen.dart';
-import 'package:schood/Profile/EmailValidationPage.dart';
+import 'package:schood/connexion_screen.dart';
+import 'package:schood/homepage_screen.dart';
 import 'package:schood/main.dart';
 import 'package:schood/request/get.dart';
 import 'package:schood/request/post.dart';
-import 'package:schood/style/AppColors.dart';
-import 'package:schood/style/AppTexts.dart';
+import 'package:schood/style/app_colors.dart';
+import 'package:schood/style/app_texts.dart';
 import 'package:schood/global.dart' as global;
-import 'package:schood/utils/SendEmail.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StandardButton extends StatelessWidget {
@@ -166,7 +164,7 @@ class EmailButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final Uri _emailLaunchUri = Uri(
+    final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
       path: global.email,
       queryParameters: {
@@ -175,7 +173,7 @@ class EmailButton extends StatelessWidget {
     );
     return ElevatedButton(
       onPressed: () {
-        launch(_emailLaunchUri.toString());
+        launch(emailLaunchUri.toString());
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.purpleSchood,
@@ -296,9 +294,7 @@ class HelpCallButton extends StatelessWidget {
   const HelpCallButton({super.key, required this.number});
   void _callURL() async {
     final url = 'tel:$number';
-    // ignore: deprecated_member_use
     if (await canLaunch(url)) {
-      // ignore: deprecated_member_use
       await launch(url);
     } else {
       throw 'Impossible d\'ouvrir l\'URL $url';

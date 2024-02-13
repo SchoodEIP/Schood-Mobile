@@ -3,15 +3,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 // import 'package:schood/ChatScreen.dart';
-import 'package:schood/Survey/SurveySummaryScreen.dart';
+import 'package:schood/Survey/survey_summary_screen.dart';
 import 'package:schood/Chat/ConversationScreen.dart';
 // import 'package:schood/DocsScreen.dart';
-import 'package:schood/Help/HelpScreen.dart';
-import 'package:schood/Homepage_screen.dart';
-import 'package:schood/WeeklyStats.dart';
+import 'package:schood/Help/help_screen.dart';
+import 'package:schood/homepage_screen.dart';
+import 'package:schood/weekly_stats.dart';
 import 'package:schood/global.dart' as global;
 import 'package:schood/main.dart';
-import 'package:schood/style/AppColors.dart';
+import 'package:schood/style/app_colors.dart';
 
 class BottomBarApp extends StatelessWidget {
   final int indexapp;

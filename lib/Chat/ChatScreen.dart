@@ -8,8 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:schood/main.dart';
 import 'package:schood/request/get.dart';
 import 'package:schood/request/post.dart';
-import 'package:schood/style/AppColors.dart';
-import 'package:schood/utils/BottomBarApp.dart';
+import 'package:schood/style/app_colors.dart';
+import 'package:schood/utils/bottom_bar_app.dart';
 import '../global.dart' as global;
 
 // ...

@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/Help/help_list.dart';
 import 'package:schood/main.dart';
-import 'package:schood/style/AppButtons.dart';
-import 'package:schood/style/AppColors.dart';
-import 'package:schood/style/AppTexts.dart';
-import 'package:schood/utils/BottomBarApp.dart';
+import 'package:schood/style/app_buttons.dart';
+import 'package:schood/style/app_colors.dart';
+import 'package:schood/style/app_texts.dart';
+import 'package:schood/utils/bottom_bar_app.dart';
 
 class HelpScreen extends StatelessWidget {
   const HelpScreen({super.key});

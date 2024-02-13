@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:schood/Profile/ProfileScreen.dart';
+import 'package:schood/Profile/profile_screen.dart';
 import 'package:schood/main.dart';
 
-import 'package:schood/style/AppColors.dart';
+import 'package:schood/style/app_colors.dart';
 
 class EmailModifier extends StatefulWidget {
   const EmailModifier({Key? key}) : super(key: key);

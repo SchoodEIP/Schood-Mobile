@@ -1,13 +1,13 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, use_build_context_synchronously, use_key_in_widget_constructors, library_private_types_in_public_api
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:schood/Survey/SurveyQuestionScreen.dart';
-import 'package:schood/utils/BottomBarApp.dart';
-import 'package:schood/style/AppColors.dart';
-import 'package:schood/style/AppTexts.dart';
+import 'package:schood/Survey/survey_question_screen.dart';
+import 'package:schood/utils/bottom_bar_app.dart';
+import 'package:schood/style/app_colors.dart';
+import 'package:schood/style/app_texts.dart';
 import 'package:schood/request/get.dart';
 import '../global.dart' as global;
 import 'package:schood/main.dart';

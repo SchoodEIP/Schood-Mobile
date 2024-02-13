@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 
@@ -8,7 +10,7 @@ Future<void> sendEmail(String emailMessage, String recipientEmail) async {
       port: 587);
 
   final message = Message()
-    ..from = Address('votre_adresse_email', 'Votre Nom')
+    ..from = const Address('votre_adresse_email', 'Votre Nom')
     ..recipients.add(recipientEmail)
     ..subject = 'Nouveau ticket'
     ..text = emailMessage;

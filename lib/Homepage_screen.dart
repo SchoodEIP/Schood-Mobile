@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, use_key_in_widget_constructors, library_private_types_in_public_api
 import 'dart:async';
 import 'dart:convert';
 
@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:schood/main.dart';
-import 'package:schood/style/AppColors.dart';
-import 'package:schood/style/AppTexts.dart';
-import 'package:schood/utils/BottomBarApp.dart';
-import 'package:schood/WeeklyStats.dart';
+import 'package:schood/style/app_colors.dart';
+import 'package:schood/style/app_texts.dart';
+import 'package:schood/utils/bottom_bar_app.dart';
+import 'package:schood/weekly_stats.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key});
@@ -36,8 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               Navigator.pushReplacementNamed(context, '/profile');
             },
-            child: Padding(
-              padding: const EdgeInsets.all(8),
+            child: const Padding(
+              padding: EdgeInsets.all(8),
               child: Icon(Icons.account_circle,
                   size: 40, color: AppColors.purpleSchood),
             ),
@@ -137,7 +137,7 @@ class WidgetCard extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, link);
                 },
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     H4TextApp(
@@ -191,8 +191,8 @@ class SurveySummaryWidget extends StatelessWidget {
   Future<String?> _getStoredSurveyId() async {
     final cacheManager = DefaultCacheManager();
     FileInfo? fileInfo = await cacheManager.getFileFromCache('survey_id');
-    if (fileInfo != null && fileInfo.file != null) {
-      List<int> bytes = await fileInfo.file!.readAsBytes();
+    if (fileInfo != null) {
+      List<int> bytes = await fileInfo.file.readAsBytes();
       return utf8.decode(bytes);
     }
     return null;
@@ -213,11 +213,9 @@ class SurveySummaryWidget extends StatelessWidget {
 
         String? surveyId = snapshot.data;
 
-        return Container(
-          child: Text(
-            'Survey $surveyId A Compléter',
-            style: const TextStyle(color: Colors.white),
-          ),
+        return Text(
+          'Survey $surveyId A Compléter',
+          style: const TextStyle(color: Colors.white),
         );
       },
     );

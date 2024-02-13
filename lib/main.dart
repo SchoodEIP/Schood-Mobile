@@ -1,17 +1,17 @@
+// ignore_for_file: unused_element, library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/Chat/ConversationScreen.dart';
-import 'package:schood/Connexion_screen.dart';
-import 'package:schood/Survey/SurveySummaryScreen.dart';
-import 'package:schood/Help/HelpScreen.dart';
-
-import 'package:schood/Homepage_screen.dart';
-import 'package:schood/Profile/EmailModifierScreen.dart';
-import 'package:schood/Profile/ProfileScreen.dart';
-import 'package:schood/Profile/Settings_screen.dart';
-
-import 'package:schood/WeeklyStats.dart';
-import 'package:schood/style/AppColors.dart';
+import 'package:schood/connexion_screen.dart';
+import 'package:schood/Survey/survey_summary_screen.dart';
+import 'package:schood/Help/help_screen.dart';
+import 'package:schood/homepage_screen.dart';
+import 'package:schood/Profile/email_modifier_screen.dart';
+import 'package:schood/Profile/profile_screen.dart';
+import 'package:schood/Profile/settings_screen.dart';
+import 'package:schood/weekly_stats.dart';
+import 'package:schood/style/app_colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +26,8 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final TextEditingController _email = TextEditingController();
+
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,12 +44,11 @@ class MyApp extends StatelessWidget {
             '/surveySummary': (context) => const SurveySummaryScreen(),
             '/stats': (context) => const StatsScreen(),
             '/info': (context) => const HelpScreen(),
-            '/chat': (context) =>  ConversationScreen(),
+            '/chat': (context) => const ConversationScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/profile': (context) => ProfileScreen(email: _email.text),
             '/emailModifier': (context) => const EmailModifier(),
-            '/splash': (context) =>
-                SplashScreen(), // Ajoutez la route de la SplashScreen
+            '/splash': (context) => const SplashScreen(), // Ajoutez la route de la SplashScreen
           },
         );
       },
@@ -105,6 +106,8 @@ class ThemeProvider with ChangeNotifier {
 }
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -149,14 +152,14 @@ class _SplashScreenState extends State<SplashScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('lib/assets/Schood_logo.png'),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             AnimatedBuilder(
               animation: _scaleAnimation,
               builder: (context, child) {
                 return Transform.scale(
                   scale: _scaleAnimation.value,
                   child: CustomPaint(
-                    size: Size(100.0, 100.0),
+                    size: const Size(100.0, 100.0),
                     painter: SmilePainter(),
                   ),
                 );

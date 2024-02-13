@@ -1,30 +1,33 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:schood/Profile/EmailValidationPage.dart';
 import 'package:schood/main.dart';
-import 'package:schood/style/AppButtons.dart';
-import 'package:schood/style/AppColors.dart';
-import 'package:schood/style/AppTexts.dart';
-import 'package:schood/utils/SendEmail.dart';
-import 'package:schood/global.dart' as global;
+import 'package:schood/style/app_buttons.dart';
+import 'package:schood/style/app_colors.dart';
+import 'package:schood/style/app_texts.dart';
 
 class ContactPage extends StatelessWidget {
+  const ContactPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final TextEditingController _messagecontroller = TextEditingController();
+    final TextEditingController messagecontroller = TextEditingController();
     List<Problem> problems = [
       Problem(
+        // ignore: unnecessary_string_escapes
         'J\'ai un problème qui n\'est pas en lien avec l\'école',
         'Pour ce genre de problème, nous ne sommes malheureusement pas en mesure de vous aider.',
       ),
       Problem(
         'Il y a un bug',
+        // ignore: unnecessary_string_escapes
         'OUPS! Nous sommes désolés que vous rencontriez un bug. Pourriez-vous remonter ce bug à notre équipe en utilisant l\'option \"Ouvrir un ticket\" ? Notre équipe se chargera de le corriger au plus vite.',
       ),
       Problem(
         'Je ne peux plus envoyer de message',
+        // ignore: unnecessary_string_escapes
         'Si vous ne pouvez plus envoyé de message, essayer de redémarrer l\'application. Si le problème persiste, merci d\'ouvrir un ticket.',
       ),
     ];
@@ -46,20 +49,20 @@ class ContactPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 20),
-            H1TextApp(
+            const SizedBox(height: 20),
+            const H1TextApp(
               text: "About us",
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Expanded(
               child: ListView(
                 children: [
                   for (var i in problems) ...[
                     ProblemCard(problem: i),
                     if (i == problems.last) ...[
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       EmailButton(
-                        messagecontroller: _messagecontroller,
+                        messagecontroller: messagecontroller,
                       )
                     ],
                   ],
@@ -83,7 +86,7 @@ class Problem {
 class ProblemCard extends StatefulWidget {
   final Problem problem;
 
-  ProblemCard({required this.problem});
+  const ProblemCard({super.key, required this.problem});
 
   @override
   _ProblemCardState createState() => _ProblemCardState();
