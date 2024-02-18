@@ -17,8 +17,7 @@ import 'package:schood/global.dart' as global;
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-
-bool isConnected = false;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StandardButton extends StatelessWidget {
   final String text;
@@ -209,6 +208,29 @@ class StayConnectedButton extends StatefulWidget {
 }
 
 class _StayConnectedButtonState extends State<StayConnectedButton> {
+  bool isConnected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load the value of isConnected from SharedPreferences when the widget is created
+    loadIsConnected();
+  }
+
+  // Function to load the value of isConnected from SharedPreferences
+  Future<void> loadIsConnected() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isConnected = prefs.getBool('isConnected') ?? false;
+    });
+  }
+
+  // Function to save the value of isConnected to SharedPreferences
+  Future<void> saveIsConnected(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isConnected', value);
+    print('isConnected value stored: $value');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -225,6 +247,8 @@ class _StayConnectedButtonState extends State<StayConnectedButton> {
               print('Stay connected disabled');
             }
           }
+          // Save the updated value of isConnected to SharedPreferences
+          saveIsConnected(isConnected);
         });
       },
       child: Row(

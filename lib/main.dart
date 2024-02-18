@@ -14,6 +14,7 @@ import 'package:schood/Profile/Settings_screen.dart';
 import 'package:schood/WeeklyStats.dart';
 import 'package:schood/style/AppButtons.dart';
 import 'package:schood/style/AppColors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -101,11 +102,12 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
+  bool isConnected = false;
 
   @override
   void initState() {
     super.initState();
-
+    loadIsConnected();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -122,15 +124,29 @@ class _SplashScreenState extends State<SplashScreen>
     _checkTokenAndNavigate();
   }
 
+  Future<void> loadIsConnected() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isConnected = prefs.getBool('isConnected') ?? false;
+    });
+  }
+
+  Future<void> saveIsConnected(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isConnected', value);
+    print('isConnected value stored: $value');
+  }
+
   // ignore: no_leading_underscores_for_local_identifiers
   Future<void> _checkTokenAndNavigate() async {
     String? tokenContent = await TokenFileManager.readTokenFromFile();
-    // TODO: add get request to check if token exists
 
+    // TODO: Perform a GET request to check if the token exists or perform any necessary validations
 
-    if (tokenContent == null || isConnected == false) {
+    if (tokenContent == null || !isConnected) {
       if (kDebugMode) {
-        print('No token content found or error reading the file.');
+        print(
+            'No token content found or error reading the file, or not connected.');
       }
 
       _controller.addStatusListener((status) {
@@ -145,11 +161,15 @@ class _SplashScreenState extends State<SplashScreen>
       if (kDebugMode) {
         print('Token content from file: $tokenContent');
       }
-      // ignore: use_build_context_synchronously
+
+      // Perform any additional actions if isConnected is true (e.g., navigate to HomeScreen)
+      // ...
+
+      // Navigate to HomeScreen
       Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-          );
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
     }
   }
 
