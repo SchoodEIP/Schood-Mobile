@@ -1,24 +1,25 @@
 // ignore_for_file: file_names
 
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:schood/Homepage_screen.dart';
+import 'package:schood/Notification/Notification_screen.dart';
 import 'package:schood/main.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:schood/global.dart' as global;
+import 'package:schood/style/AppTexts.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final String firstName = 'firstname';
-  final String lastName = 'lastname';
-  final String classe = 'class';
+
+
+  const ProfileScreen({Key? key,required this.email}) : super(key: key);
   final String email;
-
-  const ProfileScreen({Key? key, required this.email}) : super(key: key);
-
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -66,9 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _requestPermissionAndPickImage() async {
-    const permission = Permission.photos;
     var status = await Permission.photos.status;
-    var permissionStatus = await permission.request();
 
     if (status.isDenied) {
       print('Permission denied. You cannot pick an image.');
@@ -80,9 +79,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
+     Uint8List ?photo = null;
+    if (global.idimageprofil != "") {
+      photo = base64Decode(global.idimageprofil);
+    }
+  final themeProvider = Provider.of<ThemeProvider>(context);
+  print(global.idimageprofil);
     return Scaffold(
       appBar: AppBar(
+              backgroundColor: themeProvider.getBackgroundColor(),
+                      automaticallyImplyLeading: false,
+                              elevation: 0.0,
+            
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.purpleSchood),
           onPressed: () {
@@ -92,9 +100,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             );
           },
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        actions: [
+
+
+        actions: [ InkWell(
+            onTap: (){ Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotificationScreen(),
+                      ),
+                    );
+            },
+            child: const Padding(
+              padding:  EdgeInsets.all(8),
+              child: Icon(Icons.notifications_none,
+                  size: 40, color: AppColors.purpleSchood),
+            ),
+          ),
           InkWell(
             onTap: () {
               Navigator.pushNamed(context, '/settings');
@@ -107,36 +128,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      backgroundColor: themeProvider.getBackgroundColor(),
+            backgroundColor: themeProvider.getBackgroundColor(),
       body: Column(
         children: [
+          if (global.idimageprofil != "")
+            ...[
+            ],
           Container(
             alignment: Alignment.topLeft,
-            padding: const EdgeInsets.only(top: 10, left: 30),
-            child: const Text('Profile',
-                style: TextStyle(
-                    color: AppColors.backgroundDarkmode,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w600)),
+        padding: const EdgeInsets.all(32),
+            child: H1TextApp(text:"Profil"),
           ),
           InkWell(
             onTap: () {
               _requestPermissionAndPickImage();
             },
-            child: _pickedImage != null
-                ? ClipOval(
-                    child: Image.memory(
-                      _pickedImage!,
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const Icon(
-                    Icons.account_circle,
-                    size: 200,
-                    color: AppColors.purpleSchood,
-                  ),
+            child: global.idimageprofil != ""
+  ? Image.memory(
+      photo!,
+      width: 200,
+      height: 200,
+      fit: BoxFit.cover,
+    )
+  : Icon(
+      Icons.account_circle,
+      size: 200,
+      color: AppColors.purpleSchood,
+    ),
           ),
           const Padding(
             padding: EdgeInsets.only(top: 15.0),
@@ -148,11 +166,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
-            child: Text(widget.firstName,
-                style: const TextStyle(
-                    color: AppColors.backgroundDarkmode,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600)),
+            child: H4TextApp(text:global.firstName,)
           ),
           const Padding(
             padding: EdgeInsets.only(top: 15.0),
@@ -164,11 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
-            child: Text(widget.lastName,
-                style: const TextStyle(
-                    color: AppColors.backgroundDarkmode,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600)),
+            child: H4TextApp(text:global.lastName)
           ),
           const Padding(
             padding: EdgeInsets.only(top: 15.0),
@@ -180,11 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
-            child: Text(widget.classe,
-                style: const TextStyle(
-                    color: AppColors.backgroundDarkmode,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600)),
+            child: H4TextApp(text:global.classe),
           ),
           const Padding(
             padding: EdgeInsets.only(top: 15.0),
@@ -198,19 +204,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
+child:H4TextApp(text: global.email),
                 width: 200,
-                child: TextField(
+                /*child: TextField(
                   enabled: false,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
-                    labelText: widget.email,
+                    labelText: global.email,
                     enabledBorder: InputBorder.none,
                     hintStyle: const TextStyle(
-                        color: Color.fromARGB(146, 41, 41, 41),
+                        color: Color.fromARGB(14, 151, 74, 41),
                         fontSize: 22,
                         fontWeight: FontWeight.w600),
                   ),
-                ),
+                ),*/
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 15.0),

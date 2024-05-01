@@ -1,9 +1,11 @@
 // ignore_for_file: file_names
 
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/Connexion_screen.dart';
 import 'package:schood/Homepage_screen.dart';
@@ -15,7 +17,9 @@ import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/global.dart' as global;
 import 'package:schood/utils/SendEmail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
 
 class StandardButton extends StatelessWidget {
   final String text;
@@ -42,6 +46,114 @@ class StandardButton extends StatelessWidget {
   }
 }
 
+class TokenFileManager {
+  static Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  static const String fileName = 'token_file.txt';
+
+  static Future<void> writeTokenToFile(String token) async {
+    try {
+      final path = await _localPath;
+      final file = File('$path/$fileName');
+      await file.writeAsString(token);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error writing token to file: $e');
+      }
+    }
+  }
+
+  static Future<String?> readTokenFromFile() async {
+    try {
+      final path = await _localPath;
+      final file = File('$path/$fileName');
+      final exists = await file.exists();
+      if (exists) {
+        final contents = await file.readAsString();
+        return contents;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error reading token from file: $e');
+      }
+    }
+    return null;
+  }
+}
+
+class StayConnectedButton extends StatefulWidget {
+  const StayConnectedButton({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _StayConnectedButtonState createState() => _StayConnectedButtonState();
+}
+
+class _StayConnectedButtonState extends State<StayConnectedButton> {
+  bool isConnected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load the value of isConnected from SharedPreferences when the widget is created
+    loadIsConnected();
+  }
+
+  // Function to load the value of isConnected from SharedPreferences
+  Future<void> loadIsConnected() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isConnected = prefs.getBool('isConnected') ?? false;
+    });
+  }
+
+  // Function to save the value of isConnected to SharedPreferences
+  Future<void> saveIsConnected(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isConnected', value);
+    print('isConnected value stored: $value');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        setState(() {
+          isConnected = !isConnected;
+          if (isConnected) {
+            if (kDebugMode) {
+              print('Stay connected activated');
+            }
+          } else {
+            if (kDebugMode) {
+              print('Stay connected disabled');
+            }
+          }
+          // Save the updated value of isConnected to SharedPreferences
+          saveIsConnected(isConnected);
+        });
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isConnected ? Icons.check_circle : Icons.circle,
+            color: AppColors.purpleSchood,
+            size: 30.0,
+          ),
+          const SizedBox(width: 8.0),
+          const Text(
+            'Restez connecté',
+            style: TextStyle(color: Colors.black),
+          ),
+        ],
+      ),
+    );
+  }
+}
 class LoginButton extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
@@ -56,19 +168,56 @@ class LoginButton extends StatelessWidget {
     };
     final postclass = PostClass();
     try {
+
       Response response = await postclass.postData(context, data, 'user/login');
       final body = jsonDecode(response.body);
       if (response.statusCode == 200) {
+
         final getdata = GetClass();
         global.globalToken = body['token'];
+        await TokenFileManager.writeTokenToFile(global.globalToken);
+final writtenToken = await TokenFileManager.readTokenFromFile();
+        if (writtenToken == global.globalToken) {
+          if (kDebugMode) {
+            print('Token successfully written to the file!');
+          }
+
+          final fileContent = await TokenFileManager.readTokenFromFile();
+          if (kDebugMode) {
+            print('Content of the file: $fileContent');
+          }
+
+          final filePath = await TokenFileManager._localPath;
+          if (kDebugMode) {
+            print('Location of the file: $filePath/$TokenFileManager.fileName');
+          }
+        } else {
+          if (kDebugMode) {
+            print('Error writing token to the file!');
+          }
+        }
+
+        
         Response response2 =
             await getdata.getData(global.globalToken, "user/profile");
-
         Map<String, dynamic> userData = jsonDecode(response2.body);
-        global.name = userData['firstname'];
-        global.email = userData['email'];
+        print(userData);
+        global.name = userData['firstname'] +' '+ userData['lastname'] ?? '';
+        global.firstName =userData['firstname']?? '';
+        global.lastName = userData['lastname']?? '';
+        global.email = userData['email']?? '';
+        global.idimageprofil = userData['picture']?? '';
+if (userData.containsKey('classes') && userData['classes'] is List && userData['classes'].isNotEmpty) {
+  // Accédez à la première classe de l'utilisateur
+  Map<String, dynamic> firstClass = userData['classes'][0];
+  global.classe = firstClass['name'];
+  global.classeid = firstClass['_id'];
+} else {
+  global.classe= '';
+  global.classeid= '';
+}
         global.idtoken = userData['_id'];
-//        global.role = userData['role'];
+        global.role = userData['role']['name'];
         // ignore: use_build_context_synchronously
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return const HomeScreen();
@@ -94,13 +243,16 @@ class LoginButton extends StatelessWidget {
         );
       }
     } catch (error) {
+      print("HEEEERE");
+      print(error);
+            print("HEEEERE");
       // ignore: use_build_context_synchronously
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Erreur'),
-            content: const Text('Une erreur s\'est produite.'),
+            content: const Text('erreur est survenue'),
             actions: [
               TextButton(
                 child: const Text('OK'),

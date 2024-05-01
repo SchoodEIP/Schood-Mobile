@@ -5,10 +5,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:schood/Admin/SeeAlerteScreen.dart';
+import 'package:schood/Admin/signalement_screen.dart';
+import 'package:schood/Notification/Notification_screen.dart';
 import 'package:schood/main.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/BottomBarApp.dart';
+import 'package:schood/global.dart' as global;
 import 'package:schood/WeeklyStats.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,8 +23,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String firstName = '';
-  String lastName = '';
+  String firstName = global.name;
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +35,26 @@ class _HomeScreenState extends State<HomeScreen> {
         automaticallyImplyLeading: false,
         elevation: 0.0,
         actions: [
+           InkWell(
+            onTap: (){ Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotificationScreen(),
+                      ),
+                    );
+            },
+            child: const Padding(
+              padding:  EdgeInsets.all(8),
+              child: Icon(Icons.notifications_none,
+                  size: 40, color: AppColors.purpleSchood),
+            ),
+          ),
           InkWell(
             onTap: () {
               Navigator.pushReplacementNamed(context, '/profile');
             },
-            child: Padding(
-              padding: const EdgeInsets.all(8),
+            child: const Padding(
+              padding:  EdgeInsets.all(8),
               child: Icon(Icons.account_circle,
                   size: 40, color: AppColors.purpleSchood),
             ),
@@ -51,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             H1TextApp(
               text:
-                  'Bonjour $firstName $lastName\nComment te sens tu aujourd\'hui ?',
+                  'Bonjour $firstName\nComment te sens tu aujourd\'hui ?',
             ),
             const WidgetCard(
               height: 344,
@@ -77,6 +94,26 @@ class _HomeScreenState extends State<HomeScreen> {
               title: "Numéros d'aides",
               link: '/info',
             ),
+            const WidgetCard(
+              height: 216,
+              width: 401,
+              title: "Notification",
+              link: '/notification',
+            ),
+            if (global.role == "admin")
+              const WidgetCard(
+                height: 216,
+                width: 401,
+                title: "Signalements",
+                link: '/signalement',
+              ),
+            if (global.role == "admin" || global.role == "teacher")
+              const WidgetCard(
+                height: 216,
+                width: 401,
+                title: "Alerte",
+                link: '/alerte',
+              ),
           ],
         ),
       ),
@@ -135,7 +172,30 @@ class WidgetCard extends StatelessWidget {
               alignment: Alignment.topRight,
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, link);
+                  if (link != "/signalement" &&
+                      link != "/alerte" &&
+                      link != "/notification")
+                    Navigator.pushReplacementNamed(context, link);
+                  else if (link == "/notification") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotificationScreen(),
+                      ),
+                    );
+                  } else if (link == "/signalement") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SignalementScreen(),
+                      ),
+                    );
+                  } else if (link == "/alerte") {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SeeAlertScreen()));
+                  }
                 },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -170,13 +230,6 @@ class StatsWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              StatsGraphHomePage(name: "M", value: 40),
-              StatsGraphHomePage(name: "T", value: 30),
-              StatsGraphHomePage(name: "W", value: 95),
-              StatsGraphHomePage(name: "T", value: 79),
-              StatsGraphHomePage(name: "F", value: 100),
-              StatsGraphHomePage(name: "S", value: 45),
-              StatsGraphHomePage(name: "S", value: 100),
             ],
           ),
         ],
@@ -250,6 +303,32 @@ class ChatWidget extends StatelessWidget {
   }
 }
 
+class AlerteWidget extends StatelessWidget {
+  const AlerteWidget({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Spacer(),
+        Text(
+          'Numéro gratuit',
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
+        Text(
+          'Professionnels de la santé',
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
+        Text(
+          'Numéro d\'urgence',
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
+      ],
+    );
+  }
+}
+
 class HelpWidget extends StatelessWidget {
   const HelpWidget({Key? key});
 
@@ -272,6 +351,30 @@ class HelpWidget extends StatelessWidget {
           style: TextStyle(color: Colors.white, fontSize: 18),
         ),
       ],
+    );
+  }
+}
+
+class SignalementWidget extends StatelessWidget {
+  const SignalementWidget({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [],
+    );
+  }
+}
+
+class NotificationWidget extends StatelessWidget {
+  const NotificationWidget({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [],
     );
   }
 }

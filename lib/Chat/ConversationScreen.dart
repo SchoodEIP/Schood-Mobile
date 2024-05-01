@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/Chat/ChatScreen.dart';
+import 'package:schood/Chat/Signaled/Signaledpeople.dart';
+import 'package:schood/Notification/Notification_screen.dart';
 import 'package:schood/main.dart';
 import 'package:schood/request/delete.dart';
 import 'package:schood/request/get.dart';
@@ -41,9 +43,13 @@ class ConversationScreen extends StatefulWidget {
 
 class _ConversationScreenState extends State<ConversationScreen> {
   final TextEditingController _messageController = TextEditingController();
+  final TextEditingController _messageSignaledController = TextEditingController();
+  
   List<Map<String, dynamic>> conversations = [];
 
   List<Person> persons = [];
+   String selectedReason= "";
+  String selectedParticipantIds = "";
   List<String>? selectedPersons = [];
 
   void _showMultiSelect() async {
@@ -55,8 +61,97 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
   }
 
+void _sendreport(BuildContext context, conversation) async {
+  final postdata = PostClass();
+
+  if (selectedReason == "") {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Erreur'),
+          content: Text('Veuillez sélectionner une raison.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
+
+  if (selectedParticipantIds == "") {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Erreur'),
+          content: Text('Veuillez sélectionner un participant.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
+
+  if (selectedReason == "Harcèlement") {
+    selectedReason = "bullying";
+  } else if (selectedReason == "Contenu offensant") {
+    selectedReason = "badcomportment";
+  } else if (selectedReason == "Spam") {
+    selectedReason = "spam";
+  } else {
+    selectedReason = "other";
+  }
+
+  var route = "shared/report";
+
+  var data = {
+    "userSignaled": selectedParticipantIds,
+    "message": _messageSignaledController.text,
+    "conversation": conversation,
+    "type": selectedReason,
+  };
+                          _messageSignaledController.clear();
+                          selectedParticipantIds = "";
+                          selectedReason= "";
+ showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Votre signalemet à été envoyé.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+              },
+              child: Text('Retour à la messagerie'),
+            ),
+          ],
+        );});
+  //Response response = await postdata.postDataAuth(context, data, route);
+  //print(response.statusCode);
+}
+
+
   _createconversation(String message) async {
-    selectedPersons?.insert(0, global.idtoken);
+
+    if (selectedPersons?.length != 0)
+    {
+      selectedPersons?.insert(0, global.idtoken);
 
     try {
       var route = "user/chat";
@@ -67,13 +162,54 @@ class _ConversationScreenState extends State<ConversationScreen> {
       Response response = await postclass.postDataAuth(context, data, route);
 
       if (response.statusCode == 200) {
+        showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Message envoyé avec succès'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+      setState(() {
+ _getChatData(context).then((value) {
+      setState(() {
+        conversations = value;
+      });
+    });
+      });
+                Navigator.of(context).pop();        
+                Navigator.of(context).pop();        
+                
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );});
         //_sendMessage(message, context, id);
-        print("Bien envoyé");
+
       } else {
         print("Erreur lors de l'envoi du message - ${response.statusCode}");
       }
     } catch (error) {
       print("Erreur lors de l'envoi du message - $error");
+    }
+    }
+    else{
+showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Erreur'),
+          content: Text('Veuillez sélectionner au moins une personne.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );});
     }
   }
 
@@ -87,6 +223,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
       Response response = await postclass.postDataAuth(context, data, route);
       if (response.statusCode == 200) {
         _messageController.clear();
+ _getChatData(context).then((value) {
+      setState(() {
+        conversations = value;
+      });
+    });
       } else {
         print("Erreur lors de l'envoi du message - ${response.statusCode}");
       }
@@ -94,12 +235,182 @@ class _ConversationScreenState extends State<ConversationScreen> {
       print("Erreur lors de l'envoi du message - $error");
     }
   }
+void _showSelectSignaledParticipants(BuildContext context, List<dynamic> participants) async {
+  String? selectedParticipantId;
+  if (selectedParticipantIds != ""){
+       selectedParticipantId = selectedParticipantIds;
+  }
+  await showDialog<String>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Sélectionnez un participant'),
+        content: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  DropdownButton<String>(
+                    value: selectedParticipantId,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedParticipantId = newValue;
+                      });
+                    },
+                    items: participants.map<DropdownMenuItem<String>>((participant) {
+                      String participantId = participant['_id'];
+                      String firstName = participant['firstname'] ?? '';
+                      String lastName = participant['lastname'] ?? '';
 
-  _deleteconversation() async {
-    final delete = DeleteClass();
-    final response = await delete.deleteDataAuth(
-        context, global.globalToken, "user/chat/delete");
-    if (response.statusCode == 200) ;
+                      if (participantId.isNotEmpty && firstName.isNotEmpty && lastName.isNotEmpty) {
+                        String fullName = '$firstName $lastName';
+                        return DropdownMenuItem<String>(
+                          value: participantId,
+                          child: Text(fullName),
+                        );
+                      } else {
+                        return DropdownMenuItem<String>(
+                          value: '',
+                          child: SizedBox(),
+                        );
+                      }
+                    }).toList(),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (selectedParticipantId != null) {
+                selectedParticipantIds = selectedParticipantId!;
+                Navigator.pop(context, selectedParticipantId);
+              }
+            },
+            child: const Text('Valider'),
+          ),
+        ],
+      );
+    },
+  );
+}
+void _showReportDialog(BuildContext context) async {
+  String? selectedReportType = selectedReason;
+
+  await showDialog<String>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Signaler un problème'),
+        content: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RadioListTile<String>(
+                    title: Text('Harcèlement'),
+                    value: 'Harcèlement',
+                    groupValue: selectedReportType,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedReportType = value;
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: Text('Spam'),
+                    value: 'Spam',
+                    groupValue: selectedReportType,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedReportType = value;
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: Text('Autre'),
+                    value: 'Autre',
+                    groupValue: selectedReportType,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedReportType = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (selectedReportType != null) {
+                selectedReason = selectedReportType!;
+                Navigator.pop(context, selectedReportType);
+              }
+            },
+            child: const Text('Valider'),
+          ),
+        ],
+      );
+    },
+  );
+}  
+_leavechat(String idconv) async {
+    final postdata = PostClass();
+    var ide = global.globalToken;
+    var route = "user/chat/$idconv/leave";
+    var data = {
+    };
+    final response = await postdata.postDataAuth(context, data, route);
+
+    if (response.statusCode == 200) {
+      showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Vous avez bien quitté la conversation'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                                Navigator.of(context).pop();
+setState(() {
+   _getChatData(context).then((value) {
+      setState(() {
+        conversations = value;
+      });
+    }); _getChatData(context).then((value) {
+      setState(() {
+        conversations = value;
+      });
+    });
+});
+                
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );});
+    } else {
+      print("Erreur ${response.statusCode}");
+    }
   }
 
   _getUserData() async {
@@ -117,7 +428,89 @@ class _ConversationScreenState extends State<ConversationScreen> {
       }
     }
   }
+void showPopupSignaledMenu(themeProvider,conversation, participants) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return SingleChildScrollView(child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom, // Garantir que la modal reste au-dessus du clavier
+            ),
+            child: Container(
+          color: themeProvider.getBackgroundColor(),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(children: [
+              H2TextApp(
+                text: "Signaler la conversation",
+                color: themeProvider.getTextColor(),
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                  _showSelectSignaledParticipants(context, participants);
+                  },
+                  child: Text("Sélectionnez le participant")),
+              ElevatedButton(
+                  onPressed: () {
+                    _showReportDialog(context);
+                  },
+                  child: Text("Choisissez la raison du signalement")),
+              SizedBox(height: 16),
+              TextField(
+                decoration: InputDecoration(
+                  counterStyle: TextStyle(color: themeProvider.getTextColor()),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: themeProvider.getTextColor(),
+                    ),
+                    borderRadius: BorderRadius.circular(25.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: themeProvider.getTextColor(),
+                    ),
+                    borderRadius: BorderRadius.circular(25.0),
+                  ),
+                  hintText: 'Saisissez votre message',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                ),
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  color: themeProvider.getTextColor(),
+                ),
+                controller: _messageSignaledController,
+                maxLength: 325,
+                maxLines: 5,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                      child: ButtonTextApp(
+                        text: "Envoyer",
+                        color: AppColors.textDarkmode,
+                      ),
+                      onPressed: () async {
+                        _sendreport(context, conversation);
 
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.purpleSchood,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                      )),
+                ],
+              )
+            ]),
+          ))),
+        );
+      },
+    );
+  }
   Future<List<Map<String, dynamic>>> _getChatData(BuildContext context) async {
     final getData = GetClass();
 
@@ -170,17 +563,31 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      appBar: AppBar(
+ appBar: AppBar(
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         elevation: 0.0,
         actions: [
+           InkWell(
+            onTap: (){ Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotificationScreen(),
+                      ),
+                    );
+            },
+            child: const Padding(
+              padding:  EdgeInsets.all(8),
+              child: Icon(Icons.notifications_none,
+                  size: 40, color: AppColors.purpleSchood),
+            ),
+          ),
           InkWell(
             onTap: () {
               Navigator.pushReplacementNamed(context, '/profile');
             },
             child: const Padding(
-              padding: EdgeInsets.all(8),
+              padding:  EdgeInsets.all(8),
               child: Icon(Icons.account_circle,
                   size: 40, color: AppColors.purpleSchood),
             ),
@@ -259,11 +666,18 @@ class _ConversationScreenState extends State<ConversationScreen> {
                               icon: PopupMenuButton(
                                 onSelected: (value) {
                                   if (value == 'delete') {
-                                    // _deleteConversation();
+                                    _leavechat(conversation['id']);
+                                  }
+                                  else if (value == 'signaled'){
+                                    showPopupSignaledMenu(themeProvider, conversation['id'], conversation['participants']);
                                   }
                                 },
                                 itemBuilder: (BuildContext context) {
                                   return [
+                                    const PopupMenuItem(
+                                      value: 'signaled',
+                                      child: Text('Signaler une personne'),
+                                    ),
                                     const PopupMenuItem(
                                       value: 'delete',
                                       child: Text('Supprimer la conversation'),
@@ -288,101 +702,117 @@ class _ConversationScreenState extends State<ConversationScreen> {
         indexapp: 3,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _getUserData();
-          showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              return Container(
-                color: themeProvider.getBackgroundColor(),
-                child: Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Column(children: [
-                    H1TextApp(
-                      text: "Nouveau message",
+  onPressed: () {
+    _getUserData();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Utilisez isScrollControlled pour permettre à la modal d'occuper toute la hauteur de l'écran
+      builder: (context) {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom, // Garantir que la modal reste au-dessus du clavier
+            ),
+            child: Container(
+              color: themeProvider.getBackgroundColor(),
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  H1TextApp(
+                    text: "Nouveau message",
+                    color: themeProvider.getTextColor(),
+                  ),
+                  ElevatedButton(
+                    onPressed: _showMultiSelect,
+                    child: Text("Choisissez votre/vos utilisateurs(s)"),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    decoration: InputDecoration(
+                      counterStyle: TextStyle(color: themeProvider.getTextColor()),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: themeProvider.getTextColor(),
+                        ),
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: themeProvider.getTextColor(),
+                        ),
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                      hintText: 'Saisissez votre message',
+                      hintStyle: const TextStyle(color: Colors.grey),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 18,
                       color: themeProvider.getTextColor(),
                     ),
-                    ElevatedButton(
-                        onPressed: _showMultiSelect,
-                        child: Text("Choisissez votre/vos utilisateurs(s)")),
-                    SizedBox(height: 16),
-                    TextField(
-                      decoration: InputDecoration(
-                        counterStyle:
-                            TextStyle(color: themeProvider.getTextColor()),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 1,
-                            color: themeProvider.getTextColor(),
-                          ),
-                          borderRadius: BorderRadius.circular(25.0),
+                    controller: _messageController,
+                    maxLength: 325,
+                    maxLines: 5,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        child: ButtonTextApp(
+                          text: "Envoyer",
+                          color: AppColors.textDarkmode,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 1,
-                            color: themeProvider.getTextColor(),
-                          ),
-                          borderRadius: BorderRadius.circular(25.0),
-                        ),
-                        hintText: 'Saisissez votre message',
-                        hintStyle: const TextStyle(color: Colors.grey),
-                      ),
-                      style: GoogleFonts.inter(
-                        fontSize: 18,
-                        color: themeProvider.getTextColor(),
-                      ),
-                      controller: _messageController,
-                      maxLength: 325,
-                      maxLines: 5,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                            child: ButtonTextApp(
-                              text: "Envoyer",
-                              color: AppColors.textDarkmode,
-                            ),
-                            onPressed: () async {
-                              await _createconversation(
-                                  _messageController.text);
-                              List<Map<String, dynamic>> tmp =
-                                  await _getChatData(context);
-                              if (tmp.isNotEmpty) {
-                                String id = tmp.first['id'];
-                                print("ID de la première conversation : $id");
-                                _sendMessage(
-                                    _messageController.text, context, id);
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.purpleSchood,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(26),
-                              ),
-                            )),
-                        IconButton(
-                          onPressed: () async {
+                        onPressed: () async {
                             await _createconversation(_messageController.text);
-                            List<Map<String, dynamic>> tmp =
-                                await _getChatData(context);
-                            if (tmp.isNotEmpty) {
+                            List<Map<String, dynamic>> tmp = await _getChatData(context);
+                            if (tmp.isNotEmpty ) {
                               String id = tmp.first['id'];
                               print("ID de la première conversation : $id");
-                              _sendMessage(
-                                  _messageController.text, context, id);
-                            }
-                          },
-                          icon: Icon(Icons.attach_file),
+                              _sendMessage(_messageController.text, context, id);
+setState(() {
+   _getChatData(context).then((value) {
+      setState(() {
+        conversations = value;
+      });
+    });
+});
+                          }
+                          
+                          
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.purpleSchood,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(26),
+                          ),
                         ),
-                      ],
-                    )
-                  ]),
-                ),
-              );
-            },
-          );
-        },
+                      ),
+                      IconButton(
+                        onPressed: () async {
+                          _createconversation(_messageController.text);
+                          List<Map<String, dynamic>> tmp = await _getChatData(context);
+                          if (tmp.isNotEmpty) {
+                            String id = tmp.first['id'];
+                            print("ID de la première conversation : $id");
+                            _sendMessage(_messageController.text, context, id);
+
+                          }
+                        },
+                        icon: Icon(Icons.attach_file),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  },
+
         child: Icon(
           Icons.edit,
           color: AppColors.backgroundLightmode,
@@ -450,3 +880,4 @@ class _MultiSelectState extends State<MultiSelect> {
     );
   }
 }
+

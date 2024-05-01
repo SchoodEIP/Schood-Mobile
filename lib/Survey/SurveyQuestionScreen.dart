@@ -92,34 +92,36 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.purpleSchood),
-            onPressed: () {
-              Navigator.pop(context); // Go back to the previous page
-            },
-          ),
-          title: const H1TextApp(
-            text: "Questions",
-            color: AppColors.backgroundDarkmode,
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          actions: [
-            InkWell(
-              onTap: () {
-                Navigator.pushReplacementNamed(context, '/profile');
-              },
-              child: const Padding(
-                padding: EdgeInsets.all(8),
-                child: Icon(Icons.account_circle,
-                    size: 40, color: AppColors.purpleSchood),
-              ),
-            ),
-          ],
-        ),
+         appBar: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  automaticallyImplyLeading: false,
+                  title: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.arrow_back,
+                          color: AppColors.purpleSchood,
+                        ),
+                        const SizedBox(width: 8),
+                        H4TextApp(
+                            text: "Retour", color: themeProvider.getTextColor())
+                      ],
+                    ),
+                  )),
         backgroundColor: themeProvider.getBackgroundColor(),
-        body: SingleChildScrollView(
+        body: Column(                  crossAxisAlignment: CrossAxisAlignment.start,children:[Padding(
+        
+            padding: const EdgeInsets.all(32),
+            child: H1TextApp(
+              text: "Questionnaire",
+              color: themeProvider.getTextColor(),
+            ),
+          ),SingleChildScrollView(
           child: FutureBuilder<Map<String, dynamic>?>(
             future: userDataFuture,
             builder: (context, snapshot) {
@@ -252,7 +254,7 @@ class _SurveyQuestionScreenState extends State<SurveyQuestionsScreen> {
             },
           ),
         ),
-      ),
-    );
+      ]),
+    ));
   }
 }

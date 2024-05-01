@@ -49,6 +49,10 @@ dependencies:
   mailer: ^6.0.1
   flutter_native_splash: ^2.3.5
   flutter_cache_manager: ^3.3.1
+  shared_preferences: ^2.2.3
+  flutter_dotenv: ^5.1.0
+  open_file: ^3.3.2
+  fl_chart: ^0.36.0
 
 dev_dependencies:
   flutter_test:
@@ -67,7 +71,15 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
-      - lib/assets/
+      - lib/assets/Schood_logo.png
+      - lib/assets/Quentin.png
+      - lib/assets/Axel.png
+      - lib/assets/Nathan.png
+      - lib/assets/Eleonore.png
+      - lib/assets/Mateo.png
+      - lib/assets/Adrien.png
+      - lib/assets/.env
+    
   fonts:
     - family: Inter
       fonts:

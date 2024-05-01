@@ -51,22 +51,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ],
             ),
-            Center(
-                child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.purpleSchood,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
-                  )),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => AboutUs()));
-              },
-              child: ButtonTextApp(
-                text: "About us",
-                color: AppColors.textDarkmode,
-              ),
-            )),
+            
             Center(
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -83,7 +68,22 @@ class SettingsScreen extends StatelessWidget {
                     child: ButtonTextApp(
                       text: "Contactez-nous !",
                       color: AppColors.textDarkmode,
-                    ))),
+                    ))),Center(
+                child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.purpleSchood,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(26),
+                  )),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AboutUs()));
+              },
+              child: ButtonTextApp(
+                text: "À propos de nous",
+                color: AppColors.textDarkmode,
+              ),
+            )),
             const Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,

@@ -49,7 +49,7 @@ class H3TextApp extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Text(
       text,
-      style: TextStyle(
+      style: GoogleFonts.inter(
         color: color ?? themeProvider.getTextColor(),
         fontSize: 22,
       ),

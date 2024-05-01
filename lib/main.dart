@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/Chat/ConversationScreen.dart';
 import 'package:schood/Connexion_screen.dart';
@@ -11,9 +16,16 @@ import 'package:schood/Profile/ProfileScreen.dart';
 import 'package:schood/Profile/Settings_screen.dart';
 
 import 'package:schood/WeeklyStats.dart';
+import 'package:schood/request/get.dart';
+import 'package:schood/style/AppButtons.dart';
 import 'package:schood/style/AppColors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:schood/global.dart' as global;
+
+
 
 void main() async {
+  await dotenv.load(fileName: "lib/assets/.env");
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
@@ -27,6 +39,8 @@ void main() async {
 class MyApp extends StatelessWidget {
   final TextEditingController _email = TextEditingController();
 
+  MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
@@ -35,42 +49,23 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'SCHOOD',
           themeMode: Provider.of<ThemeProvider>(context).getThemeMode(),
-          initialRoute: '/splash', // Mettez à jour la route initiale
+          initialRoute: '/splash',
           routes: {
             '/': (context) => const LoginPage(),
             '/home': (context) => const HomeScreen(),
             '/surveySummary': (context) => const SurveySummaryScreen(),
             '/stats': (context) => const StatsScreen(),
             '/info': (context) => const HelpScreen(),
-            '/chat': (context) =>  ConversationScreen(),
+            '/chat': (context) => const ConversationScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/profile': (context) => ProfileScreen(email: _email.text),
             '/emailModifier': (context) => const EmailModifier(),
-            '/splash': (context) =>
-                SplashScreen(), // Ajoutez la route de la SplashScreen
+            '/splash': (context) => const SplashScreen(),
           },
         );
       },
     );
   }
-
-  // Le reste de votre code reste inchangé
-}
-
-ThemeData _buildLightTheme() {
-  return ThemeData(
-    brightness: Brightness.light,
-    primaryColor: AppColors.purpleSchood,
-    scaffoldBackgroundColor: AppColors.backgroundLightmode,
-  );
-}
-
-ThemeData _buildDarkTheme() {
-  return ThemeData(
-    brightness: Brightness.dark,
-    primaryColor: AppColors.purpleSchood,
-    scaffoldBackgroundColor: AppColors.backgroundDarkmode,
-  );
 }
 
 class ThemeProvider with ChangeNotifier {
@@ -105,7 +100,10 @@ class ThemeProvider with ChangeNotifier {
 }
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _SplashScreenState createState() => _SplashScreenState();
 }
 
@@ -113,11 +111,12 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
+  bool isConnected = false;
 
   @override
   void initState() {
     super.initState();
-
+    loadIsConnected();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -131,14 +130,73 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _controller.forward();
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        );
-      }
+    _checkTokenAndNavigate();
+  }
+
+  Future<void> loadIsConnected() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isConnected = prefs.getBool('isConnected') ?? false;
     });
+  }
+
+  Future<void> saveIsConnected(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isConnected', value);
+    print('isConnected value stored: $value');
+  }
+
+  // ignore: no_leading_underscores_for_local_identifiers
+  Future<void> _checkTokenAndNavigate() async {
+    String? tokenContent = await TokenFileManager.readTokenFromFile();
+    // TODO: Perform a GET request to check if the token exists or perform any necessary validations
+    if (tokenContent == null || !isConnected) {
+      if (kDebugMode) {
+        print(
+            'No token content found or error reading the file, or not connected.');
+      }
+
+      _controller.addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginPage()),
+          );
+        }
+      });
+    } else {
+      if (kDebugMode) {
+        print('Token content from file: $tokenContent');
+      }
+
+      // Perform any additional actions if isConnected is true (e.g., navigate to HomeScreen)
+      // ...
+
+      // Navigate to HomeScreen
+      final getdata = GetClass();
+Response response2 =
+            await getdata.getData(tokenContent, "user/profile");
+        Map<String, dynamic> userData = jsonDecode(response2.body);
+        global.globalToken = tokenContent;
+        global.name = userData['firstname'] +' '+ userData['lastname'];
+        global.firstName =userData['firstname'];
+        global.lastName = userData['lastname'];
+        global.email = userData['email'];
+if (userData.containsKey('classes') && userData['classes'] is List && userData['classes'].isNotEmpty) {
+  // Accédez à la première classe de l'utilisateur
+  Map<String, dynamic> firstClass = userData['classes'][0];
+  global.classe = firstClass['name'];
+  global.classeid = firstClass['_id'];
+} else {
+  // Si l'utilisateur n'a pas de classe, vous pouvez attribuer des valeurs par défaut ou gérer le cas en conséquence
+}
+        global.idtoken = userData['_id'];
+        global.role = userData['role']['name'];
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    }
   }
 
   @override
@@ -149,14 +207,14 @@ class _SplashScreenState extends State<SplashScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('lib/assets/Schood_logo.png'),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             AnimatedBuilder(
               animation: _scaleAnimation,
               builder: (context, child) {
                 return Transform.scale(
                   scale: _scaleAnimation.value,
                   child: CustomPaint(
-                    size: Size(100.0, 100.0),
+                    size: const Size(100.0, 100.0),
                     painter: SmilePainter(),
                   ),
                 );

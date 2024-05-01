@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:schood/Notification/Notification_screen.dart';
 import 'package:schood/Survey/SurveyQuestionScreen.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 import 'package:schood/style/AppColors.dart';
@@ -65,21 +66,31 @@ class _SurveySummaryState extends State<SurveySummaryScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const H1TextApp(
-          text: "Questionnaires",
-          color: AppColors.backgroundDarkmode,
-        ),
+       appBar: AppBar(
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         elevation: 0.0,
         actions: [
+           InkWell(
+            onTap: (){ Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotificationScreen(),
+                      ),
+                    );
+            },
+            child: const Padding(
+              padding:  EdgeInsets.all(8),
+              child: Icon(Icons.notifications_none,
+                  size: 40, color: AppColors.purpleSchood),
+            ),
+          ),
           InkWell(
             onTap: () {
               Navigator.pushReplacementNamed(context, '/profile');
             },
             child: const Padding(
-              padding: EdgeInsets.all(8),
+              padding:  EdgeInsets.all(8),
               child: Icon(Icons.account_circle,
                   size: 40, color: AppColors.purpleSchood),
             ),
@@ -87,7 +98,15 @@ class _SurveySummaryState extends State<SurveySummaryScreen> {
         ],
       ),
       backgroundColor: themeProvider.getBackgroundColor(),
-      body: SingleChildScrollView(
+      body: Column(                  crossAxisAlignment: CrossAxisAlignment.start,children:[Padding(
+        
+            padding: const EdgeInsets.all(32),
+            child: H1TextApp(
+              text: "Historique",
+              color: themeProvider.getTextColor(),
+            ),
+          ),
+          SingleChildScrollView(
         child: FutureBuilder<List<Map<String, dynamic>>?>(
           future: _getSurveyData(context),
           builder: (context, snapshot) {
@@ -133,8 +152,7 @@ class _SurveySummaryState extends State<SurveySummaryScreen> {
             }
             return const Center(child: Text('No survey data available'));
           },
-        ),
-      ),
+        ))]),
       bottomNavigationBar: const BottomBarApp(
         indexapp: 1,
       ),

@@ -36,20 +36,30 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Padding(child: 
+              Image.asset('lib/assets/Schood_logo.png'),
+              padding: const EdgeInsets.all(32),),  
+              Container(height: 30),
               const Center(
                   child: H3TextApp(
                 text: "Email",
+                color: AppColors.purpleSchood,
               )),
               AppTextFieldForm(
+                hinttext: "email",
                 validator: "email",
+                
                 controller: _emailcontroller,
               ),
-              const SizedBox(height: 10.0),
+              const SizedBox(height: 20.0),
               const Center(
                   child: H3TextApp(
                 text: "Mot de passe",
+                
+                color: AppColors.purpleSchood,
               )),
               AppTextFieldForm(
+                hinttext: "mot de passe",
                 obs: true,
                 validator: "Password",
                 controller: _passwordcontroller,
@@ -60,6 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                 emailController: _emailcontroller,
                 passwordController: _passwordcontroller,
               ),
+              const StayConnectedButton(),
             ],
           ),
         ),

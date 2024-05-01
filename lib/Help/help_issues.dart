@@ -9,11 +9,13 @@ class HelpIssues extends StatelessWidget {
   final String texthelp;
   final String number;
   final String title;
+  final String email;
   const HelpIssues(
       {super.key,
       required this.texthelp,
       required this.number,
-      required this.title});
+      required this.title,
+      required this.email});
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -52,7 +54,12 @@ class HelpIssues extends StatelessWidget {
                         H4TextApp(
                           text: texthelp,
                           color: AppColors.purpleSchood,
-                        ),
+                        ), email.isNotEmpty
+                        ? H4TextApp(
+                            text: email,
+                            color: AppColors.purpleSchood,
+                          )
+                        : Container(), 
                         HelpCallButton(
                           number: number,
                         )
