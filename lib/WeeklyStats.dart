@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,7 @@ import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/Notification/Notification_screen.dart';
 import 'package:schood/main.dart';
+import 'package:schood/request/get.dart';
 import 'package:schood/request/post.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
@@ -25,7 +27,8 @@ class _StatsScreenState extends State<StatsScreen> {
   String selectedOption = "Semaine";
   Map<String, Map<String, dynamic>> moodData = {};
     Map<String, Map<String, dynamic>> drawmoodData = {};
-
+List<Map<String, dynamic>> classes = []; 
+String? selectedClassId;
   int averagePercentage = 0;
   List<String> arraymood= [];
 _setmoodweekly() {
@@ -82,18 +85,63 @@ _setmoodweekly() {
   // Ajoutez ici la logique pour les semaines suivantes en fonction de vos besoins
 }
 
+_onDropdownChanged(String value) {
+  setState(() {
+    selectedOption = value;
+    if (selectedOption == 'Année') {
+      daydatebefore = 365;
+    } else {
+      daydatebefore = 7;
+    }
+    DateTime currentDate = DateTime.now();
+    DateTime datebefore = currentDate.subtract(Duration(days: daydatebefore));
+    moodData = {}; // Réinitialiser moodData
+    _getmood(context, datebefore);
+  });
+}
+  _getclasses(BuildContext context) async {
+    final getdata = GetClass();
+    Response response  = await getdata.getData(global.globalToken, "shared/classes");
+    List<dynamic> responseData = jsonDecode(response.body);
+    List<Map<String, dynamic>> classList = [];
+           responseData.forEach((classData) {
+      // Ajouter chaque classe à la liste temporaire
+      classList.add({
+        'id': classData['_id'],
+        'name': classData['name'],
+      });
+    });
 
-
+    setState(() {
+      classes = classList; // Mettre à jour la liste des classes
+    });
+  }
   _getmood(BuildContext context, datebefore) async {
+    //_getclasses(context);
     final postdata = PostClass();
     DateTime currentDate = DateTime.now();
+    Response response;
     var data = {
       "fromDate": datebefore.toIso8601String(),
       "toDate": currentDate.toIso8601String()
     };
-    Response response = await postdata.postDataAuth(context, data, "student/statistics/moods");
-    Map<String, dynamic> responseData = jsonDecode(response.body);
+    //if (global.role == "student"){     
+      response = await postdata.postDataAuth(context, data, "student/statistics/moods");
+    //}
+    /*else{
+      print("HEEERE");
+      print(selectedClassId);
+          var data = {
+      "fromDate": datebefore.toIso8601String(),
+      "toDate": currentDate.toIso8601String(),
+      "classFilter": selectedClassId,
+    };
+       response = await postdata.postDataAuth(context, data,"shared/statistics/dailyMoods" );
+       print(response.body);
+    }*/
 
+    Map<String, dynamic> responseData = jsonDecode(response.body);
+    //print(responseData);
     DateTime datebeforedraw = currentDate.subtract(Duration(days: 35));
     var data2 = {"fromDate":datebeforedraw.toIso8601String(), "toDate": currentDate.toIso8601String()};
     Response response2 = await postdata.postDataAuth(context, data2, "student/statistics/moods");
@@ -115,7 +163,10 @@ _setmoodweekly() {
         };
       }
     });
-  _setmoodweekly(); 
+  await _setmoodweekly(); 
+  setState(() {
+    
+  });
     //averagePercentage = responseData['averagePercentage'] ?? 0;
 if (daydatebefore == 365) {
   Map<String, Map<String, dynamic>> newData = {};
@@ -196,9 +247,13 @@ if (daydatebefore == 365) {
 
   @override
   Widget build(BuildContext context) {
+             Uint8List ?photo = null;
+    if (global.idimageprofil != "") {
+      photo = base64Decode(global.idimageprofil);
+    }
       final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      appBar: AppBar(
+     appBar: AppBar(
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         elevation: 0.0,
@@ -217,18 +272,29 @@ if (daydatebefore == 365) {
                   size: 40, color: AppColors.purpleSchood),
             ),
           ),
-          InkWell(
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/profile');
-            },
-            child: const Padding(
-              padding:  EdgeInsets.all(8),
-              child: Icon(Icons.account_circle,
-                  size: 40, color: AppColors.purpleSchood),
-            ),
-          ),
-        ],
+           IconButton(
+      onPressed: () {
+        Navigator.pushReplacementNamed(context, '/profile');
+      },
+      icon: Container(
+        width: 40, // Ajustez la taille selon vos besoins
+        height: 40, // Ajustez la taille selon vos besoins
+        child: /*global.idimageprofil != ""
+            ? ClipOval(
+                child: Image.memory(
+                  photo!,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : */Icon(
+                Icons.account_circle,
+                size: 40,
+                color: AppColors.purpleSchood,
+              ),
       ),
+        )]),
       backgroundColor: themeProvider.getBackgroundColor(),
       body: SingleChildScrollView(
         child: Column(
@@ -245,27 +311,38 @@ if (daydatebefore == 365) {
           const SizedBox(
             height: 20,
           ),
+          /*if(global.role != "student")...[DropdownButtonFormField<String>(
+  value: selectedClassId,
+  onChanged: (newValue) {
+    setState(() {
+      selectedClassId = newValue;
+                DateTime currentDate = DateTime.now();
+          DateTime datebefore = currentDate.subtract(Duration(days: daydatebefore));
+
+      _getmood(context, datebefore); // Appel pour rafraîchir les données avec la nouvelle classe sélectionnée
+    });
+  },
+  items: classes.map((classData) {
+    return DropdownMenuItem<String>(
+      value: classData['id'],
+      child: Container(
+        height: 40, // Définir la hauteur de l'élément du menu déroulant
+        child: Center(
+          child: Text(
+            classData['name'],
+            style: TextStyle(fontSize: 16), // Ajuster la taille du texte pour correspondre aux autres éléments
+          ),
+        ),
+      ),
+    );
+  }).toList(),
+)],*/
+Center(child:H2TextApp(text: "Durée")),
           MyDropdown(
 
-            onChanged: (String value) {
-              setState(() {
-  selectedOption = value;
-  if (selectedOption == 'Année') {
-    daydatebefore = 365;
-  } else {
-    daydatebefore = 7;
-  }
-  DateTime currentDate = DateTime.now();
-  DateTime datebefore = currentDate.subtract(Duration(days: daydatebefore));
-  moodData = {}; // Réinitialiser moodData
-  setState(() {
+           onChanged: _onDropdownChanged,
 
-      _getmood(context, datebefore);
-  });
-
-
-});
-}),
+          ),
           const SizedBox(height: 20),
            Padding(padding:EdgeInsets.only(left: 16, right: 16),  child:Column(            crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,children: [   Row(
@@ -290,6 +367,7 @@ if (daydatebefore == 365) {
                   StatsGraph(name: "M", value: moodData['March']?['average']?.toDouble() ?? 0),
                   StatsGraph(name: "A", value: moodData['April']?['average']?.toDouble() ?? 0),
                   StatsGraph(name: "M", value: moodData['May']?['average']?.toDouble() ?? 0),
+                  
                   StatsGraph(name: "J", value: moodData['June']?['average']?.toDouble() ?? 0),
                   StatsGraph(name: "J", value: moodData['July']?['average']?.toDouble() ?? 0),
                   StatsGraph(name: "A", value: moodData['August']?['average']?.toDouble() ?? 0),
@@ -356,11 +434,11 @@ class _StatsGraphState extends State<StatsGraph> {
   @override
   void didUpdateWidget(StatsGraph oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Vérifiez si les données ont changé et appelez setState si nécessaire
+
     if (widget.name != oldWidget.name || widget.value != oldWidget.value) {
-      setState(() {print(widget.name);
+      setState(() {//print(widget.name);
       print(widget.value);});
-    }
+      }
   }
   Widget build(BuildContext context) {
    Color color;

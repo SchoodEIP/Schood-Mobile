@@ -48,7 +48,7 @@ class ContactPage extends StatelessWidget {
           children: [
             SizedBox(height: 20),
             H1TextApp(
-              text: "About us",
+              text: "Contactez-nous",
             ),
             SizedBox(height: 20),
             Expanded(

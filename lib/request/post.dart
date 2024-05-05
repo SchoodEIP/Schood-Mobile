@@ -19,7 +19,6 @@ class PostClass {
 
   postDataAuth(context, data, url) async {
     var fullUrl = global.urlApi + url;
-    print(data);
     final response = await http.post(Uri.parse(fullUrl),
         headers: {
           'x-auth-token': global.globalToken,
@@ -40,7 +39,13 @@ class PostFileClass {
       Map<String, dynamic> data, String url, File file) async {
     var fullUrl = global.urlApi + url;
 
-    var request = http.MultipartRequest('POST', Uri.parse(fullUrl));
+    var request = http.MultipartRequest('POST', Uri.parse(fullUrl),);
+    
+    // Ajouter les en-têtes à la demande multipart
+    request.headers.addAll({
+      'x-auth-token': global.globalToken,
+      'Content-Type': 'multipart/form-data', // Le type de contenu devrait être multipart/form-data
+    });
 
     data.forEach((key, value) {
       request.fields[key] = value.toString();

@@ -21,11 +21,13 @@ import 'package:schood/style/AppButtons.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:schood/global.dart' as global;
+import 'package:intl/date_symbol_data_local.dart';
 
 
 
 void main() async {
   await dotenv.load(fileName: "lib/assets/.env");
+    await initializeDateFormatting('fr_FR', '');
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(

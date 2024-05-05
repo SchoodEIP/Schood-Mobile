@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -60,7 +63,48 @@ class _ConversationScreenState extends State<ConversationScreen> {
       },
     );
   }
+  String? filePath;
+  File? file;
 
+void _openFilePicker() async {
+  FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+  if (result != null && result.files.isNotEmpty) {
+    String? filePath = result.files.single.path;
+
+    if (filePath != null) {
+      setState(() {
+        file = File(filePath);
+        // Maintenant, vous avez un objet File 'file' que vous pouvez utiliser.
+        print("Chemin du fichier : ${file?.path}");
+        // Faites ce que vous voulez avec le fichier...
+      });
+    }
+  } else {
+    print("Aucun fichier sélectionné.");
+  }
+}
+
+  void _sendFile(String id) async {
+  try {
+    var route = "user/chat/$id/newFile";
+    Map<String, dynamic> data = {};
+    final postclass = PostFileClass();
+
+    if (file != null) {
+      Response response = await postclass.postDataWithFile(data, route, file!);
+      if (response.statusCode == 200) {
+        print("test");
+      } else {
+        print("Erreur lors de l'envoi du fichier - ${response.statusCode}");
+      }
+    } else {
+      print("Aucun fichier sélectionné.");
+    }
+  } catch (error) {
+    print("Erreur lors de l'envoi du fichier - $error");
+  }
+}
 void _sendreport(BuildContext context, conversation) async {
   final postdata = PostClass();
 
@@ -85,7 +129,7 @@ void _sendreport(BuildContext context, conversation) async {
     return;
   }
 
-  if (selectedParticipantIds == "") {
+if (selectedParticipantIds == "") {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -142,8 +186,24 @@ void _sendreport(BuildContext context, conversation) async {
             ),
           ],
         );});
-  //Response response = await postdata.postDataAuth(context, data, route);
-  //print(response.statusCode);
+        try{
+  Response response = await postdata.postDataAuth(context, data, route);
+        }catch(error){ showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Une erreur est survenue'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+              },
+              child: Text('Veuillez reessayer plus tard'),
+            ),
+          ],
+        );});}
+
 }
 
 
@@ -176,8 +236,7 @@ void _sendreport(BuildContext context, conversation) async {
         conversations = value;
       });
     });
-      });
-                Navigator.of(context).pop();        
+      });       
                 Navigator.of(context).pop();        
                 
               },
@@ -214,6 +273,7 @@ showDialog(
   }
 
   void _sendMessage(String message, BuildContext context, String id) async {
+    if (file ==null){
     try {
       var route = "user/chat/$id/newMessage";
       var data = {
@@ -233,6 +293,30 @@ showDialog(
       }
     } catch (error) {
       print("Erreur lors de l'envoi du message - $error");
+    }
+    }
+  else{try {
+      var route = "user/chat/$id/newMessage";
+      var data = {
+        'content': message,
+      };
+      final postclass = PostClass();
+      Response response = await postclass.postDataAuth(context, data, route);
+      if (response.statusCode == 200) {
+        _messageController.clear();
+ _getChatData(context).then((value) {
+      setState(() {
+        conversations = value;
+      });
+    });
+      } else {
+        print("Erreur lors de l'envoi du message - ${response.statusCode}");
+      }
+    } catch (error) {
+      print("Erreur lors de l'envoi du message - $error");
+    }
+        _sendFile(id);
+    file= null;
     }
   }
 void _showSelectSignaledParticipants(BuildContext context, List<dynamic> participants) async {
@@ -330,6 +414,15 @@ void _showReportDialog(BuildContext context) async {
                   RadioListTile<String>(
                     title: Text('Spam'),
                     value: 'Spam',
+                    groupValue: selectedReportType,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedReportType = value;
+                      });
+                    },
+                  ), RadioListTile<String>(
+                    title: Text("Contenu offensant"),
+                    value: 'Contenu offensant',
                     groupValue: selectedReportType,
                     onChanged: (String? value) {
                       setState(() {
@@ -561,9 +654,13 @@ void showPopupSignaledMenu(themeProvider,conversation, participants) {
 
   @override
   Widget build(BuildContext context) {
+                 Uint8List ?photo = null;
+    if (global.idimageprofil != "") {
+      photo = base64Decode(global.idimageprofil);
+    }
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
- appBar: AppBar(
+appBar: AppBar(
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         elevation: 0.0,
@@ -582,18 +679,29 @@ void showPopupSignaledMenu(themeProvider,conversation, participants) {
                   size: 40, color: AppColors.purpleSchood),
             ),
           ),
-          InkWell(
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/profile');
-            },
-            child: const Padding(
-              padding:  EdgeInsets.all(8),
-              child: Icon(Icons.account_circle,
-                  size: 40, color: AppColors.purpleSchood),
-            ),
-          ),
-        ],
+           IconButton(
+      onPressed: () {
+        Navigator.pushReplacementNamed(context, '/profile');
+      },
+      icon: Container(
+        width: 40, // Ajustez la taille selon vos besoins
+        height: 40, // Ajustez la taille selon vos besoins
+        child: /*global.idimageprofil != ""
+            ? ClipOval(
+                child: Image.memory(
+                  photo!,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : */Icon(
+                Icons.account_circle,
+                size: 40,
+                color: AppColors.purpleSchood,
+              ),
       ),
+        )]),
       backgroundColor: themeProvider.getBackgroundColor(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -791,7 +899,7 @@ setState(() {
                       ),
                       IconButton(
                         onPressed: () async {
-                          _createconversation(_messageController.text);
+                        _openFilePicker();
                           List<Map<String, dynamic>> tmp = await _getChatData(context);
                           if (tmp.isNotEmpty) {
                             String id = tmp.first['id'];

@@ -8,6 +8,22 @@ import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/global.dart' as global;
 
+class Person {
+  final String id;
+  final String firstname;
+  final String lastname;
+
+  Person({required this.id, required this.firstname, required this.lastname});
+
+  factory Person.fromJson(Map<String, dynamic> json) {
+    return Person(
+      id: json['_id'],
+      firstname: json['firstname'],
+      lastname: json['lastname'],
+    );
+  }
+}
+
 class SignalementScreen extends StatefulWidget {
   @override
   _SignalementScreenState createState() => _SignalementScreenState();
@@ -15,6 +31,7 @@ class SignalementScreen extends StatefulWidget {
 
 class _SignalementScreenState extends State<SignalementScreen> {
   List<Widget> bodyWidgets = [];
+  List<Person> persons = [];
 
   @override
   void initState() {
@@ -23,34 +40,97 @@ class _SignalementScreenState extends State<SignalementScreen> {
   }
 
   Future<void> _getSignalement() async {
+    try{
     final getdata = GetClass();
-    Response response =
-        await getdata.getData(global.globalToken, "shared/report");
+    Response response = await getdata.getData(global.globalToken, "shared/report");
 
     if (response.statusCode == 200) {
-      // Convertissez la chaîne JSON en une liste de maps
+      // Convertir la chaîne JSON en une liste de maps
       List<Map<String, dynamic>> signalements =
           List<Map<String, dynamic>>.from(jsonDecode(response.body));
-
-      // Convertissez la date au format DateTime pour permettre le tri
+      // Convertir la date au format DateTime pour permettre le tri
       signalements.forEach((signalement) {
         signalement["createdAt"] = DateTime.parse(signalement["createdAt"]);
+          String type = signalement["type"];
+  if (type == "other") {
+    signalement["type"] = "Autre";
+  } else if (type == "badcomportment") {
+    signalement["type"] = "Contenu offensant";
+    
+  }else if (type == "bullying") {
+    signalement["type"] = "Harcèlement";}
+    else if (type == "spam"){
+      signalement["type"] = "Spam";
+    }
       });
 
-      // Triez la liste par date
+      // Trier la liste par date
       signalements.sort((a, b) => a["createdAt"].compareTo(b["createdAt"]));
 
-      // Construisez la liste des widgets de signalements
+      // Obtenir les données des personnes
+      await _getUserData();
+
+      // Construire la liste des widgets de signalements avec les détails des personnes
       setState(() {
-        bodyWidgets = _buildSignalementList(signalements);
+        bodyWidgets = _buildSignalementList(signalements, persons);
       });
     } else {
       print(
           "Erreur lors de la récupération des signalements. Statut : ${response.statusCode}");
     }
+    }catch(error){ showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Une erreur est survenue'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+              },
+              child: Text('Veuillez reessayer plus tard'),
+            ),
+          ],
+        );});}
   }
 
-  Future<void> _showDetailsPopup(Map<String, dynamic> signalement) async {
+  Future<void> _getUserData() async {
+    try{
+    final getData = GetClass();
+    final response = await getData.getData(global.globalToken, "user/chat/users");
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+
+      persons = data.map((personData) => Person.fromJson(personData)).toList();
+
+      for (var person in persons) {
+        print(
+            'ID: ${person.id}, Firstname: ${person.firstname}, Lastname: ${person.lastname}');
+      }
+    }}catch(error){ showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Une erreur est survenue'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+              },
+              child: Text('Veuillez reessayer plus tard'),
+            ),
+          ],
+        );});}
+  }
+
+Future<void> _showDetailsPopup(Map<String, dynamic> signalement) async {
+    // Recherche de la personne correspondante pour l'utilisateur signalé
+    Person? userSignaled = persons.firstWhere((person) => person.id == signalement["userSignaled"], orElse: () => Person(id: "", firstname: "", lastname: ""));
+    // Recherche de la personne correspondante pour l'utilisateur signalé par
+    Person? signaledBy = persons.firstWhere((person) => person.id == signalement["signaledBy"], orElse: () => Person(id: "", firstname: "", lastname: ""));
+    print(signalement);
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -59,14 +139,12 @@ class _SignalementScreenState extends State<SignalementScreen> {
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //Text("ID: ${signalement["_id"]}"),
-              Text("Utilisateur signalé: ${signalement["userSignaled"]}"),
-              Text("Signalé par: ${signalement["signaledBy"]}"),
-              Text("Date: ${signalement["createdAt"]}"),
-              Text("Message: ${signalement["message"]}"),
-              Text("Type de signalement: ${signalement["type"]}"),
-              Text("Conversation: ${signalement["conversation"]}"),
-              // Ajoutez d'autres champs selon vos besoins
+              H4TextApp(text:"Utilisateur signalé: ${userSignaled?.firstname ?? "Utilisateur inconnu"} ${userSignaled?.lastname ?? ""}", color: AppColors.textLightmode,),
+              H4TextApp(text:"Signalé par: ${signaledBy?.firstname ?? "Utilisateur inconnu"} ${signaledBy?.lastname ?? ""}",color: AppColors.textLightmode),
+              H4TextApp(text:"Date: ${signalement["createdAt"]}",color: AppColors.textLightmode),
+              H4TextApp(text:"Message: ${signalement["message"]}",color: AppColors.textLightmode),
+              H4TextApp(text:"Type de signalement: ${signalement["type"]}",color: AppColors.textLightmode),
+              //Text("Conversation: ${signalement["conversation"]}"),
             ],
           ),
           actions: <Widget>[
@@ -82,17 +160,28 @@ class _SignalementScreenState extends State<SignalementScreen> {
     );
   }
 
-  List<Widget> _buildSignalementList(List<Map<String, dynamic>> signalements) {
-    return signalements.map((signalement) {
-      String id = signalement["_id"];
-      String userSignaled = signalement["userSignaled"];
-      String userSignaledby = signalement["signaledBy"];
-      DateTime date = signalement["createdAt"];
-      String message = signalement["message"];
-      String type = signalement["type"];
-      String conversation = signalement["conversation"];
 
-      return Padding(
+
+  List<Widget> _buildSignalementList(List<Map<String, dynamic>> signalements, List<Person> persons) {
+    // Afficher une liste vide en attendant que les données soient chargées
+    if (signalements.isEmpty) {
+      return [Text("Chargement...")];
+    }
+
+    // Afficher la liste des signalements avec les noms d'utilisateur mis à jour
+    return signalements.map((signalement) {
+      String id = signalement["_id"] ?? "";
+      String userSignaled = signalement["userSignaled"] ?? "";
+      String userSignaledby = signalement["signaledBy"] ?? "";
+      DateTime date = signalement["createdAt"] ?? "";
+      String message = signalement["message"] ?? "";
+      String type = signalement["type"] ?? "";
+      String conversation = signalement["conversation"] ?? "";
+      // Recherche de la personne correspondante
+      Person? personSignaled = persons.firstWhere((person) => person.id == userSignaled, orElse: () => Person(id: "", firstname: "", lastname: ""));
+      Person? personSignaledBy = persons.firstWhere((person) => person.id == userSignaledby, orElse: () => Person(id: "", firstname: "", lastname: ""));
+
+       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
           onPressed: () {
@@ -107,12 +196,9 @@ class _SignalementScreenState extends State<SignalementScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              H4TextApp(
-                text: userSignaledby,
-                color: AppColors.textDarkmode,
-              ),
-              H4TextApp(
-                text: "à signaler $userSignaled",
+
+              ButtonTextApp( // Utiliser ButtonTextApp pour définir le style de votre bouton
+                text: "${personSignaledBy.firstname}"+" "+ "${personSignaledBy.lastname} à signaler ${personSignaled.firstname}" +" "+ "${personSignaled.lastname}",
                 color: AppColors.textDarkmode,
               ),
             ],
@@ -120,6 +206,7 @@ class _SignalementScreenState extends State<SignalementScreen> {
         ),
       );
     }).toList();
+
   }
 
   @override

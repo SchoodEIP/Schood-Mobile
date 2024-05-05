@@ -7,6 +7,7 @@ import 'package:schood/style/AppButtons.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/TextFieldForm.dart';
+import 'package:schood/global.dart' as global;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,43 +22,41 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordcontroller = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: themeProvider.getBackgroundColor(),
-      body: Center(
+      body: WillPopScope(
+        onWillPop: () async {
+          // Empêcher le retour en arrière
+          return false;
+        },
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(child: 
-              Image.asset('lib/assets/Schood_logo.png'),
-              padding: const EdgeInsets.all(32),),  
+              Padding(
+                padding: const EdgeInsets.all(32),
+                child: Image.asset('lib/assets/Schood_logo.png'),
+              ),
               Container(height: 30),
               const Center(
-                  child: H3TextApp(
-                text: "Email",
-                color: AppColors.purpleSchood,
-              )),
+                child: H3TextApp(
+                  text: "Email",
+                  color: AppColors.purpleSchood,
+                ),
+              ),
               AppTextFieldForm(
                 hinttext: "email",
                 validator: "email",
-                
                 controller: _emailcontroller,
               ),
               const SizedBox(height: 20.0),
               const Center(
-                  child: H3TextApp(
-                text: "Mot de passe",
-                
-                color: AppColors.purpleSchood,
-              )),
+                child: H3TextApp(
+                  text: "Mot de passe",
+                  color: AppColors.purpleSchood,
+                ),
+              ),
               AppTextFieldForm(
                 hinttext: "mot de passe",
                 obs: true,
@@ -83,6 +82,7 @@ void signOutAndNavigateToLogin(BuildContext context) async {
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(builder: (context) => const LoginPage()),
+
   );
 }
 

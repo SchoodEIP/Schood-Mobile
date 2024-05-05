@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+         Uint8List ?photo = null;
+    if (global.idimageprofil != "") {
+      photo = base64Decode(global.idimageprofil);
+    }
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       backgroundColor: themeProvider.getBackgroundColor(),
@@ -49,18 +54,30 @@ class _HomeScreenState extends State<HomeScreen> {
                   size: 40, color: AppColors.purpleSchood),
             ),
           ),
-          InkWell(
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/profile');
-            },
-            child: const Padding(
-              padding:  EdgeInsets.all(8),
-              child: Icon(Icons.account_circle,
-                  size: 40, color: AppColors.purpleSchood),
-            ),
-          ),
-        ],
+           IconButton(
+      onPressed: () {
+        Navigator.pushReplacementNamed(context, '/profile');
+      },
+      icon: Container(
+        width: 40, // Ajustez la taille selon vos besoins
+        height: 40, // Ajustez la taille selon vos besoins
+        child: /*global.idimageprofil != ""
+            ? ClipOval(
+                child: Image.memory(
+                  photo!,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : */Icon(
+                Icons.account_circle,
+                size: 40,
+                color: AppColors.purpleSchood,
+              ),
       ),
+        )]),
+
       body: Padding(
         padding: const EdgeInsets.all(32),
         child: ListView(
@@ -225,11 +242,20 @@ class StatsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
+      backgroundColor: AppColors.purpleSchood,
       body: Column(
+        
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              StatsGraphHomePage(name: "L", value: 40),
+              StatsGraphHomePage(name: "M", value: 30),
+              StatsGraphHomePage(name: "M", value: 95),
+              StatsGraphHomePage(name: "J", value: 79),
+              StatsGraphHomePage(name: "V", value: 100),
+              StatsGraphHomePage(name: "S", value: 45),
+              StatsGraphHomePage(name: "D", value: 100),
             ],
           ),
         ],
@@ -375,6 +401,44 @@ class NotificationWidget extends StatelessWidget {
     return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [],
+    );
+  }
+}
+class StatsGraphHomePage extends StatelessWidget {
+  final String name;
+  final double value;
+
+  const StatsGraphHomePage({super.key, required this.name, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Container(
+          height: 100,
+          width: 10,
+          color: Colors.transparent, // Set your desired background color here
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(
+                height: 100 - value,
+                width: 10,
+              ),
+              Container(
+                height: value,
+                width: 10,
+                decoration: BoxDecoration(
+                  color: AppColors.backgroundLightmode,
+                  borderRadius: BorderRadius.circular(26),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Text(name, style: TextStyle(color: AppColors.textDarkmode)),
+      ],
     );
   }
 }

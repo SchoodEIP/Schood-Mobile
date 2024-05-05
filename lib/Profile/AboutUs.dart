@@ -36,8 +36,9 @@ class AboutUs extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [const H4TextApp(
                 text:
-                    "Bienvenue chez Schood! Nous sommes une équipe de 6 développeurs qui avons pour but de venir en aide aux élèves en difficulté et de les mettre en relation avec les personnes appropriées.",
-              ),
+"Schood a pour objectif est de mettre en place une écoute et une synthèse des ressentis des jeunes de manière hebdomadaire et accessible."              ),
+              SizedBox(height: 30,),
+              H2TextApp(text: "L'équipe:"),
             Center(child:Container(
         width: 150, // Largeur du conteneur
         height: 150, // Hauteur du conteneur
@@ -51,7 +52,7 @@ class AboutUs extends StatelessWidget {
     const Center(child:H3TextApp(text: "Adrien BUSNEL", color: AppColors.purpleSchood,)),
             const Center(child:H4TextApp(text: "Développeur Web",color: AppColors.purpleSchood)),
         
-                        
+                        SizedBox(height: 30,),
             Center(child:Container(
         width: 150, // Largeur du conteneur
         height: 150, // Hauteur du conteneur
@@ -65,7 +66,7 @@ class AboutUs extends StatelessWidget {
     const Center(child:H3TextApp(text: "Eléonore Wichegrod", color: AppColors.purpleSchood,)),
             const Center(child:H4TextApp(text: "Développeur Web",color: AppColors.purpleSchood)),
         
-  
+  SizedBox(height: 30,),
             Center(child:Container(
         width: 150, // Largeur du conteneur
         height: 150, // Hauteur du conteneur
@@ -79,7 +80,7 @@ class AboutUs extends StatelessWidget {
     const Center(child:H3TextApp(text: "Nathan DUCHESNE", color: AppColors.purpleSchood,)),
             const Center(child:H4TextApp(text: "Développeur Back-end",color: AppColors.purpleSchood)),
         
-
+SizedBox(height: 30,),
             Center(child:Container(
         width: 150, // Largeur du conteneur
         height: 150, // Hauteur du conteneur
@@ -93,7 +94,7 @@ class AboutUs extends StatelessWidget {
     const Center(child:H3TextApp(text: "Quentin MANANES", color: AppColors.purpleSchood,)),
             const Center(child:H4TextApp(text: "Développeur Back-end",color: AppColors.purpleSchood)),
         
-            
+            SizedBox(height: 30,),
             Center(child:Container(
         width: 150, // Largeur du conteneur
         height: 150, // Hauteur du conteneur
@@ -107,7 +108,7 @@ class AboutUs extends StatelessWidget {
     const Center(child:H3TextApp(text: "Matéo DEROCHE", color: AppColors.purpleSchood,)),
             const Center(child:H4TextApp(text: "Développeur Mobile et Desktop",color: AppColors.purpleSchood)),
         
-
+SizedBox(height: 30,),
             Center(child:Container(
         width: 150, // Largeur du conteneur
         height: 150, // Hauteur du conteneur

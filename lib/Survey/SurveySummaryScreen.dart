@@ -65,6 +65,10 @@ class _SurveySummaryState extends State<SurveySummaryScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+                 Uint8List ?photo = null;
+    if (global.idimageprofil != "") {
+      photo = base64Decode(global.idimageprofil);
+    }
     return Scaffold(
        appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -85,18 +89,29 @@ class _SurveySummaryState extends State<SurveySummaryScreen> {
                   size: 40, color: AppColors.purpleSchood),
             ),
           ),
-          InkWell(
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/profile');
-            },
-            child: const Padding(
-              padding:  EdgeInsets.all(8),
-              child: Icon(Icons.account_circle,
-                  size: 40, color: AppColors.purpleSchood),
-            ),
-          ),
-        ],
+           IconButton(
+      onPressed: () {
+        Navigator.pushReplacementNamed(context, '/profile');
+      },
+      icon: Container(
+        width: 40, // Ajustez la taille selon vos besoins
+        height: 40, // Ajustez la taille selon vos besoins
+        child: /*global.idimageprofil != ""
+            ? ClipOval(
+                child: Image.memory(
+                  photo!,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                ),
+              )
+            :*/ Icon(
+                Icons.account_circle,
+                size: 40,
+                color: AppColors.purpleSchood,
+              ),
       ),
+        )]),
       backgroundColor: themeProvider.getBackgroundColor(),
       body: Column(                  crossAxisAlignment: CrossAxisAlignment.start,children:[Padding(
         

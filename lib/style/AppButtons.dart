@@ -210,8 +210,8 @@ final writtenToken = await TokenFileManager.readTokenFromFile();
 if (userData.containsKey('classes') && userData['classes'] is List && userData['classes'].isNotEmpty) {
   // Accédez à la première classe de l'utilisateur
   Map<String, dynamic> firstClass = userData['classes'][0];
-  global.classe = firstClass['name'];
-  global.classeid = firstClass['_id'];
+  global.classe = firstClass['name'] ?? '';
+  global.classeid = firstClass['_id'] ?? '';
 } else {
   global.classe= '';
   global.classeid= '';
@@ -243,16 +243,14 @@ if (userData.containsKey('classes') && userData['classes'] is List && userData['
         );
       }
     } catch (error) {
-      print("HEEEERE");
-      print(error);
-            print("HEEEERE");
+
       // ignore: use_build_context_synchronously
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Erreur'),
-            content: const Text('erreur est survenue'),
+            title:  Text('Erreur'),
+            content: const Text('Une erreur est survenue'),
             actions: [
               TextButton(
                 child: const Text('OK'),

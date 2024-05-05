@@ -129,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
             backgroundColor: themeProvider.getBackgroundColor(),
-      body: Column(
+      body: SingleChildScrollView(child:Column(
         children: [
           if (global.idimageprofil != "")
             ...[
@@ -139,22 +139,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.all(32),
             child: H1TextApp(text:"Profil"),
           ),
-          InkWell(
-            onTap: () {
-              _requestPermissionAndPickImage();
-            },
-            child: global.idimageprofil != ""
-  ? Image.memory(
-      photo!,
-      width: 200,
-      height: 200,
-      fit: BoxFit.cover,
-    )
-  : Icon(
-      Icons.account_circle,
-      size: 200,
-      color: AppColors.purpleSchood,
-    ),
+         InkWell(
+  onTap: () {
+    _requestPermissionAndPickImage();
+  },
+  child: Builder(
+    builder: (BuildContext context) {
+      try {
+        if (global.idimageprofil != "") {
+          return ClipOval(
+            child: Image.memory(
+              photo!,
+              width: 200,
+              height: 200,
+              fit: BoxFit.cover,
+            ),
+          );
+        } else {
+          return Icon(
+            Icons.account_circle,
+            size: 200,
+            color: AppColors.purpleSchood,
+          );
+        }
+      } catch (e) {
+        print("Error loading image: $e");
+        return Icon(
+          Icons.error,
+          size: 200,
+          color: Colors.red,
+        );
+      }
+    },
+  ),
+
+
           ),
           const Padding(
             padding: EdgeInsets.only(top: 15.0),
@@ -231,6 +250,6 @@ child:H4TextApp(text: global.email),
           ),
         ],
       ),
-    );
+    ));
   }
 }

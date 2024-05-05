@@ -58,15 +58,22 @@ class ChatScreenState extends State<ChatScreen> {
     });
   }
   String? filePath;
+  File? file;
 
-  void _openFilePicker() async {
+void _openFilePicker() async {
   FilePickerResult? result = await FilePicker.platform.pickFiles();
 
   if (result != null && result.files.isNotEmpty) {
-    setState(() {
-      filePath = result.files.single.path;
-      print(filePath);
-    });
+    String? filePath = result.files.single.path;
+
+    if (filePath != null) {
+      setState(() {
+        file = File(filePath);
+        // Maintenant, vous avez un objet File 'file' que vous pouvez utiliser.
+        print("Chemin du fichier : ${file?.path}");
+        // Faites ce que vous voulez avec le fichier...
+      });
+    }
   } else {
     print("Aucun fichier sélectionné.");
   }
@@ -138,28 +145,26 @@ class ChatScreenState extends State<ChatScreen> {
 void _sendFile(String id) async {
   try {
     var route = "user/chat/$id/newFile";
-Map<String, dynamic> data = {};
+    Map<String, dynamic> data = {};
     final postclass = PostFileClass();
 
-    if (filePath != null) {
-      File file = File(filePath!);
-      print(file);// Convertir le chemin en objet de fichier
-      Response response = await postclass.postDataWithFile(data, route, file);
+    if (file != null) {
+      Response response = await postclass.postDataWithFile(data, route, file!);
       if (response.statusCode == 200) {
-        // Traitement en cas de succès
+        print("test");
       } else {
-        print("Erreur lors de l'envoi du message - ${response.statusCode}");
+        print("Erreur lors de l'envoi du fichier - ${response.statusCode}");
       }
     } else {
       print("Aucun fichier sélectionné.");
     }
   } catch (error) {
-    print("Erreur lors de l'envoi du message - $error");
+    print("Erreur lors de l'envoi du fichier - $error");
   }
 }
 
   void _sendMessage(String message, BuildContext context) async {
-    if (filePath == null){
+    if (file== null){
     try {
       var id = widget.id;
       var route = "user/chat/$id/newMessage";
@@ -180,7 +185,26 @@ Map<String, dynamic> data = {};
     }
   }
   else{
+     try {
+      var id = widget.id;
+      var route = "user/chat/$id/newMessage";
+      var data = {
+        'content': message,
+      };
+      final postclass = PostClass();
+      Response response = await postclass.postDataAuth(context, data, route);
+      if (response.statusCode == 200) {
+        messageController.clear();
+        // ignore: use_build_context_synchronously
+        _getmessage(context);
+      } else {
+        print("Erreur lors de l'envoi du message - ${response.statusCode}");
+      }
+    } catch (error) {
+      print("Erreur lors de l'envoi du message - $error");
+    }
     _sendFile(widget.id);
+    file= null;
   }
   }
 
@@ -426,15 +450,7 @@ _getfile(BuildContext context, String id) async {
             Navigator.pop(context);
           },
         ),
-        actions: [
-          // Bouton à droite de l'AppBar
-          IconButton(
-            icon: Icon(Icons.announcement, color: AppColors.purpleSchood),
-            onPressed: () {
-              showPopupMenu(themeProvider);
-            },
-          ),
-        ],
+
       ),
       body: GestureDetector(
         onTap: () {
@@ -456,9 +472,9 @@ _getfile(BuildContext context, String id) async {
 
                       DateTime dateTime =
                           DateTime.tryParse(time) ?? DateTime.now();
-                      String mois = DateFormat('MMMM').format(dateTime);
+                      String mois = DateFormat('MMMM', 'fr_FR').format(dateTime);
                       String heure =
-                          '${dateTime.day} $mois ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+                          '${dateTime.day} $mois ${dateTime.hour + 2}:${dateTime.minute.toString().padLeft(2, '0')}';
 
                       AlignmentDirectional alignment = userId == global.idtoken
                           ? AlignmentDirectional.centerEnd
