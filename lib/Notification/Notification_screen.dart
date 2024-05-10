@@ -68,7 +68,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(16),
                       child: H1TextApp(
                         text: "Notification",
                         color: themeProvider.getTextColor(),
@@ -108,13 +108,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
-  List<Widget> _buildNotificationList(
-      List<Map<String, dynamic>> notifications) {
-    return notifications.map((notification) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
+List<Widget> _buildNotificationList(List<Map<String, dynamic>> notifications) {
+  return notifications.map((notification) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () {          _showPopup(notification["title"], notification["message"]);},
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.purpleSchood,
             shape: RoundedRectangleBorder(
@@ -135,7 +134,28 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ],
           ),
         ),
-      );
-    }).toList();
-  }
+      
+    );
+  }).toList();
 }
+
+void _showPopup(String title, String message) {
+ showDialog(
+  context: context,
+  builder: (BuildContext context) {
+    return AlertDialog(
+      title: Text(title),
+      content: Text(message), // Affiche le message dans le corps de la boîte de dialogue
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text("Retour"), // Bouton avec le texte "Retour"
+        ),
+      ],
+    );
+  },
+);
+
+}}

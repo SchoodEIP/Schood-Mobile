@@ -615,19 +615,28 @@ void showPopupSignaledMenu(themeProvider,conversation, participants) {
 
         if (chatData is List) {
           List<Map<String, dynamic>> chatList = [];
-
-          for (var item in chatData) {
-            String conversationId = item['_id'];
-            DateTime date = DateTime.parse(item['date']);
-            var participants = item['participants'];
-            if (participants is List) {
-              chatList.add({
+for (var item in chatData) {
+    String conversationId = item['_id'];
+    DateTime date = DateTime.parse(item['date']);
+    var participants = item['participants'];
+    if (participants is List) {
+            chatList.add({
                 'id': conversationId,
                 'participants': participants,
                 'date': date
-              });
-            }
-          }
+            });
+        }
+    }
+chatList.forEach((conversation) {
+  List participants = conversation['participants'];
+
+  // Parcourir chaque participant dans la liste des participants
+  participants.removeWhere((participant) =>
+      participant['_id'] == global.idtoken);
+
+  conversation['participants'] = participants;
+});      print(chatList);
+
           chatList.sort((a, b) => b['date'].compareTo(a['date']));
           return chatList;
         }

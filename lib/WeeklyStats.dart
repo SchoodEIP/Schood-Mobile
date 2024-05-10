@@ -58,7 +58,7 @@ _setmoodweekly() {
       }
     }
 
-    String averagemood = "Pas de donnée"; // Déclaration de averagemood en dehors de la condition if
+    String averagemood = "Pas de données"; // Déclaration de averagemood en dehors de la condition if
 
     // Vérifier s'il y a des données pour la semaine actuelle avant de calculer la moyenne
     if (count > 0) {
@@ -76,8 +76,8 @@ _setmoodweekly() {
       }
     }
 
-    if (averagemood == "Pas de donnée") {
-      arraymood.add("Il y a $i Semaine: Pas de donnée"); // Ajouter un message si aucune donnée n'est disponible
+    if (averagemood == "Pas de données") {
+      arraymood.add("Il y a $i Semaine: Pas de données"); // Ajouter un message si aucune donnée n'est disponible
     } else {
       arraymood.add("Il y a $i Semaine: $averagemood"); // Ajouter la qualité de l'humeur à arraymood
     }
@@ -401,15 +401,15 @@ Center(child:H2TextApp(text: "Durée")),
               text: "Semaines passées",
               color: AppColors.backgroundDarkmode)),
                          SizedBox(height: 20,),
-           Center(child:H4TextApp(text: arraymood.length > 0 ? arraymood[0] : "Semaine 1: Pas de donnée")),
+           Center(child:H4TextApp(text: arraymood.length > 0 ? arraymood[0] : "Semaine 1: Pas de données")),
            SizedBox(height: 10,),
-Center(child:H4TextApp(text: arraymood.length > 1 ? arraymood[1] : "Semaine 2: Pas de donnée")),
+Center(child:H4TextApp(text: arraymood.length > 1 ? arraymood[1] : "Semaine 2: Pas de données")),
            SizedBox(height: 10,),
-Center(child:H4TextApp(text: arraymood.length > 2 ? arraymood[2] : "Semaine 3: Pas de donnée")),
+Center(child:H4TextApp(text: arraymood.length > 2 ? arraymood[2] : "Semaine 3: Pas de données")),
            SizedBox(height: 10,),
-Center(child:H4TextApp(text: arraymood.length > 3 ? arraymood[3] : "Semaine 4: Pas de donnée")),
+Center(child:H4TextApp(text: arraymood.length > 3 ? arraymood[3] : "Semaine 4: Pas de données")),
            SizedBox(height: 10,),
-Center(child:H4TextApp(text: arraymood.length > 4 ? arraymood[4] : "Semaine 5: Pas de donnée")),
+Center(child:H4TextApp(text: arraymood.length > 4 ? arraymood[4] : "Semaine 5: Pas de données")),
            SizedBox(height: 30,),
 
         ],

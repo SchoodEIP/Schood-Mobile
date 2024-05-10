@@ -4,12 +4,14 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:schood/Admin/SeeAlerteScreen.dart';
 import 'package:schood/Admin/signalement_screen.dart';
 import 'package:schood/Notification/Notification_screen.dart';
 import 'package:schood/main.dart';
+import 'package:schood/request/get.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/BottomBarApp.dart';
@@ -100,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
               link: '/surveySummary',
             ),
             const WidgetCard(
-              height: 286,
+              height: 500,
               width: 401,
               title: "Messagerie",
               link: '/chat',
@@ -161,7 +163,7 @@ class WidgetCard extends StatelessWidget {
     } else if (link == '/surveySummary') {
       return const Expanded(child: SurveySummaryWidget());
     } else if (link == '/chat') {
-      return const Expanded(child: ChatWidget());
+      return  Expanded(child: ChatWidget());
     } else if (link == '/info') {
       return const Expanded(child: HelpWidget());
     } else {
@@ -303,30 +305,224 @@ class SurveySummaryWidget extends StatelessWidget {
   }
 }
 
-class ChatWidget extends StatelessWidget {
-  const ChatWidget({Key? key});
+class ChatWidget extends StatefulWidget {
+  
+   ChatWidget({Key? key});
+   
+     @override
+
+  _ChatWidgetState createState() => _ChatWidgetState();
+}
+class _ChatWidgetState  extends State<ChatWidget>{
+    List<Map<String, dynamic>> conversations = [];
+
+Future<String> _getLastMessage(String id) async {
+  final getdata = GetClass();
+
+  var route = "user/chat/$id/messages";
+  Response response2 = await getdata.getData(global.globalToken, route);
+
+  List<dynamic> messageData = jsonDecode(response2.body);
+
+  List<Map<String, dynamic>?> messagesList = messageData
+      .map((dynamic item) {
+        if (item is Map<String, dynamic>) {
+          return Map<String, dynamic>.from(item);
+        } else {
+          return null;
+        }
+      })
+      .where((element) => element != null)
+      .toList();
+  messagesList.sort((a, b) {
+    if (a?['date'] != null && b?['date'] != null) {
+      return DateTime.parse(b!['date']!).compareTo(DateTime.parse(a!['date']!));
+    } else {
+      return 0;
+    }
+  });
+
+  if (messagesList.isNotEmpty) {
+    String messageContent = messagesList.first?['content'] ?? '';
+    if (messageContent.length > 25) {
+      return messageContent.substring(0, 25) + '...'; // Limiter à 25 caractères et ajouter '...'
+    } else {
+      return messageContent;
+    }
+  } else {
+    return ''; // Aucun message trouvé
+  }
+}
+
+
+Future<List<Map<String, dynamic>>> _getchatwidget() async {
+  final getData = GetClass();  
+  final response = await getData.getData(global.globalToken, "user/chat");
+
+  if (response.statusCode == 200) {
+    try {
+      final chatData = jsonDecode(response.body);
+
+      if (chatData is List) {
+        List<Map<String, dynamic>> chatList = [];
+
+        for (var item in chatData) {
+          String conversationId = item['_id'];
+          DateTime date = DateTime.parse(item['date']);
+          var participants = item['participants'];
+          String lastMessageContent = await _getLastMessage(conversationId); // Attendre le résultat
+
+          if (participants is List) {
+            chatList.add({
+              'id': conversationId,
+              'participants': participants,
+              'date': date,
+              'lastMessage': lastMessageContent,
+            });
+          }
+        }
+        chatList.sort((a, b) => b['date'].compareTo(a['date']));
+        chatList.forEach((conversation) {
+  List participants = conversation['participants'];
+
+  // Parcourir chaque participant dans la liste des participants
+  participants.removeWhere((participant) =>
+      participant['_id'] == global.idtoken);
+
+  conversation['participants'] = participants;
+});      print(chatList);
+
+        return chatList;
+      }
+    } catch (e) {
+      print('Erreur lors du décodage du JSON : $e');
+    }
+  } else {
+    print('Erreur lors de la récupération des données : ${response.statusCode}');
+  }
+
+  return [];
+}
+
+
+void initState() {
+  super.initState();
+  _loadChatData();
+
+}
+
+Future<void> _loadChatData() async {
+  try {
+    List<Map<String, dynamic>> chatList = await _getchatwidget();
+    setState(() {
+      conversations = chatList;
+        print(conversations);
+    });
+  } catch (error) {
+    print('Erreur lors du chargement des données de chat : $error');
+
+  }
+}
 
   @override
-  Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+
+@override
+Widget build(BuildContext context) {
+
+  return Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+   Row(
+  children: [
+    for (var i = 0; i < conversations.length && i < 2; i++)
+      Expanded(
+        child: Container(
+          margin: EdgeInsets.all(8),
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 2,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List.generate(
+                  conversations[i]['participants'].length,
+                  (index) {
+                    String firstName =
+                        conversations[i]['participants'][index]['firstname'] ??
+                            'Unknown';
+                    String lastName =
+                        conversations[i]['participants'][index]['lastname'] ??
+                            'Unknown';
+                    return Text(
+                      '$firstName $lastName',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(conversations[i]['lastMessage']),
+            ],
+          ),
+        ),
+      ),
+  ],
+),
+
+    SizedBox(height: 8), 
+    Row(
       children: [
-        Spacer(),
-        Text(
-          'Professeur Math',
-          style: TextStyle(color: Colors.white, fontSize: 18),
-        ),
-        Text(
-          'Professeur Anglais',
-          style: TextStyle(color: Colors.white, fontSize: 18),
-        ),
-        Text(
-          'Professeur Histoire',
-          style: TextStyle(color: Colors.white, fontSize: 18),
-        ),
+        for (var i = 2; i < conversations.length && i < 4; i++)
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.all(8),
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 2,
+                    offset: Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    conversations[i]['participants'][0]['firstname'] + ' ' +
+                    conversations[i]['participants'][0]['lastname'] ??
+                    'Utilisateur inconnu',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 4),
+                  Text(conversations[i]['lastMessage']),
+                ],
+              ),
+            ),
+          ),
       ],
-    );
-  }
+    ),
+  ],
+);
+
+}
+
 }
 
 class AlerteWidget extends StatelessWidget {

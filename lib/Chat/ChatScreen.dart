@@ -175,7 +175,12 @@ void _sendFile(String id) async {
       Response response = await postclass.postDataAuth(context, data, route);
       if (response.statusCode == 200) {
         messageController.clear();
-        // ignore: use_build_context_synchronously
+ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('Message envoyé'),
+      duration: Duration(seconds: 2),
+    ),
+  );
         _getmessage(context);
       } else {
         print("Erreur lors de l'envoi du message - ${response.statusCode}");
@@ -195,7 +200,12 @@ void _sendFile(String id) async {
       Response response = await postclass.postDataAuth(context, data, route);
       if (response.statusCode == 200) {
         messageController.clear();
-        // ignore: use_build_context_synchronously
+ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('Message et fichier envoyé'),
+      duration: Duration(seconds: 2),
+    ),
+  );
         _getmessage(context);
       } else {
         print("Erreur lors de l'envoi du message - ${response.statusCode}");
@@ -565,7 +575,9 @@ _getfile(BuildContext context, String id) async {
                     ),
                     onPressed: () {
                       if (!isTextFieldEmpty)
+                       FocusScope.of(context).unfocus();
                         _sendMessage(messageController.text, context);
+        
                     },
                   ),
                   IconButton(

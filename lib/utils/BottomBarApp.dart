@@ -118,31 +118,31 @@ class BottomBarApp extends StatelessWidget {
             icon: Icon(
               Icons.home,
             ),
-            label: '',
+            label: 'Accueil',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.description,
             ),
-            label: '',
+            label: 'Questionnaire',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.show_chart,
             ),
-            label: '',
+            label: 'Statistique',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.chat,
             ),
-            label: '',
+            label: 'Chat',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.info_rounded,
             ),
-            label: '',
+            label: 'Aide',
           ),
         ],
         selectedItemColor: AppColors.purpleSchood,

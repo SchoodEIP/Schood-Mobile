@@ -63,58 +63,54 @@ class _SurveySummaryState extends State<SurveySummaryScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-                 Uint8List ?photo = null;
+    Uint8List? photo;
     if (global.idimageprofil != "") {
       photo = base64Decode(global.idimageprofil);
     }
     return Scaffold(
-       appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         elevation: 0.0,
         actions: [
-           InkWell(
-            onTap: (){ Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NotificationScreen(),
-                      ),
-                    );
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NotificationScreen(),
+                ),
+              );
             },
             child: const Padding(
-              padding:  EdgeInsets.all(8),
+              padding: EdgeInsets.all(8),
               child: Icon(Icons.notifications_none,
                   size: 40, color: AppColors.purpleSchood),
             ),
           ),
-           IconButton(
-      onPressed: () {
-        Navigator.pushReplacementNamed(context, '/profile');
-      },
-      icon: Container(
-        width: 40, // Ajustez la taille selon vos besoins
-        height: 40, // Ajustez la taille selon vos besoins
-        child: /*global.idimageprofil != ""
-            ? ClipOval(
-                child: Image.memory(
-                  photo!,
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.cover,
-                ),
-              )
-            :*/ Icon(
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/profile');
+            },
+            icon: Container(
+              width: 40,
+              height: 40,
+              child: Icon(
                 Icons.account_circle,
                 size: 40,
                 color: AppColors.purpleSchood,
               ),
+            ),
+          ),
+        ],
       ),
-        )]),
       backgroundColor: themeProvider.getBackgroundColor(),
-      body: Column(                  crossAxisAlignment: CrossAxisAlignment.start,children:[Padding(
-        
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
             padding: const EdgeInsets.all(32),
             child: H1TextApp(
               text: "Historique",
@@ -122,55 +118,76 @@ class _SurveySummaryState extends State<SurveySummaryScreen> {
             ),
           ),
           SingleChildScrollView(
-        child: FutureBuilder<List<Map<String, dynamic>>?>(
-          future: _getSurveyData(context),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+            child: FutureBuilder<List<Map<String, dynamic>>?>(
+              future: _getSurveyData(context),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-            if (snapshot.hasError) {
-              return const Center(child: Text('Error loading data'));
-            }
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Error loading data'));
+                }
 
-            if (snapshot.hasData) {
-              List<Map<String, dynamic>> surveyList = snapshot.data!;
+                if (snapshot.hasData) {
+                  List<Map<String, dynamic>> surveyList = snapshot.data!;
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  for (var surveyData in surveyList) ...[
-                    TextButton(
-                      onPressed: () async {
-                        await _storeIdInCache("${surveyData['_id']}");
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SurveyQuestionsScreen(
-                                id: "${surveyData['_id']}"),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+
+                      for (var surveyData in surveyList) ...[
+                        TextButton(
+                          onPressed: () async {
+                            await _storeIdInCache("${surveyData['_id']}");
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SurveyQuestionsScreen(
+                                    id: "${surveyData['_id']}"),
+                              ),
+                            );
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${surveyData['title']} à compléter',
+                                style: const TextStyle(
+                                  color: AppColors.purpleSchood,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              H4TextApp(
+                                text: "Du " +
+                                    _formatDate(surveyData['fromDate']) +
+                                    " au " +
+                                    _formatDate(surveyData['toDate']),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                      child: Text(
-                        'Survey ID: ${surveyData['_id']} A Compléter',
-                        style: const TextStyle(
-                            color: AppColors.purpleSchood,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                ],
-              );
-            }
-            return const Center(child: Text('No survey data available'));
-          },
-        ))]),
+                        ),
+                      ],
+                    ],
+                  );
+                }
+                return const Center(child: Text('Pas de questionnaire'));
+              },
+            ),
+          ),
+        ],
+      ),
       bottomNavigationBar: const BottomBarApp(
         indexapp: 1,
       ),
     );
   }
+String _formatDate(String dateString) {
+  DateTime date = DateTime.parse(dateString);
+  String day = date.day.toString().padLeft(2, '0');
+  String month = date.month.toString().padLeft(2, '0');
+  String year = date.year.toString();
+  return "$day/$month/$year";
+}
 }
