@@ -100,6 +100,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
       // Comparer le concernedUser avec votre variable id
       String id = global.idtoken; // Remplacez ceci par votre variable id
+      
       notificationsData =
           alerts.where((alert) => alert["concernedUser"] == id).toList();
     } else {

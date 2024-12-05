@@ -1,6 +1,8 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:schood/main.dart';
 import 'package:schood/style/AppColors.dart';
 
 class AppTextFieldForm extends StatefulWidget {
@@ -35,14 +37,16 @@ class _AppTextFieldFormState extends State<AppTextFieldForm> {
 
   @override
   Widget build(BuildContext context) {
+        final themeProvider = Provider.of<ThemeProvider>(context);
     return Container(
       width: 300,
       height: 50,
       decoration: BoxDecoration(
-        color: AppColors.pinkSchood,
-        borderRadius: BorderRadius.circular(26),
+        color: AppColors.greyFormFieldSchood,
+        borderRadius: BorderRadius.circular(10),
       ),
       child: TextFormField(
+                                keyboardAppearance: themeProvider.getkeyboardColor(),
         obscureText: obscure,
         validator: (value) {
           if (value == null || value.isEmpty) {

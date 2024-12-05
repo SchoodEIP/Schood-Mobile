@@ -5,18 +5,26 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:schood/Admin/SeeAlerteScreen.dart';
-import 'package:schood/Admin/signalement_screen.dart';
+import 'package:schood/Chat/ConversationScreen.dart';
+import 'package:schood/Feeling/FeelingScreen.dart';
 import 'package:schood/Notification/Notification_screen.dart';
+import 'package:schood/Signalement/SignalementAdminScreen.dart';
+import 'package:schood/Signalement/SignalementScreen.dart';
+import 'package:schood/Survey/SurveySummaryScreen.dart';
+import 'package:schood/graphstats.dart';
 import 'package:schood/main.dart';
 import 'package:schood/request/get.dart';
+import 'package:schood/request/post.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/BottomBarApp.dart';
 import 'package:schood/global.dart' as global;
 import 'package:schood/WeeklyStats.dart';
+
+import 'Survey/SurveyScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key});
@@ -30,15 +38,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
          Uint8List ?photo = null;
-    if (global.idimageprofil != "") {
-      photo = base64Decode(global.idimageprofil);
+
+    String welcometext = "Bonjour $firstName";
+    if (global.role == "student"){
+      welcometext = "Bonjour $firstName\nComment te sens tu aujourd'hui ?";
     }
     final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
       backgroundColor: themeProvider.getBackgroundColor(),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: themeProvider.getBackgroundColor(),
         automaticallyImplyLeading: false,
         elevation: 0.0,
         actions: [
@@ -63,16 +75,16 @@ class _HomeScreenState extends State<HomeScreen> {
       icon: Container(
         width: 40, // Ajustez la taille selon vos besoins
         height: 40, // Ajustez la taille selon vos besoins
-        child: /*global.idimageprofil != ""
+        child: global.idimageprofil != ""
             ? ClipOval(
-                child: Image.memory(
-                  photo!,
+                child: Image.network(
+                  global.idimageprofil,
                   width: 40,
                   height: 40,
                   fit: BoxFit.cover,
                 ),
               )
-            : */Icon(
+            : Icon(
                 Icons.account_circle,
                 size: 40,
                 color: AppColors.purpleSchood,
@@ -81,58 +93,34 @@ class _HomeScreenState extends State<HomeScreen> {
         )]),
 
       body: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.only(right: 32, left: 32, top: 32),
         child: ListView(
           physics: const BouncingScrollPhysics(),
           children: [
             H1TextApp(
               text:
-                  'Bonjour $firstName\nComment te sens tu aujourd\'hui ?',
+                  welcometext,
             ),
-            const WidgetCard(
-              height: 344,
+            /*const WidgetCard(
+              height: 444,
               width: 401,
               title: "Stats hebdomadaire",
               link: '/stats',
-            ),
-            const WidgetCard(
-              height: 216,
-              width: 401,
-              title: "Questionnaires",
-              link: '/surveySummary',
-            ),
-            const WidgetCard(
-              height: 500,
-              width: 401,
-              title: "Messagerie",
-              link: '/chat',
-            ),
-            const WidgetCard(
-              height: 286,
-              width: 401,
-              title: "Numéros d'aides",
-              link: '/info',
-            ),
-            const WidgetCard(
-              height: 216,
-              width: 401,
-              title: "Notification",
-              link: '/notification',
-            ),
-            if (global.role == "admin")
-              const WidgetCard(
-                height: 216,
-                width: 401,
-                title: "Signalements",
-                link: '/signalement',
-              ),
-            if (global.role == "admin" || global.role == "teacher")
-              const WidgetCard(
-                height: 216,
-                width: 401,
-                title: "Alerte",
-                link: '/alerte',
-              ),
+            ),*/
+
+            const SizedBox(height: 64,),
+
+            if(global.role == "student" || global.role == "teacher" || global.role == "administration")
+              FeelingWidget(themeProvider:themeProvider),
+            SizedBox(height: 253, child:StatsWidget(themeProvider: themeProvider)),
+            if (global.role == "student"|| global.role == "teacher")
+              SizedBox(height: 144, width: 401,child: SurveySummaryWidget(themeProvider: themeProvider,),),
+              SizedBox(height: 290,child:ChatWidget(themeProvider: themeProvider),),
+            /*if (global.role == "admin" || global.role == "teacher" || global.role =="administration")
+              SizedBox(height: 144, child:HelpWidget(themeProvider:themeProvider)),*/
+            if (global.role == "administration" ||global.role == "teacher")
+              AlerteWidget(themeProvider:themeProvider),
+              SignalementWidget(themeProvider:themeProvider),
           ],
         ),
       ),
@@ -157,19 +145,6 @@ class WidgetCard extends StatelessWidget {
     required this.link,
   });
 
-  Widget getContentWidget() {
-    if (link == '/stats') {
-      return const Expanded(child: StatsWidget());
-    } else if (link == '/surveySummary') {
-      return const Expanded(child: SurveySummaryWidget());
-    } else if (link == '/chat') {
-      return  Expanded(child: ChatWidget());
-    } else if (link == '/info') {
-      return const Expanded(child: HelpWidget());
-    } else {
-      return Container();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -186,7 +161,6 @@ class WidgetCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             H2TextApp(text: title, color: AppColors.backgroundLightmode),
-            getContentWidget(),
             Align(
               alignment: Alignment.topRight,
               child: TextButton(
@@ -202,18 +176,6 @@ class WidgetCard extends StatelessWidget {
                         builder: (context) => NotificationScreen(),
                       ),
                     );
-                  } else if (link == "/signalement") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SignalementScreen(),
-                      ),
-                    );
-                  } else if (link == "/alerte") {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SeeAlertScreen()));
                   }
                 },
                 child: Row(
@@ -238,77 +200,290 @@ class WidgetCard extends StatelessWidget {
   }
 }
 
-class StatsWidget extends StatelessWidget {
-  const StatsWidget({Key? key});
+class StatsWidget extends StatefulWidget {
+  StatsWidget({Key? key, required this.themeProvider}) : super(key: key);
+final themeProvider;
+  @override
+  _StatsWidgetState createState() => _StatsWidgetState();
+}
+
+class _StatsWidgetState extends State<StatsWidget> {
+  Map<String, Map<String, dynamic>> moodData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    if (global.role == "student")
+    _getMood(context);
+    else{
+      _getstudentmood(context);
+    }
+  }
+_getstudentmood(BuildContext context) async {
+  final postdata = PostClass();
+    DateTime currentDate = DateTime.now();
+        DateTime datebefore = currentDate.subtract(Duration(days: 365));
+  var data = {
+    "fromDate": datebefore.toIso8601String(),
+    "toDate": currentDate.toIso8601String(),
+    "classFilter": "all"
+  };
+  final response = await postdata.postDataAuth(context, data, "shared/statistics/dailyMoods");
+  Map<String, dynamic> responseData = jsonDecode(response.body);
+
+    Map<String, Map<String, dynamic>> newData = {};
+    responseData.forEach((key, value) {
+      if (key != 'averagePercentage') {
+        DateTime date = DateTime.parse(key);
+        String monthName = DateFormat.MMMM().format(date);
+        newData.putIfAbsent(monthName, () => {'moods': [], 'average': 0});
+        newData[monthName]!['moods'].addAll(value['moods']);
+        newData[monthName]!['average'] += value['average'];
+      }
+    });
+
+    newData.forEach((month, data) {
+      int totalMoods = data['moods'].length;
+      double average = totalMoods > 0 ? data['average'] / totalMoods : 0;
+      data['average'] = average;
+    });
+
+    setState(() {
+      moodData = newData;
+    });
+
+}
+ _getMood(BuildContext context) async {
+    final postData = PostClass();
+    DateTime currentDate = DateTime.now();
+    DateTime dateBefore = currentDate.subtract(Duration(days: 365));
+    Response response;
+    var data = {
+      "fromDate": dateBefore.toIso8601String(),
+      "toDate": currentDate.toIso8601String()
+    };
+    response = await postData.postDataAuth(context, data, "student/statistics/moods");
+
+    response = await postData.postDataAuth(context, data, "student/statistics/moods");
+
+    Map<String, dynamic> responseData = jsonDecode(response.body);
+
+    Map<String, Map<String, dynamic>> newData = {};
+    responseData.forEach((key, value) {
+      if (key != 'averagePercentage') {
+        DateTime date = DateTime.parse(key);
+        String monthName = DateFormat.MMMM().format(date);
+        newData.putIfAbsent(monthName, () => {'moods': [], 'average': 0});
+        newData[monthName]!['moods'].addAll(value['moods']);
+        newData[monthName]!['average'] += value['average'];
+      }
+    });
+
+    newData.forEach((month, data) {
+      int totalMoods = data['moods'].length;
+      double average = totalMoods > 0 ? data['average'] / totalMoods : 0;
+      data['average'] = average;
+    });
+
+    setState(() {
+      moodData = newData;
+    });
+
+
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: AppColors.purpleSchood,
-      body: Column(
-        
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              StatsGraphHomePage(name: "L", value: 40),
-              StatsGraphHomePage(name: "M", value: 30),
-              StatsGraphHomePage(name: "M", value: 95),
-              StatsGraphHomePage(name: "J", value: 79),
-              StatsGraphHomePage(name: "V", value: 100),
-              StatsGraphHomePage(name: "S", value: 45),
-              StatsGraphHomePage(name: "D", value: 100),
-            ],
-          ),
-        ],
-      ),
+        final themeProvider = Provider.of<ThemeProvider>(context);
+
+    return  Scaffold(
+            backgroundColor: themeProvider.getBackgroundColor(),      body: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                H2TextApp(
+                  text: "Stats hebdomadaire",
+                   color: themeProvider.getIconColor(),
+                ),
+TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const StatsScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
+              ),
+            );
+                  },
+                  child: Row(
+                    children: [
+                      H4TextApp(
+                        text: "Voir plus",
+                    color: themeProvider.getIconColor(),
+                      ),
+                      const SizedBox(width: 4), // Espacement entre le texte et l'icône
+                      Icon(
+                        Icons.forward,  
+                    color: themeProvider.getIconColor(),
+                        size: 12,
+                      ),
+                    ],
+                  ),
+                ),         
+              ],
+            ), // Ajouter un espace entre les éléments
+            LineChartSample2(
+              moodData: moodData,
+              selectedOption: "Mois",
+              gradient: [AppColors.purpleSchood, AppColors.pinkSchood],
+              xbackgroundColor: AppColors.backgroundDarkmode,
+              ybackgroundColor: AppColors.backgroundLightmode,
+              colorstext: themeProvider.getTextColor() ,
+            ),
+          ],
+        ),
+      
     );
   }
 }
 
-class SurveySummaryWidget extends StatelessWidget {
-  const SurveySummaryWidget({Key? key});
+class SurveySummaryWidget extends StatefulWidget {
+  SurveySummaryWidget({Key? key, required this.themeProvider}) : super(key: key);
+final themeProvider;
+  @override
+  _SurveySummaryWidgetState createState() => _SurveySummaryWidgetState();
+}
 
-  Future<String?> _getStoredSurveyId() async {
-    final cacheManager = DefaultCacheManager();
-    FileInfo? fileInfo = await cacheManager.getFileFromCache('survey_id');
-    if (fileInfo != null && fileInfo.file != null) {
-      List<int> bytes = await fileInfo.file!.readAsBytes();
-      return utf8.decode(bytes);
+class _SurveySummaryWidgetState extends State<SurveySummaryWidget> {
+  List<Map<String, dynamic>> questionnairesList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getSurveyData();
+  }
+
+  Future<void> _getSurveyData() async {
+     final getdata = GetClass();
+      final response = await getdata.getData(global.globalToken, "shared/questionnaire");
+
+    if (response.statusCode == 200) {
+      try {
+        final List<dynamic> surveyList = jsonDecode(response.body);
+        setState(() {
+          questionnairesList = surveyList.expand((survey) {
+            final fromDate = survey['fromDate'];
+            final toDate = survey['toDate'];
+            final List<dynamic> questionnaires = survey['questionnaires'];
+            return questionnaires.map((questionnaire) {
+              return {
+                'id': questionnaire['_id'],
+                'title': questionnaire['title'],
+                'fromDate': fromDate,
+                'toDate': toDate,
+              };
+            }).toList();
+          }).toList();
+        });
+
+      } catch (e) {
+        print('Error decoding JSON: $e');
+      }
+    } else {
+      print('Error fetching data: ${response.statusCode}');
     }
-    return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String?>(
-      future: _getStoredSurveyId(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        }
-
-        if (snapshot.hasError) {
-          return Text('Error loading survey ID: ${snapshot.error}');
-        }
-
-        String? surveyId = snapshot.data;
-
-        return Container(
-          child: Text(
-            'Survey $surveyId A Compléter',
-            style: const TextStyle(color: Colors.white),
-          ),
-        );
-      },
+          final themeProvider = Provider.of<ThemeProvider>(context);
+    return Container(
+      
+      
+      child: 
+          Column(children:[Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                H2TextApp(
+                  text: "Questionnaires",
+                   color: themeProvider.getIconColor(),
+                ),
+TextButton(
+                  onPressed: () {
+                  if (global.role == "teacher"){ Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const SurveyScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
+              ),
+            );}
+            else{
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const SurveySummaryScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
+              ),
+            );
+            }
+                  },
+                  child: Row(
+                    children: [
+                      H4TextApp(
+                        text: "Voir plus",
+                    color: themeProvider.getIconColor(),
+                      ),
+                      const SizedBox(width: 4), // Espacement entre le texte et l'icône
+                      Icon(
+                        Icons.forward,  
+                    color: themeProvider.getIconColor(),
+                        size: 12,
+                      ),
+                    ],
+                  ),
+                ),         
+              ],
+            ),Column(
+              children: _buildSurveyList(),
+            ),]),
     );
+  }
+
+  List<Widget> _buildSurveyList() {
+        final themeProvider = widget.themeProvider;
+    List<Widget> widgets = [];
+    int count = questionnairesList.length > 2 ? 2 : questionnairesList.length;
+
+
+    for (int i = 0; i < count; i++) {
+      widgets.add(H4TextApp(text: questionnairesList[i]['title'],color: themeProvider.getTextColor(),));
+    }
+
+    if (questionnairesList.length > 2) {
+      widgets.add(H4TextApp(text:'...',color: themeProvider.getTextColor(),));
+    }
+
+    return widgets;
   }
 }
 
 class ChatWidget extends StatefulWidget {
   
-   ChatWidget({Key? key});
-   
+   ChatWidget({Key? key, required this.themeProvider});
+   final themeProvider;
      @override
 
   _ChatWidgetState createState() => _ChatWidgetState();
@@ -318,81 +493,106 @@ class _ChatWidgetState  extends State<ChatWidget>{
 
 Future<String> _getLastMessage(String id) async {
   final getdata = GetClass();
-
   var route = "user/chat/$id/messages";
   Response response2 = await getdata.getData(global.globalToken, route);
 
-  List<dynamic> messageData = jsonDecode(response2.body);
+  try {
+    final decodedData = jsonDecode(response2.body);
 
-  List<Map<String, dynamic>?> messagesList = messageData
-      .map((dynamic item) {
-        if (item is Map<String, dynamic>) {
-          return Map<String, dynamic>.from(item);
+    if (decodedData is Map<String, dynamic>) {
+      print("Les messages sont sous forme d'objet, pas de liste !");
+      return ''; // Si c'est un objet, renvoyer une chaîne vide ou gérer cela
+    }
+
+    if (decodedData is List) {
+      List<Map<String, dynamic>?> messagesList = decodedData
+          .map((dynamic item) {
+            if (item is Map<String, dynamic>) {
+              return Map<String, dynamic>.from(item);
+            } else {
+              return null;
+            }
+          })
+          .where((element) => element != null)
+          .toList();
+
+      messagesList.sort((a, b) {
+        if (a?['date'] != null && b?['date'] != null) {
+          return DateTime.parse(b!['date']!).compareTo(DateTime.parse(a!['date']!));
         } else {
-          return null;
+          return 0;
         }
-      })
-      .where((element) => element != null)
-      .toList();
-  messagesList.sort((a, b) {
-    if (a?['date'] != null && b?['date'] != null) {
-      return DateTime.parse(b!['date']!).compareTo(DateTime.parse(a!['date']!));
-    } else {
-      return 0;
-    }
-  });
+      });
 
-  if (messagesList.isNotEmpty) {
-    String messageContent = messagesList.first?['content'] ?? '';
-    if (messageContent.length > 25) {
-      return messageContent.substring(0, 25) + '...'; // Limiter à 25 caractères et ajouter '...'
-    } else {
-      return messageContent;
+      if (messagesList.isNotEmpty) {
+        String messageContent = messagesList.first?['content'] ?? '';
+        if (messageContent.length > 25) {
+          return messageContent.substring(0, 25) + '...'; // Limiter à 25 caractères et ajouter '...'
+        } else {
+          return messageContent;
+        }
+      } else {
+        return ''; // Aucun message trouvé
+      }
     }
-  } else {
-    return ''; // Aucun message trouvé
+  } catch (e) {
+    print("Erreur lors du décodage des messages : $e");
   }
+
+  return ''; // En cas d'erreur, renvoyer une chaîne vide
 }
 
 
+
 Future<List<Map<String, dynamic>>> _getchatwidget() async {
-  final getData = GetClass();  
+  final getData = GetClass();
   final response = await getData.getData(global.globalToken, "user/chat");
 
   if (response.statusCode == 200) {
     try {
       final chatData = jsonDecode(response.body);
 
+      if (chatData is Map<String, dynamic>) {
+        print("Le JSON retourné est un objet et non une liste !");
+        return [];
+      }
+
       if (chatData is List) {
         List<Map<String, dynamic>> chatList = [];
-
+        print("test1");
         for (var item in chatData) {
-          String conversationId = item['_id'];
-          DateTime date = DateTime.parse(item['date']);
-          var participants = item['participants'];
-          String lastMessageContent = await _getLastMessage(conversationId); // Attendre le résultat
+                  print("test2");
+          if (item is Map<String, dynamic>) {
+                    print("test3");
+            String conversationId = item['_id'] ?? '';
+            DateTime date = DateTime.parse(item['date'] ?? '');
+            var participants = item['participants'];
+            String lastMessageContent = await _getLastMessage(conversationId);
 
-          if (participants is List) {
-            chatList.add({
-              'id': conversationId,
-              'participants': participants,
-              'date': date,
-              'lastMessage': lastMessageContent,
-            });
+            if (participants is List) {
+              chatList.add({
+                'id': conversationId,
+                'participants': participants,
+                'date': date,
+                'lastMessage': lastMessageContent,
+              });
+            }
           }
         }
         chatList.sort((a, b) => b['date'].compareTo(a['date']));
         chatList.forEach((conversation) {
-  List participants = conversation['participants'];
+          List participants = conversation['participants'];
 
-  // Parcourir chaque participant dans la liste des participants
-  participants.removeWhere((participant) =>
-      participant['_id'] == global.idtoken);
+          participants.removeWhere((participant) =>
+              participant is Map<String, dynamic> &&
+              participant['_id'] == global.idtoken);
 
-  conversation['participants'] = participants;
-});      print(chatList);
+          conversation['participants'] = participants;
+        });
 
         return chatList;
+      } else {
+        print("Données inattendues !");
       }
     } catch (e) {
       print('Erreur lors du décodage du JSON : $e');
@@ -403,6 +603,7 @@ Future<List<Map<String, dynamic>>> _getchatwidget() async {
 
   return [];
 }
+
 
 
 void initState() {
@@ -416,7 +617,6 @@ Future<void> _loadChatData() async {
     List<Map<String, dynamic>> chatList = await _getchatwidget();
     setState(() {
       conversations = chatList;
-        print(conversations);
     });
   } catch (error) {
     print('Erreur lors du chargement des données de chat : $error');
@@ -428,10 +628,49 @@ Future<void> _loadChatData() async {
 
 @override
 Widget build(BuildContext context) {
-
+          final themeProvider = Provider.of<ThemeProvider>(context);
   return Column(
+    
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
+Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                H2TextApp(
+                  text: "Ma messagerie",
+                   color: themeProvider.getIconColor(),
+                ),
+TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const ConversationScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
+              ),
+            );
+                  },
+                  child: Row(
+                    children: [
+                      H4TextApp(
+                        text: "Voir plus",
+                    color: themeProvider.getIconColor(),
+                      ),
+                      const SizedBox(width: 4), // Espacement entre le texte et l'icône
+                      Icon(
+                        Icons.forward,  
+                    color: themeProvider.getIconColor(),
+                        size: 12,
+                      ),
+                    ],
+                  ),
+                ),         
+              ],
+            ), 
    Row(
   children: [
     for (var i = 0; i < conversations.length && i < 2; i++)
@@ -440,7 +679,7 @@ Widget build(BuildContext context) {
           margin: EdgeInsets.all(8),
           padding: EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: themeProvider.getBackgroundColor(),
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
@@ -467,13 +706,13 @@ Widget build(BuildContext context) {
                             'Unknown';
                     return Text(
                       '$firstName $lastName',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: themeProvider.getTextColor()),
                     );
                   },
                 ),
               ),
               SizedBox(height: 4),
-              Text(conversations[i]['lastMessage']),
+              Text(conversations[i]['lastMessage'],style: TextStyle(color: themeProvider.getTextColor()),),
             ],
           ),
         ),
@@ -490,7 +729,7 @@ Widget build(BuildContext context) {
               margin: EdgeInsets.all(8),
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: themeProvider.getBackgroundColor(),
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
@@ -508,10 +747,10 @@ Widget build(BuildContext context) {
                     conversations[i]['participants'][0]['firstname'] + ' ' +
                     conversations[i]['participants'][0]['lastname'] ??
                     'Utilisateur inconnu',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold,color: themeProvider.getTextColor()),
                   ),
                   SizedBox(height: 4),
-                  Text(conversations[i]['lastMessage']),
+                  Text(conversations[i]['lastMessage'],style: TextStyle(color: themeProvider.getTextColor()),),
                 ],
               ),
             ),
@@ -525,8 +764,84 @@ Widget build(BuildContext context) {
 
 }
 
-class AlerteWidget extends StatelessWidget {
-  const AlerteWidget({Key? key});
+class AlerteWidget extends StatefulWidget {
+  const AlerteWidget({Key? key, required this.themeProvider}) : super(key: key);
+  final themeProvider;
+
+  @override
+  _AlerteWidgetState createState() => _AlerteWidgetState();
+}
+
+class _AlerteWidgetState extends State<AlerteWidget> {
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+ 
+
+  @override
+
+Widget build(BuildContext context) {
+
+          final themeProvider = Provider.of<ThemeProvider>(context);
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          H2TextApp(
+            text: "Mes alertes",
+            color: themeProvider.getIconColor(),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      SeeAlertScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return child;
+                  },
+                ),
+              );
+            },
+            child: Row(
+              children: [
+                H4TextApp(
+                  text: "Voir plus",
+                    color: themeProvider.getIconColor(),
+                ),
+                const SizedBox(width: 4), // Espacement entre le texte et l'icône
+                Icon(
+                  Icons.forward,
+                    color: themeProvider.getIconColor(),
+                  size: 12,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+}
+}
+class HelpWidget extends StatefulWidget{
+  
+  HelpWidget({Key? key, required this.themeProvider}) : super(key: key);
+final themeProvider;
+  @override
+  _HelpWidgetState createState() => _HelpWidgetState();
+}
+
+class _HelpWidgetState  extends State<HelpWidget> {
 
   @override
   Widget build(BuildContext context) {
@@ -551,42 +866,72 @@ class AlerteWidget extends StatelessWidget {
   }
 }
 
-class HelpWidget extends StatelessWidget {
-  const HelpWidget({Key? key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Spacer(),
-        Text(
-          'Numéro gratuit',
-          style: TextStyle(color: Colors.white, fontSize: 18),
-        ),
-        Text(
-          'Professionnels de la santé',
-          style: TextStyle(color: Colors.white, fontSize: 18),
-        ),
-        Text(
-          'Numéro d\'urgence',
-          style: TextStyle(color: Colors.white, fontSize: 18),
-        ),
-      ],
-    );
-  }
+class SignalementWidget extends StatefulWidget {
+  const SignalementWidget({Key? key, required this.themeProvider}) : super(key: key);
+final themeProvider;
+_SignalementWidgetState createState() => _SignalementWidgetState();
 }
-
-class SignalementWidget extends StatelessWidget {
-  const SignalementWidget({Key? key});
-
+class _SignalementWidgetState extends State<SignalementWidget>{
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [],
-    );
-  }
+              final themeProvider = Provider.of<ThemeProvider>(context);
+    return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          H2TextApp(
+            text: "Mes signalements",
+                   color: themeProvider.getIconColor(),
+          ),
+          TextButton(
+            onPressed: () {
+            if (global.role == "administration" ||global.role == "teacher"){
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      SignalementAdminScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return child;
+                  },
+                ),
+              );
+            }if (global.role == "student") {
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      SignalementScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return child;
+                  },
+                ),
+              );
+            }},
+            child: Row(
+              children: [
+                H4TextApp(
+                  text: "Voir plus",
+                   color: themeProvider.getIconColor(),
+                ),
+                const SizedBox(width: 4), // Espacement entre le texte et l'icône
+                Icon(
+                  Icons.forward,
+                   color: themeProvider.getIconColor(),
+                  size: 12,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+}
 }
 
 class NotificationWidget extends StatelessWidget {
@@ -600,41 +945,184 @@ class NotificationWidget extends StatelessWidget {
     );
   }
 }
-class StatsGraphHomePage extends StatelessWidget {
-  final String name;
-  final double value;
 
-  const StatsGraphHomePage({super.key, required this.name, required this.value});
+class FeelingWidget extends StatefulWidget {
+  const FeelingWidget({Key? key, required this.themeProvider}) : super(key: key);
+  final themeProvider;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Container(
-          height: 100,
-          width: 10,
-          color: Colors.transparent, // Set your desired background color here
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SizedBox(
-                height: 100 - value,
-                width: 10,
-              ),
-              Container(
-                height: value,
-                width: 10,
-                decoration: BoxDecoration(
-                  color: AppColors.backgroundLightmode,
-                  borderRadius: BorderRadius.circular(26),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Text(name, style: TextStyle(color: AppColors.textDarkmode)),
-      ],
-    );
+  _FeelingWidgetState createState() => _FeelingWidgetState();
+}
+
+class _FeelingWidgetState extends State<FeelingWidget> {
+  List<Map<String, dynamic>> feelings = [];
+  bool isLoading = true; // Indicateur de chargement
+
+  @override
+  void initState() {
+    super.initState();
+    getFeeling();
   }
+
+  getFeeling() async {
+    try {
+      final getData = GetClass();
+      final response = await getData.getData(global.globalToken, "student/mood");
+      final data = jsonDecode(response.body);
+
+      // Vérification que la donnée est bien une liste
+      if (data is List) {
+        setState(() {
+          feelings = data.map((item) {
+            String anonymity = item['annonymous'] ? 'anonyme' : 'public';
+
+            // Formater la date
+            DateTime dateTime = DateTime.parse(item['date']);
+            String formattedDate = DateFormat('d MMMM yyyy à HH:mm', 'fr_FR').format(dateTime);
+
+            // Transformer 'mood' en smiley
+            List<String> moodIcons = ["😡", "☹️", "😐", "🙂", "😄"];
+            String moodIcon;
+            if (item['mood'] >= 0 && item['mood'] < moodIcons.length) {
+              moodIcon = moodIcons[item['mood']];
+            } else {
+              moodIcon = "❓"; // Icône par défaut pour les valeurs non valides
+            }
+
+            return {
+              '_id': item['_id'],
+              'user': item['user'],
+              'mood': moodIcon,
+              'date': formattedDate,
+              'comment': item['comment'],
+              'anonymous': anonymity,
+              'facility': item['facility']
+            };
+          }).toList();
+        });
+      } else {
+        // Si la donnée n'est pas une liste, on définit feelings à une liste vide
+        setState(() {
+          feelings = [];
+        });
+      }
+    } catch (e) {
+      // En cas d'erreur, on définit feelings à une liste vide
+      setState(() {
+        feelings = [];
+      });
+    } finally {
+      setState(() {
+        isLoading = false; // Fin du chargement
+      });
+    }
+  }
+
+  @override
+  @override
+Widget build(BuildContext context) {
+          final themeProvider = Provider.of<ThemeProvider>(context);
+  String title = "Mes ressentis";
+  if (global.role == "teacher"){
+    title = "Ressentis classes";
+  }
+  if (isLoading) {
+    return CircularProgressIndicator(); // Affiche un indicateur de chargement
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          H2TextApp(
+            text: title,
+                    color: themeProvider.getIconColor(),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      const FeelingScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return child;
+                  },
+                ),
+              );
+            },
+            child: Row(
+              children: [
+                H4TextApp(
+                  text: "Voir plus",
+                    color: themeProvider.getIconColor(),
+                ),
+                const SizedBox(width: 4), // Espacement entre le texte et l'icône
+                Icon(
+                  Icons.forward,
+                    color: themeProvider.getIconColor(),
+                  size: 12,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      // Vérifie si l'utilisateur est un enseignant
+      if (global.role != "teacher") ...[
+        feelings.isEmpty
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: H4TextApp(text:'Pas de ressenti', ),
+              ) // Affiche "Pas de ressenti" si la liste est vide
+            : Column(
+                children: [
+                  // Affiche les ressentis en lignes de 2
+                  for (var i = 0; i < 4; i += 2)
+                    Row(
+                      children: [
+                        for (var j = i; j < i + 2 && j < feelings.length; j++)
+                          Expanded(
+                            child: Container(
+                              margin: EdgeInsets.all(8),
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: themeProvider.getBackgroundColor(),
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [  
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 1,
+                                    blurRadius: 2,
+                                    offset: Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Mood: ${feelings[j]['mood']}',
+                                    style: TextStyle(fontWeight: FontWeight.bold, color: themeProvider.getTextColor()),
+                                    
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text('Date: ${feelings[j]['date']}',style: TextStyle(color: themeProvider.getTextColor()),),
+                                  Text('Comment: ${feelings[j]['comment']}',style: TextStyle(color: themeProvider.getTextColor()),),
+                                  Text('En ${feelings[j]['anonymous']}',style: TextStyle(color: themeProvider.getTextColor()),),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                ],
+              ),
+      ],
+    ],
+  );
+}
 }

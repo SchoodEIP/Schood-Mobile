@@ -49,8 +49,8 @@ class AboutUs extends StatelessWidget {
             fit: BoxFit.cover, // Ajustement de l'image pour couvrir le conteneur
           ),
         ),)),
-    const Center(child:H3TextApp(text: "Adrien BUSNEL", color: AppColors.purpleSchood,)),
-            const Center(child:H4TextApp(text: "Développeur Web",color: AppColors.purpleSchood)),
+     Center(child:H3TextApp(text: "Adrien BUSNEL", color: themeProvider.getIconColor() ,)),
+             Center(child:H4TextApp(text: "Développeur Web",color: themeProvider.getIconColor())),
         
                         SizedBox(height: 30,),
             Center(child:Container(
@@ -63,8 +63,8 @@ class AboutUs extends StatelessWidget {
             fit: BoxFit.cover, // Ajustement de l'image pour couvrir le conteneur
           ),
         ),)), 
-    const Center(child:H3TextApp(text: "Eléonore Wichegrod", color: AppColors.purpleSchood,)),
-            const Center(child:H4TextApp(text: "Développeur Web",color: AppColors.purpleSchood)),
+    Center(child:H3TextApp(text: "Eléonore Wichegrod", color: themeProvider.getIconColor(),)),
+           Center(child:H4TextApp(text: "Développeur Web",color: themeProvider.getIconColor())),
         
   SizedBox(height: 30,),
             Center(child:Container(
@@ -77,8 +77,8 @@ class AboutUs extends StatelessWidget {
             fit: BoxFit.cover, // Ajustement de l'image pour couvrir le conteneur
           ),
         ),)),
-    const Center(child:H3TextApp(text: "Nathan DUCHESNE", color: AppColors.purpleSchood,)),
-            const Center(child:H4TextApp(text: "Développeur Back-end",color: AppColors.purpleSchood)),
+     Center(child:H3TextApp(text: "Nathan DUCHESNE", color: themeProvider.getIconColor(),)),
+             Center(child:H4TextApp(text: "Développeur Back-end",color: themeProvider.getIconColor())),
         
 SizedBox(height: 30,),
             Center(child:Container(
@@ -91,8 +91,8 @@ SizedBox(height: 30,),
             fit: BoxFit.cover, // Ajustement de l'image pour couvrir le conteneur
           ),
         ),)),
-    const Center(child:H3TextApp(text: "Quentin MANANES", color: AppColors.purpleSchood,)),
-            const Center(child:H4TextApp(text: "Développeur Back-end",color: AppColors.purpleSchood)),
+     Center(child:H3TextApp(text: "Quentin MANANES", color: themeProvider.getIconColor(),)),
+             Center(child:H4TextApp(text: "Développeur Back-end",color: themeProvider.getIconColor())),
         
             SizedBox(height: 30,),
             Center(child:Container(
@@ -105,8 +105,8 @@ SizedBox(height: 30,),
             fit: BoxFit.cover, // Ajustement de l'image pour couvrir le conteneur
           ),
         ),)),
-    const Center(child:H3TextApp(text: "Matéo DEROCHE", color: AppColors.purpleSchood,)),
-            const Center(child:H4TextApp(text: "Développeur Mobile et Desktop",color: AppColors.purpleSchood)),
+     Center(child:H3TextApp(text: "Matéo DEROCHE", color: themeProvider.getIconColor(),)),
+             Center(child:H4TextApp(text: "Développeur Mobile et Desktop",color: themeProvider.getIconColor())),
         
 SizedBox(height: 30,),
             Center(child:Container(
@@ -120,8 +120,8 @@ SizedBox(height: 30,),
           ),
         ),)),
 
-            const Center(child:H3TextApp(text: "Axel LEBLOND", color: AppColors.purpleSchood,)),
-            const Center(child:H4TextApp(text: "Développeur Mobile",color: AppColors.purpleSchood)),
+             Center(child:H3TextApp(text: "Axel LEBLOND", color: themeProvider.getIconColor(),)),
+            Center(child:H4TextApp(text: "Développeur Mobile",color: themeProvider.getIconColor())),
             
         ]))],
         ),

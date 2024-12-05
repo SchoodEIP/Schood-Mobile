@@ -10,4 +10,6 @@ class AppColors {
   static const textLightmode = Color.fromRGBO(41, 41, 41, 1);
   static const textDarkmode = Color.fromRGBO(255, 255, 255, 1);
   static const backgroundDarkmode = Color.fromRGBO(41, 41, 41, 1);
+  static const greyButtonSchood = Color.fromRGBO(243, 240, 253, 1);
+  static const greyFormFieldSchood = Color.fromRGBO(224, 224, 224,1);
 }

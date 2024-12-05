@@ -9,7 +9,7 @@ import 'package:schood/Chat/ConversationScreen.dart';
 import 'package:schood/Connexion_screen.dart';
 import 'package:schood/Survey/SurveySummaryScreen.dart';
 import 'package:schood/Help/HelpScreen.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:schood/Homepage_screen.dart';
 import 'package:schood/Profile/EmailModifierScreen.dart';
 import 'package:schood/Profile/ProfileScreen.dart';
@@ -26,10 +26,8 @@ import 'package:intl/date_symbol_data_local.dart';
 
 
 void main() async {
-  await dotenv.load(fileName: "lib/assets/.env");
-    await initializeDateFormatting('fr_FR', '');
   WidgetsFlutterBinding.ensureInitialized();
-
+  await initializeDateFormatting('fr_FR', null);
   runApp(
     ChangeNotifierProvider<ThemeProvider>(
       create: (_) => ThemeProvider(),
@@ -39,10 +37,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  final TextEditingController _email = TextEditingController();
-
-  MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
@@ -50,7 +44,16 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'SCHOOD',
-          themeMode: Provider.of<ThemeProvider>(context).getThemeMode(),
+          themeMode: themeProvider.getThemeMode(),
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [
+            const Locale('fr', ''), // Français
+            const Locale('en', ''), // Anglais
+          ],
           initialRoute: '/splash',
           routes: {
             '/': (context) => const LoginPage(),
@@ -60,7 +63,7 @@ class MyApp extends StatelessWidget {
             '/info': (context) => const HelpScreen(),
             '/chat': (context) => const ConversationScreen(),
             '/settings': (context) => const SettingsScreen(),
-            '/profile': (context) => ProfileScreen(email: _email.text),
+            '/profile': (context) => ProfileScreen(email: ''),
             '/emailModifier': (context) => const EmailModifier(),
             '/splash': (context) => const SplashScreen(),
           },
@@ -76,6 +79,11 @@ class ThemeProvider with ChangeNotifier {
   Color backgroundLightMode = AppColors.backgroundLightmode;
   Color textDarkMode = AppColors.textDarkmode;
   Color textLightMode = AppColors.textLightmode;
+Color barDarkMode = AppColors.backgroundDarkmode;
+  Color barLightMode = AppColors.pinkSchood;
+  Color iconDarkMode = AppColors.backgroundLightmode;
+  Color iconLightMode = AppColors.purpleSchood;
+
   bool get isDarkMode => _isDarkMode;
 
   set isDarkMode(bool value) {
@@ -91,11 +99,19 @@ class ThemeProvider with ChangeNotifier {
   ThemeMode getThemeMode() {
     return isDarkMode ? ThemeMode.dark : ThemeMode.light;
   }
-
+Brightness getkeyboardColor(){
+  return isDarkMode ? Brightness.dark : Brightness.light;
+}
   Color getBackgroundColor() {
     return isDarkMode ? backgroundDarkMode : backgroundLightMode;
   }
 
+Color getBarColor(){
+  return isDarkMode?  barDarkMode : barLightMode;
+}
+Color getIconColor(){
+  return isDarkMode? iconDarkMode : iconLightMode;
+}
   Color getTextColor() {
     return isDarkMode ? textDarkMode : textLightMode;
   }

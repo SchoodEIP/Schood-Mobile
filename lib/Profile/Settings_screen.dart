@@ -18,7 +18,7 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: themeProvider.getBackgroundColor(),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+              backgroundColor: themeProvider.getBackgroundColor(),
         elevation: 0.0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.purpleSchood),
@@ -41,7 +41,7 @@ class SettingsScreen extends StatelessWidget {
                 const Expanded(
                   child: Align(
                       alignment: Alignment.centerLeft,
-                      child: H4TextApp(text: "Thème de l'application")),
+                      child: H4TextApp(text: "Mode Jour / Nuit")),
                 ),
                 Switch(
                   value: themeProvider.isDarkMode,
@@ -51,13 +51,13 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ],
             ),
-            
+            SizedBox(height: 10),
             Center(
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.purpleSchood,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(26),
+                          borderRadius: BorderRadius.circular(10),
                         )),
                     onPressed: () {
                       Navigator.push(
@@ -68,12 +68,14 @@ class SettingsScreen extends StatelessWidget {
                     child: ButtonTextApp(
                       text: "Contactez-nous !",
                       color: AppColors.textDarkmode,
-                    ))),Center(
+                    ))),
+                                SizedBox(height: 10)
+                    ,Center(
                 child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.purpleSchood,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
+                    borderRadius: BorderRadius.circular(10),
                   )),
               onPressed: () {
                 Navigator.push(context,

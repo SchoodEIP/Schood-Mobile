@@ -91,6 +91,23 @@ class H4TextApp extends StatelessWidget {
   }
 }
 
+class H8TextApp extends StatelessWidget {
+  final String text;
+  final Color? color;
+  const H8TextApp({super.key, required this.text, this.color});
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    return Text(
+      text,
+      style: GoogleFonts.inter(
+        color: color ?? themeProvider.getTextColor(),
+        fontSize: 14,
+      ),
+    );
+  }
+}
+
 class ConversationTextApp extends StatelessWidget {
   final String text;
   final Color? color;

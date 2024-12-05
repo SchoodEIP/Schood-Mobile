@@ -1,7 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:schood/main.dart';
 import 'package:schood/request/get.dart';
@@ -9,17 +9,23 @@ import 'package:schood/request/post.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/global.dart' as global;
-import 'package:schood/utils/ErrorMessage.dart';
-
 
 class Person {
   final String id;
   final String firstname;
   final String lastname;
   final List classe;
-final String roleid;
-final String rolename;
-  Person({required this.id, required this.firstname, required this.lastname,required this.classe,required this.roleid, required this.rolename});
+  final String roleid;
+  final String rolename;
+
+  Person({
+    required this.id,
+    required this.firstname,
+    required this.lastname,
+    required this.classe,
+    required this.roleid,
+    required this.rolename,
+  });
 
   factory Person.fromJson(Map<String, dynamic> json) {
     return Person(
@@ -28,24 +34,42 @@ final String rolename;
       lastname: json['lastname'],
       classe: json['classes'],
       roleid: json['role']['_id'],
-      rolename:json['role']['name']
+      rolename: json['role']['name'],
     );
   }
 }
-class DropdownWidget extends StatelessWidget {
+
+class DropdownWidget extends StatefulWidget {
   final List<Person> persons;
   final ValueChanged<String?>? onChanged;
-  String? idchoos;
-  String rolchoos = "";
+  final String? initialRole;
 
-  DropdownWidget({required this.persons, required this.onChanged, required this.idchoos});
+  const DropdownWidget({
+    required this.persons,
+    required this.onChanged,
+    this.initialRole,
+  });
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _DropdownWidgetState createState() => _DropdownWidgetState();
+}
+
+class _DropdownWidgetState extends State<DropdownWidget> {
+  String? selectedRoleId;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedRoleId = widget.initialRole;
+  }
 
   @override
   Widget build(BuildContext context) {
     List<String> uniqueRoleIds = [];
     List<DropdownMenuItem<String>> dropdownItems = [];
 
-    for (var person in persons) {
+    for (var person in widget.persons) {
       if (!uniqueRoleIds.contains(person.roleid)) {
         uniqueRoleIds.add(person.roleid);
         String roleDisplayName = _getRoleDisplayName(person.rolename);
@@ -59,31 +83,19 @@ class DropdownWidget extends StatelessWidget {
     }
 
     return DropdownButton<String>(
+      value: selectedRoleId,
       onChanged: (selectedRoleId) {
-        idchoos = selectedRoleId;
-        final selectedPerson = persons.firstWhere(
-          (person) => person.roleid == selectedRoleId,
-          orElse: () => Person(
-            id: '',
-            firstname: '',
-            lastname: '',
-            classe: [],
-            roleid: '',
-            rolename: '',
-          ),
-        );
-        rolchoos = selectedPerson.rolename;
-        print(rolchoos);
-        onChanged?.call(selectedRoleId);
+        setState(() {
+          this.selectedRoleId = selectedRoleId;
+        });
+        widget.onChanged?.call(selectedRoleId);
       },
-      hint: Text(rolchoos ?? 'Sélectionnez un rôle'),
+      hint: Text('Sélectionnez un rôle'),
       items: dropdownItems,
     );
   }
 
   String _getRoleDisplayName(String roleName) {
-    print("HEERE AXEL");
-    print(roleName);
     switch (roleName) {
       case 'administration':
         return 'Administration';
@@ -98,9 +110,6 @@ class DropdownWidget extends StatelessWidget {
     }
   }
 }
-
-
-
 
 class SeeAlertScreen extends StatefulWidget {
   @override
@@ -137,80 +146,71 @@ class _SeeAlertScreenState extends State<SeeAlertScreen> {
     await _getUserData();
   }
 
- void _showAddAlertPopup(BuildContext context) {
-  String title = '';
-  String message = '';
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: Text("Ajouter une alerte"),
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextField(
-                  decoration: InputDecoration(labelText: 'Titre de l\'alerte'),
-                  onChanged: (value) {
-                    setState(() {
-                      title = value;
-                    });
+  void _showAddAlertPopup(BuildContext context) {
+    String title = '';
+    String message = '';
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text("Ajouter une alerte"),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    decoration: const InputDecoration(labelText: 'Titre de l\'alerte'),
+                    onChanged: (value) {
+                      setState(() {
+                        title = value;
+                      });
+                    },
+                  ),
+                  TextField(
+                    decoration: const InputDecoration(labelText: 'Message'),
+                    onChanged: (value) {
+                      setState(() {
+                        message = value;
+                      });
+                    },
+                  ),
+                  DropdownWidget(
+                    persons: persons,
+                    initialRole: idchoos,
+                    onChanged: (String? selectedRole) {
+                      setState(() {
+                        idchoos = selectedRole;
+                      });
+                    },
+                  )
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
                   },
+                  child: Text('Annuler'),
                 ),
-                TextField(
-                  decoration: InputDecoration(labelText: 'Message'),
-                  onChanged: (value) {
-                    setState(() {
-                      message = value;
-                    });
+                ElevatedButton(
+                  onPressed: () {
+                    _sendAlert(context, title, message);
+                    Navigator.of(context).pop();
                   },
+                  child: const Text('Envoyer'),
                 ),
-                DropdownWidget(
-                  persons: persons,
-                  idchoos: idchoos,
-
-                  onChanged: (String? selectedRole) {
-                    setState(() {
-                      idchoos = selectedRole;
-                    });
-                  },
-                )
               ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Annuler'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _sendAlert(context, title, message);
-                  Navigator.of(context).pop();
-                },
-                child: Text('Envoyer'),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
+            );
+          },
+        );
+      },
+    );
+  }
 
-  _sendAlert(BuildContext context, title, String message) async {
-    final getdata = GetClass();
-    Response reponse2 =
-        await getdata.getData(global.globalToken, "user/profile");
+  _sendAlert(BuildContext context, String title, String message) async {
 
-    String roleId = "";
-    Map<String, dynamic> responseData = json.decode(reponse2.body);
-
-    Map<String, dynamic> roleData = responseData["role"];
-    roleId = roleData["_id"];
-    var data = {'title': title, 'message': message, 'role': idchoos, };
+    var data = {'title': title, 'message': message, 'role': idchoos};
     final postclass = PostClass();
     //print(data);
     Response response =
@@ -220,17 +220,18 @@ class _SeeAlertScreenState extends State<SeeAlertScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Votre Alerte à bien été envoyé.'),
+          title: const Text('Votre Alerte à bien été envoyé.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-
               },
-              child: Text('Retour aux alertes'),
+              child: const Text('Retour aux alertes'),
             ),
           ],
-        );});
+        );
+      },
+    );
   }
 
   Future<void> _getAlert() async {
@@ -250,20 +251,22 @@ class _SeeAlertScreenState extends State<SeeAlertScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: H2TextApp(text: "${alert["title"]}"),
-          content: Container(
+          title: H2TextApp(text: "${alert["title"]}",                  color: AppColors.textLightmode,),
+          content: SizedBox(
             width: double.maxFinite,
             height: 200,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 H3TextApp(
+                  color: AppColors.textLightmode,
                     text:
                         "Alerté par: ${alert["createdBy"]['firstname'] + ' ' + alert["createdBy"]['lastname']}"),
+                        
                 SizedBox(
                   height: 20,
                 ),
-                H4TextApp(text: "${alert["message"]}"),
+                H4TextApp(text: "${alert["message"]}",                  color: AppColors.textLightmode,),
               ],
             ),
           ),
@@ -281,56 +284,56 @@ class _SeeAlertScreenState extends State<SeeAlertScreen> {
     );
   }
 
-  List<Widget> _buildAlertList(List<Map<String, dynamic>> alerts) {
-    return alerts.map((alert) {
-      String title = alert["title"] ?? "";
-      DateTime createdAt = DateTime.parse(alert["createdAt"]);
-      String createdBy = (alert["createdBy"] != null && alert["createdBy"]['firstname'] != null && alert["createdBy"]['lastname'] != null) ? 
-                         "${alert["createdBy"]['firstname']} ${alert["createdBy"]['lastname']}" : "";
+List<Widget> _buildAlertList(List<Map<String, dynamic>> alerts) {
+  return alerts.map((alert) {
+    String title = alert["title"] ?? "";
+    DateTime createdAt = DateTime.parse(alert["createdAt"]);
+    String formattedDate = DateFormat('dd/MM/yyyy').format(createdAt);
+    String createdBy = (alert["createdBy"] != null && alert["createdBy"]['firstname'] != null && alert["createdBy"]['lastname'] != null) 
+                       ? "${alert["createdBy"]['firstname']} ${alert["createdBy"]['lastname']}" 
+                       : "";
 
-      return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.purpleSchood,
-                borderRadius: BorderRadius.circular(26),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppColors.purpleSchood,
+          borderRadius: BorderRadius.circular(26),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              H4TextApp(
+                text: "Créée le $formattedDate",
+                color: AppColors.textDarkmode,
               ),
-              child: InkWell(
-                onTap: () {
-                  _showDetailsPopup(alert);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      H4TextApp(
-                        text: "Créée le $createdAt",
-                        color: AppColors.textDarkmode,
-                      ),
-                      H4TextApp(
-                        text: "Titre: $title",
-                        color: AppColors.textDarkmode,
-                      ),
-                      H4TextApp(
-                        text: "Par: $createdBy",
-                        color: AppColors.textDarkmode,
-                      ),
-                    ],
-                  ),
-                ),
-              )));
-    }).toList();
-  }
+              H4TextApp(
+                text: "Titre: $title",
+                color: AppColors.textDarkmode,
+              ),
+              H4TextApp(
+                text: "Par: $createdBy",
+                color: AppColors.textDarkmode,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }).toList();
+}
+
 
   @override
   Widget build(BuildContext context) {
-    
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       backgroundColor: themeProvider.getBackgroundColor(),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: themeProvider.getBackgroundColor(),
         elevation: 0,
         automaticallyImplyLeading: false,
         title: InkWell(
@@ -349,9 +352,7 @@ class _SeeAlertScreenState extends State<SeeAlertScreen> {
                 text: "Retour",
                 color: themeProvider.getTextColor(),
               )
-            ],
-          ),
-        ),
+            ])),
         actions: [
           IconButton(
             icon: Icon(Icons.add_rounded),
@@ -363,19 +364,13 @@ class _SeeAlertScreenState extends State<SeeAlertScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        child: Align(
-          alignment: Alignment.center,
+        child: Padding(
+          padding: const EdgeInsets.all(32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: H1TextApp(
-                  text: "Alerte",
-                  color: themeProvider.getTextColor(),
-                ),
-              ),
-              const SizedBox(height: 60.0),
+              const H1TextApp(text: "Mes Alertes"),
+              const SizedBox(height: 120.0),
               ...bodyWidgets,
             ],
           ),

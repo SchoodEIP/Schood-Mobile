@@ -18,6 +18,7 @@ class PatchClass {
   }
 
   _setHeaders() => {
+    'x-auth-token': global.globalToken,
         'Content-type': 'application/json',
         'Accept': 'application/json',
       };

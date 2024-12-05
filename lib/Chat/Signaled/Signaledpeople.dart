@@ -30,10 +30,7 @@ class _MultiSelectSignaledState extends State<MultiSelectSignaledReason> {
 
   @override
   Widget build(BuildContext context) {
-    /*OTHER: 'other',
-  BULLYING: 'bullying',
-  BADCOMPORTMENT: 'badcomportment',
-  SPAM: 'spam'*/ 
+
     List<List<String>> categoriesTable = [
       ["Harcèlement", "Description du harcèlement"],
       ["Contenu offensant", "Description du contenu offensant"],

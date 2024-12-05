@@ -79,12 +79,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-     Uint8List ?photo = null;
-    if (global.idimageprofil != "") {
-      photo = base64Decode(global.idimageprofil);
-    }
+
   final themeProvider = Provider.of<ThemeProvider>(context);
-  print(global.idimageprofil);
     return Scaffold(
       appBar: AppBar(
               backgroundColor: themeProvider.getBackgroundColor(),
@@ -145,12 +141,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   },
   child: Builder(
     builder: (BuildContext context) {
-      try {
         if (global.idimageprofil != "") {
+                  print(global.idimageprofil);
           return ClipOval(
-            child: Image.memory(
-              photo!,
-              width: 200,
+                            child: Image.network(
+                  global.idimageprofil,width: 200,
               height: 200,
               fit: BoxFit.cover,
             ),
@@ -162,24 +157,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: AppColors.purpleSchood,
           );
         }
-      } catch (e) {
-        print("Error loading image: $e");
-        return Icon(
-          Icons.error,
-          size: 200,
-          color: Colors.red,
-        );
-      }
-    },
+     } 
   ),
 
 
           ),
-          const Padding(
+           Padding(
             padding: EdgeInsets.only(top: 15.0),
             child: Text('Prénom:',
                 style: TextStyle(
-                    color: AppColors.purpleSchood,
+                    color: themeProvider.getIconColor(),
                     fontSize: 22,
                     fontWeight: FontWeight.w600)),
           ),
@@ -187,11 +174,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.only(top: 5.0),
             child: H4TextApp(text:global.firstName,)
           ),
-          const Padding(
+           Padding(
             padding: EdgeInsets.only(top: 15.0),
             child: Text('Nom de famille:',
                 style: TextStyle(
-                    color: AppColors.purpleSchood,
+                    color: themeProvider.getIconColor(),
                     fontSize: 22,
                     fontWeight: FontWeight.w600)),
           ),
@@ -199,23 +186,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.only(top: 5.0),
             child: H4TextApp(text:global.lastName)
           ),
-          const Padding(
-            padding: EdgeInsets.only(top: 15.0),
-            child: Text('Classe:',
-                style: TextStyle(
-                    color: AppColors.purpleSchood,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600)),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5.0),
-            child: H4TextApp(text:global.classe),
-          ),
-          const Padding(
+ Padding(
+  padding: EdgeInsets.only(top: 15.0),
+  child: Text(
+    'Classe:',
+    style: TextStyle(
+                    color: themeProvider.getIconColor(),
+        fontSize: 22,
+        fontWeight: FontWeight.w600
+    ),
+  ),
+),
+Padding(
+  padding: const EdgeInsets.only(top: 5.0),
+  child: H4TextApp(text: global.classe),
+),
+
+           Padding(
             padding: EdgeInsets.only(top: 15.0),
             child: Text('Adresse email:',
                 style: TextStyle(
-                    color: AppColors.purpleSchood,
+                    color: themeProvider.getIconColor(),
                     fontSize: 22,
                     fontWeight: FontWeight.w600)),
           ),

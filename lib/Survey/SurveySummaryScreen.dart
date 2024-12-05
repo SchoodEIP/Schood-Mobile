@@ -1,11 +1,11 @@
-// ignore_for_file: file_names
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:schood/Notification/Notification_screen.dart';
 import 'package:schood/Survey/SurveyQuestionScreen.dart';
+import 'package:schood/Survey/SurveySummaryAnswerScreen.dart';
+
 import 'package:schood/utils/BottomBarApp.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
@@ -23,38 +23,8 @@ class SurveySummaryScreen extends StatefulWidget {
 }
 
 class _SurveySummaryState extends State<SurveySummaryScreen> {
-  List<String> selectedMoods = [];
   String id = global.globalToken;
-
-  Future<List<Map<String, dynamic>>?> _getSurveyData(
-      BuildContext context) async {
-    final getdata = GetClass();
-    final response =
-        await getdata.getData(global.globalToken, "shared/questionnaire");
-
-    if (response.statusCode == 200) {
-      try {
-        final surveyList = jsonDecode(response.body);
-        print(surveyList);
-        return surveyList.cast<Map<String, dynamic>>();
-      } catch (e) {
-        print('Error decoding JSON: $e');
-      }
-    } else {
-      print('Error fetching data: ${response.statusCode}');
-    }
-    return null;
-  }
-
-  Future<void> _storeIdInCache(String id) async {
-    final cacheManager = DefaultCacheManager();
-    await cacheManager.putFile(
-      'survey_id',
-      Uint8List.fromList(
-          utf8.encode(id)),
-      fileExtension: '.txt', 
-    );
-  }
+  List<Map<String, dynamic>> questionnairesList = [];
 
   @override
   void initState() {
@@ -62,19 +32,70 @@ class _SurveySummaryState extends State<SurveySummaryScreen> {
     super.initState();
   }
 
-  @override
-Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    Uint8List? photo;
-    if (global.idimageprofil != "") {
-      photo = base64Decode(global.idimageprofil);
+  Future<void> _getSurveyData(BuildContext context) async {
+    final getdata = GetClass();
+    final response = await getdata.getData(global.globalToken, "shared/questionnaire");
+    if (response.statusCode == 200) {
+      try {
+        final List<dynamic> surveyList = jsonDecode(response.body);
+        //print(response.body);
+
+        setState(() {
+          questionnairesList = surveyList.expand((survey) {
+            final fromDate = survey['fromDate'];
+            final toDate = survey['toDate'];
+            final List<dynamic> questionnaires = survey['questionnaires'];
+            return questionnaires
+                .map((questionnaire) {
+                  return {
+                    'id': questionnaire['_id'],
+                    'title': questionnaire['title'],
+                    'fromDate': fromDate,
+                    'toDate': toDate,
+                  };
+                }).toList();
+          }).toList();
+        });
+
+      } catch (e) {
+        print('Erreur lors du décodage JSON: $e');
+      }
+    } else {
+      print('Erreur lors de la récupération des données: ${response.statusCode}');
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        elevation: 0.0,
-        actions: [
+  backgroundColor: themeProvider.getBackgroundColor(),
+  elevation: 0.0,
+  automaticallyImplyLeading: false,
+  title: global.role == "teacher"
+      ? InkWell(
+          onTap: () {
+            Navigator.pop(context); // Retour à l'écran précédent
+          },
+          child: Row(
+            children: [
+              const Icon(
+                Icons.arrow_back,
+                color: AppColors.purpleSchood,
+              ),
+              const SizedBox(width: 8),
+              H4TextApp(
+                text: "Retour",
+                color: themeProvider.getTextColor(),
+              ),
+            ],
+          ),
+        )
+      : null, // Pas de titre s'il n'y a pas de rôle "teacher"
+  actions: global.role != "teacher"
+      ? [
           InkWell(
             onTap: () {
               Navigator.push(
@@ -91,21 +112,32 @@ Widget build(BuildContext context) {
             ),
           ),
           IconButton(
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, '/profile');
-            },
-            icon: Container(
-              width: 40,
-              height: 40,
-              child: Icon(
+      onPressed: () {
+        Navigator.pushReplacementNamed(context, '/profile');
+      },
+      icon: Container(
+        width: 40, // Ajustez la taille selon vos besoins
+        height: 40, // Ajustez la taille selon vos besoins
+        child: global.idimageprofil != ""
+            ? ClipOval(
+                child: Image.network(
+                  global.idimageprofil,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : Icon(
                 Icons.account_circle,
                 size: 40,
                 color: AppColors.purpleSchood,
               ),
-            ),
-          ),
-        ],
       ),
+        )
+        ]
+      : null, // Aucune action si le rôle est "teacher"
+),
+
       backgroundColor: themeProvider.getBackgroundColor(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,63 +149,58 @@ Widget build(BuildContext context) {
               color: themeProvider.getTextColor(),
             ),
           ),
-          SingleChildScrollView(
-            child: FutureBuilder<List<Map<String, dynamic>>?>(
-              future: _getSurveyData(context),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: questionnairesList.map((questionnaire) {
+                  final fromDate = DateTime.parse(questionnaire['fromDate']);
+                  final toDate = DateTime.parse(questionnaire['toDate']);
+                  final now = DateTime.now();
 
-                if (snapshot.hasError) {
-                  return const Center(child: Text('Error loading data'));
-                }
+                  final isExpired = now.isAfter(toDate);
 
-                if (snapshot.hasData) {
-                  List<Map<String, dynamic>> surveyList = snapshot.data!;
+                  return ListTile(
+                    title: H3TextApp(
+                      text: questionnaire['title'],
+                      color: isExpired ? AppColors.redSchood : null,
+                    ),
+                    subtitle: H4TextApp(
+                      text: 'Du ${_formatDate(questionnaire['fromDate'])} au ${_formatDate(questionnaire['toDate'])}',
+                      color: isExpired ? AppColors.redSchood : null,
+                    ),
+                    onTap: () {
+  if (isExpired && global.role != "teacher") {
+    // Si le questionnaire est expiré et que l'utilisateur n'est pas un enseignant, désactivez le tap
+    return;
+  }
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+  // Si l'utilisateur est enseignant ou que le questionnaire n'est pas expiré
+  if (global.role == "teacher") {
+    // Naviguez vers la page des réponses du questionnaire pour les enseignants
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SurveySummaryAnswersScreen(
+          id: questionnaire['id'], // Passez l'ID du questionnaire
+        ),
+      ),
+    );
+  } else {
+    // Naviguez vers la page des questions du questionnaire pour les autres rôles
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SurveyQuestionsScreen(
+          idsurvey: questionnaire['id'],
+        ),
+      ),
+    );
+  }
+},
 
-                      for (var surveyData in surveyList) ...[
-                        TextButton(
-                          onPressed: () async {
-                            await _storeIdInCache("${surveyData['_id']}");
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SurveyQuestionsScreen(
-                                    id: "${surveyData['_id']}"),
-                              ),
-                            );
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${surveyData['title']} à compléter',
-                                style: const TextStyle(
-                                  color: AppColors.purpleSchood,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              H4TextApp(
-                                text: "Du " +
-                                    _formatDate(surveyData['fromDate']) +
-                                    " au " +
-                                    _formatDate(surveyData['toDate']),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ],
                   );
-                }
-                return const Center(child: Text('Pas de questionnaire'));
-              },
+                }).toList(),
+              ),
             ),
           ),
         ],
@@ -183,11 +210,12 @@ Widget build(BuildContext context) {
       ),
     );
   }
-String _formatDate(String dateString) {
-  DateTime date = DateTime.parse(dateString);
-  String day = date.day.toString().padLeft(2, '0');
-  String month = date.month.toString().padLeft(2, '0');
-  String year = date.year.toString();
-  return "$day/$month/$year";
-}
+
+  String _formatDate(String dateString) {
+    DateTime date = DateTime.parse(dateString);
+    String day = date.day.toString().padLeft(2, '0');
+    String month = date.month.toString().padLeft(2, '0');
+    String year = date.year.toString();
+    return "$day/$month/$year";
+  }
 }

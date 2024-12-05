@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:schood/Help/HelpAdminScreen.dart';
+import 'package:schood/Survey/SurveyScreen.dart';
 // import 'package:schood/ChatScreen.dart';
 import 'package:schood/Survey/SurveySummaryScreen.dart';
 import 'package:schood/Chat/ConversationScreen.dart';
@@ -23,17 +25,9 @@ class BottomBarApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int checkrole() {
-      if (global.role == 'student') {
-        return 1;
-      } else if (global.role == 'admin') {
-        return 2;
-      } else {
-        return 0;
-      }
-    }
+    int indexapp2 = indexapp;
 
-    int role = checkrole();
+
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Container(
       width: 120,
@@ -45,13 +39,14 @@ class BottomBarApp extends StatelessWidget {
             width: 1.2,
           ),
         ),
-      ),
-      child: BottomNavigationBar(
-        backgroundColor: themeProvider.getBackgroundColor(),
+      ), 
+      child: global.role != 'administration' ?
+      BottomNavigationBar(
+        backgroundColor: themeProvider.getBarColor(),
         type: BottomNavigationBarType.fixed,
-        currentIndex: indexapp,
+        currentIndex: indexapp2,
         onTap: (int index) {
-          if (index == 0 && role <= 2) {
+          if (index == 0) {
             Navigator.pushReplacement(
               context,
               PageRouteBuilder(
@@ -63,7 +58,19 @@ class BottomBarApp extends StatelessWidget {
                 },
               ),
             );
-          } else if (index == 1 && role <= 2) {
+          } else if (index == 1) {
+             if (global.role == "teacher"){ Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const SurveyScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
+              ),
+            );}
+            else{
             Navigator.pushReplacement(
               context,
               PageRouteBuilder(
@@ -75,7 +82,8 @@ class BottomBarApp extends StatelessWidget {
                 },
               ),
             );
-          } else if (index == 2 && role <= 2) {
+            }
+          } else if (index == 2 ) {
             Navigator.pushReplacement(
               context,
               PageRouteBuilder(
@@ -87,7 +95,7 @@ class BottomBarApp extends StatelessWidget {
                 },
               ),
             );
-          } else if (index == 3 && role <= 2) {
+          } else if (index == 3 ) {
             Navigator.pushReplacement(
               context,
               PageRouteBuilder(
@@ -99,7 +107,19 @@ class BottomBarApp extends StatelessWidget {
                 },
               ),
             );
-          } else if (index == 4 && role <= 2) {
+          } else if (index == 4 ) {
+            if (global.role == "administration" ){ Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const HelpAdminScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
+              ),
+            );}
+            else{
             Navigator.pushReplacement(
               context,
               PageRouteBuilder(
@@ -110,16 +130,17 @@ class BottomBarApp extends StatelessWidget {
                   return child;
                 },
               ),
-            );
+            );}
           }
         },
-        items: const [
+        items:  [
           BottomNavigationBarItem(
             icon: Icon(
               Icons.home,
             ),
             label: 'Accueil',
           ),
+
           BottomNavigationBarItem(
             icon: Icon(
               Icons.description,
@@ -147,7 +168,92 @@ class BottomBarApp extends StatelessWidget {
         ],
         selectedItemColor: AppColors.purpleSchood,
         unselectedItemColor: themeProvider.getTextColor(),
-      ),
+      ) :BottomNavigationBar(
+        backgroundColor: themeProvider.getBarColor(),
+        type: BottomNavigationBarType.fixed,
+        currentIndex: indexapp2,
+        onTap: (int index) {
+          if (index == 0) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const HomeScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
+              ),
+            );
+          } else if (index == 1) {
+             
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const StatsScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
+              ),
+            );
+            
+          } else if (index == 2 ) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const ConversationScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
+              ),
+            );
+          } else if (index == 3 ) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const HelpAdminScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return child;
+                },
+              ),
+            );
+          }
+        },
+        items:  [
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+            ),
+            label: 'Accueil',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.show_chart,
+            ),
+            label: 'Statistique',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.chat,
+            ),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.info_rounded,
+            ),
+            label: 'Aide',
+          ),
+        ],
+        selectedItemColor: AppColors.purpleSchood,
+        unselectedItemColor: themeProvider.getTextColor(),
+      )
     );
   }
 }

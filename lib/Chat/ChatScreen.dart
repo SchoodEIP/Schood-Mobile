@@ -6,24 +6,40 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:mailer/mailer.dart';
 import 'package:provider/provider.dart';
+import 'package:schood/Chat/ConversationScreen.dart';
 import 'package:schood/main.dart';
 import 'package:schood/request/get.dart';
 import 'package:schood/request/post.dart';
 import 'package:schood/style/AppColors.dart';
 import 'package:schood/style/AppTexts.dart';
 import 'package:schood/utils/BottomBarApp.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 import 'package:open_file/open_file.dart';
 import 'dart:async';
 import 'package:path/path.dart' as path;
 import '../global.dart' as global;
 import 'package:path_provider/path_provider.dart';
 
+
+class Person {
+  final String id;
+  final String firstname;
+  final String lastname;
+
+  Person({required this.id, required this.firstname, required this.lastname});
+
+  factory Person.fromJson(Map<String, dynamic> json) {
+    return Person(
+      id: json['_id'],
+      firstname: json['firstname'],
+      lastname: json['lastname'],
+    );
+  }
+}
+
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key, required this.id, required this.participants})
-      : super(key: key);
+  const ChatScreen({super.key, required this.id, required this.participants});
 
   final String id;
   final List<dynamic> participants;
@@ -36,27 +52,32 @@ class ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final TextEditingController messageController = TextEditingController();
   bool isTextFieldEmpty = true;
-  String id = global.globalToken;
+  //String id = global.globalToken;
   List<Map<String, dynamic>> messages = [];
   List<String> selectedParticipantIds = [];
-  late Timer _timer;
   List<String> selectedReasons =
+  
       []; 
+          List<Person> persons = [];
+List<Map<String, dynamic>> participants = [];
+
 
   @override
-  void initState() {
-    print(widget.participants);
-    super.initState();
+ @override
+void initState() {
+  super.initState();
+  participants = List<Map<String, dynamic>>.from(widget.participants);
+  _getmessage(context);
+  Timer.periodic(Duration(seconds: 10), (timer) {
     _getmessage(context);
-    _timer = Timer.periodic(Duration(seconds: 10), (timer) {
-      _getmessage(context);
+  });
+  messageController.addListener(() {
+    setState(() {
+      isTextFieldEmpty = messageController.text.isEmpty;
     });
-    messageController.addListener(() {
-      setState(() {
-        isTextFieldEmpty = messageController.text.isEmpty;
-      });
-    });
-  }
+  });
+}
+
   String? filePath;
   File? file;
 
@@ -69,15 +90,150 @@ void _openFilePicker() async {
     if (filePath != null) {
       setState(() {
         file = File(filePath);
-        // Maintenant, vous avez un objet File 'file' que vous pouvez utiliser.
-        print("Chemin du fichier : ${file?.path}");
-        // Faites ce que vous voulez avec le fichier...
       });
     }
-  } else {
+  } else { 
     print("Aucun fichier sélectionné.");
   }
 }
+List<String> _getExistingParticipantIds() {
+  return widget.participants.map((participant) => participant['_id'] as String).toList();
+}
+String _getUserNameById(String userId) {
+  // Vérifiez si l'ID de l'utilisateur est le même que le token global
+  if (userId == global.idtoken) {
+    return 'Vous'; // ou le nom que vous souhaitez afficher pour l'utilisateur actuel
+  }
+
+  // Recherchez l'utilisateur dans la liste des participants
+  final participant = widget.participants.firstWhere(
+    (participant) => participant['_id'] == userId,
+    orElse: () => null, // Retourne null si l'utilisateur n'est pas trouvé
+  );
+
+  // Vérifiez si le participant a été trouvé
+  if (participant != null) {
+    final firstname = participant['firstname'] ?? 'Inconnu';
+    final lastname = participant['lastname'] ?? '';
+    return '$firstname $lastname'.trim();
+  } else {
+    return 'Inconnu'; // Nom par défaut
+  }
+}
+_adduser(bool shareHistory) async {
+  // Get the existing participants' IDs
+  List<String> existingParticipantIds = _getExistingParticipantIds();
+
+  // Get the IDs of new participants to be added
+  List<String> newParticipants = selectedParticipantIds.where((id) => !existingParticipantIds.contains(id)).toList();
+
+  // If there are no new participants, show an alert and return
+  if (newParticipants.isEmpty) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Aucun nouvel utilisateur"),
+          content: Text("Tous les utilisateurs sélectionnés sont déjà dans la conversation."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
+
+  // Check if history should be shared
+  if (shareHistory == false) {
+    // Combine existing participants' IDs with new participants' IDs, and include your own ID
+    List<String> allParticipants = existingParticipantIds + newParticipants + [global.idtoken];
+
+    // Prepare the data with all participant IDs
+    var data = {
+      "participants": allParticipants,  // Send both existing, new participant IDs, and your own ID
+    };
+
+    var route = "user/chat";
+    final postclass = PostClass();
+    Response response = await postclass.postDataAuth(context, data, route);
+
+    if (response.statusCode == 200) {
+      print("Participants (including history) added successfully.");
+        Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const ConversationScreen(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        return child;
+                      },
+                    ),
+                  );
+    } else {
+      print("Erreur lors de l'ajout des participants avec historique - ${response.statusCode}");
+    }
+  } else {
+    // If history is not to be shared, add only new participants
+    var idconv = widget.id;
+    var route = "user/chat/$idconv/addParticipants";
+    var data = {
+      "participants": newParticipants,
+    };
+
+    final postclass = PostClass();
+    Response response = await postclass.postDataAuth(context, data, route);
+
+    if (response.statusCode == 200) {
+      // Update the participants list with the new participants
+      setState(() {
+        participants.addAll(newParticipants.map((id) => {
+          "_id": id,
+          "firstname": "NomParDéfaut", // You can update this to get the actual first name
+          "lastname": "NomParDéfaut"   // You can update this to get the actual last name
+        }).toList());
+      });
+
+      // Show a confirmation dialog
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Utilisateur ajouté"),
+            content: Text("Les utilisateurs ont bien été ajoutés."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const ConversationScreen(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        return child;
+                      },
+                    ),
+                  );
+                },
+                child: Text("Retour"),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      print("Erreur lors de l'ajout des participants - ${response.statusCode}");
+    }
+  }
+}
+
+
+
 
   void _showMultiSelectParticipants() async {
 
@@ -115,7 +271,7 @@ void _openFilePicker() async {
                         },
                       );
                     } else {
-                      return SizedBox(); // Gérer le cas où les données du participant sont incomplètes
+                      return const SizedBox(); // Gérer le cas où les données du participant sont incomplètes
                     }
                   }).toList(),
                 ),
@@ -130,6 +286,7 @@ void _openFilePicker() async {
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context, selectedParticipantIds);
+
                   },
                   child: const Text('Valider'),
                 ),
@@ -142,6 +299,8 @@ void _openFilePicker() async {
 
   }
 
+
+
 void _sendFile(String id) async {
   try {
     var route = "user/chat/$id/newFile";
@@ -151,7 +310,6 @@ void _sendFile(String id) async {
     if (file != null) {
       Response response = await postclass.postDataWithFile(data, route, file!);
       if (response.statusCode == 200) {
-        print("test");
       } else {
         print("Erreur lors de l'envoi du fichier - ${response.statusCode}");
       }
@@ -224,6 +382,23 @@ ScaffoldMessenger.of(context).showSnackBar(
     super.dispose();
   }
 
+_getUserData() async {
+  final getData = GetClass();
+  final response = await getData.getData(global.globalToken, "user/chat/users");
+  if (response.statusCode == 200) {
+    final List<dynamic> data = jsonDecode(response.body);
+
+    persons = data.map((personData) => Person.fromJson(personData)).toList();
+
+    for (var person in persons) {
+      print(
+          'ID: ${person.id}, Firstname: ${person.firstname}, Lastname: ${person.lastname}');
+    }
+    // Notify the UI to rebuild
+    setState(() {});
+  }
+}
+
 
 _getfile(BuildContext context, String id) async {
   final getdata = GetClass();
@@ -285,7 +460,6 @@ _getfile(BuildContext context, String id) async {
 
     var conversation = widget.id;
     var route = "shared/report";
-    var msg = _messageController.text;
 
     var data = {
       "userSignaled": selectedParticipantIds,
@@ -294,7 +468,7 @@ _getfile(BuildContext context, String id) async {
       "type": "other",
     };
     Response response = await postdata.postDataAuth(context, data, route);
-    print(response.statusCode);
+
   }
 
   _getmessage(BuildContext context) async {
@@ -326,6 +500,7 @@ _getfile(BuildContext context, String id) async {
     });
 
     setState(() {
+      print(messagesList);
       messages = messagesList
           .where((element) => element != null)
           .cast<Map<String, dynamic>>()
@@ -333,104 +508,74 @@ _getfile(BuildContext context, String id) async {
     });
   }
 
-  void _showMultiSelectReasons() async {
-    List<String>? reasons = await showDialog<List<String>>(
-      context: context,
-      builder: (BuildContext context) {
-        return MultiSelectReason();
-      },
-    );
+void _showSelectUserDialog(BuildContext context) async {
+  // Fetch users before displaying the dialog
+  await _getUserData();
 
-    if (reasons != null) {
-      setState(() {
-        selectedReasons = reasons;
-      });
-    }
-  }
+  bool _shareHistory = false; // Variable pour la case à cocher
 
-  void showPopupMenu(themeProvider) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return SingleChildScrollView(child: Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom, // Garantir que la modal reste au-dessus du clavier
-            ),
-            child: Container(
-          color: themeProvider.getBackgroundColor(),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(children: [
-              H2TextApp(
-                text: "Signaler la conversation",
-                color: themeProvider.getTextColor(),
-              ),
-              ElevatedButton(
-                  onPressed: () {
-                    // Ajoutez l'appel à _showMultiSelectParticipants ici
-                    _showMultiSelectParticipants();
+  await showDialog<String>(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, setState) {
+          return AlertDialog(
+            title: const Text('Sélectionnez un utilisateur'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min, // Pour s'adapter à la taille du contenu
+              children: [
+                DropdownButtonFormField<String>(
+                  items: persons.map((Person person) {
+                    return DropdownMenuItem<String>(
+                      value: person.id,
+                      child: Text('${person.firstname} ${person.lastname}'),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      selectedParticipantIds.add(value!);
+                    });
                   },
-                  child: Text("Sélectionnez les participants")),
-              ElevatedButton(
-                  onPressed: () {
-                    _showMultiSelectReasons();
-                  },
-                  child: Text("Choisissez la raison du signalement")),
-              SizedBox(height: 16),
-              TextField(
-                decoration: InputDecoration(
-                  counterStyle: TextStyle(color: themeProvider.getTextColor()),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: themeProvider.getTextColor(),
-                    ),
-                    borderRadius: BorderRadius.circular(25.0),
+                  decoration: InputDecoration(
+                    hintText: 'Choisir un utilisateur',
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: themeProvider.getTextColor(),
-                    ),
-                    borderRadius: BorderRadius.circular(25.0),
-                  ),
-                  hintText: 'Saisissez votre message',
-                  hintStyle: const TextStyle(color: Colors.grey),
                 ),
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  color: themeProvider.getTextColor(),
-                ),
-                controller: _messageController,
-                maxLength: 325,
-                maxLines: 5,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                      child: ButtonTextApp(
-                        text: "Envoyer",
-                        color: AppColors.textDarkmode,
-                      ),
-                      onPressed: () async {
-                        _sendreport();
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _shareHistory,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _shareHistory = value!;
+                        });
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.purpleSchood,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(26),
-                        ),
-                      )),
-                ],
-              )
-            ]),
-          ))),
-        );
-      },
-    );
-  }
+                    ),
+                    const Text('Partager l\'historique ?'),
+                  ],
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Annuler'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _adduser(_shareHistory); // Passer l'état de la Checkbox
+                },
+                child: const Text('Valider'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -439,7 +584,7 @@ _getfile(BuildContext context, String id) async {
     return Scaffold(
       backgroundColor: themeProvider.getBackgroundColor(),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: themeProvider.getBackgroundColor(),
         elevation: 0.0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -447,11 +592,16 @@ _getfile(BuildContext context, String id) async {
             const H4TextApp(
               text: 'Avec ',
             ),
-            H3TextApp(text:  widget.participants
-                  .map<String>((participant) =>
-                      '${participant['firstname']} ${participant['lastname']}')
-                  .join(', '),)
-            
+            H3TextApp(
+  text: widget.participants
+      .map<String>((participant) {
+        String firstname = participant['firstname'] ?? 'Inconnu';
+        String lastname = participant['lastname'] ?? '';
+        return '$firstname $lastname'.trim();
+      })
+      .join(', '),
+),
+
           ],
         ),
         leading: IconButton(
@@ -460,7 +610,14 @@ _getfile(BuildContext context, String id) async {
             Navigator.pop(context);
           },
         ),
-
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person_add, color: AppColors.purpleSchood),
+            onPressed: () {
+              _showSelectUserDialog(context);
+            },
+          ),
+        ],
       ),
       body: GestureDetector(
         onTap: () {
@@ -479,12 +636,13 @@ _getfile(BuildContext context, String id) async {
                       String time = message['date'] ?? '';
                       String userId = message['user'] ?? '';
                       String file = message['file'] ?? '';
+                      final userName = _getUserNameById(userId);
 
                       DateTime dateTime =
                           DateTime.tryParse(time) ?? DateTime.now();
                       String mois = DateFormat('MMMM', 'fr_FR').format(dateTime);
                       String heure =
-                          '${dateTime.day} $mois ${dateTime.hour + 2}:${dateTime.minute.toString().padLeft(2, '0')}';
+                          '${dateTime.day} $mois ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
 
                       AlignmentDirectional alignment = userId == global.idtoken
                           ? AlignmentDirectional.centerEnd
@@ -497,14 +655,16 @@ _getfile(BuildContext context, String id) async {
                           decoration: BoxDecoration(
                             color: userId == global.idtoken
                                 ? AppColors.pinkSchood
-                                : AppColors.purpleSchood, // Utilisez différentes couleurs ou styles si nécessaire
+                                : AppColors.purpleSchood, 
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('$content',
-                                  style: TextStyle(color: Colors.white)),
+                              
+                              H8TextApp(text:userName, color: userId == global.idtoken ? AppColors.textLightmode : AppColors.textDarkmode  ),H8TextApp(
+        text: '$content', color: userId == global.idtoken ? AppColors.textLightmode : AppColors.textDarkmode 
+                              ),
                               if (file != '' && file.isNotEmpty)
                                 GestureDetector(
                                   onTap: () {
@@ -515,14 +675,13 @@ _getfile(BuildContext context, String id) async {
                                       Icon(Icons.download_rounded,
                                           color: Colors.white),
                                       SizedBox(width: 8),
-                                      Text('Fichier attaché',
-                                          style:
-                                              TextStyle(color: Colors.white)),
+                                      H8TextApp(text:'Fichier attaché',
+                                      ),
                                     ],
                                   ),
                                 ), // Utilisez une couleur différente pour le texte si nécessaire
-                              Text('$heure',
-                                  style: TextStyle(color: Colors.white)),
+                              H8TextApp(text: '$heure',
+                                 color: userId == global.idtoken ? AppColors.textLightmode : AppColors.textDarkmode  ),
                               // Utilisez une couleur différente pour le texte si nécessaire
                             ],
                           ),
@@ -541,6 +700,7 @@ _getfile(BuildContext context, String id) async {
                 children: [
                   Expanded(
                       child: TextField(
+                        keyboardAppearance: themeProvider.getkeyboardColor(),
                     decoration: InputDecoration(
                       counterStyle:
                           TextStyle(color: themeProvider.getTextColor()),
@@ -582,9 +742,9 @@ _getfile(BuildContext context, String id) async {
                   ),
                   IconButton(
                       icon: Icon(
-                        Icons.file_copy,
+                        Icons.add_circle_rounded,
                         size: 30,
-                        color:  Colors.green,
+                        color:  AppColors.purpleSchood
                       ),
                       onPressed: () {
                         _openFilePicker();
@@ -602,85 +762,4 @@ _getfile(BuildContext context, String id) async {
     );
   }
 }
-
-class MultiSelectReason extends StatefulWidget {
-  const MultiSelectReason({Key? key}) : super(key: key);
-  @override
-  State<MultiSelectReason> createState() => _MultiSelectState();
-}
-
-class _MultiSelectState extends State<MultiSelectReason> {
-  final List<String> _selectedItems = [];
-  void _itemChange(String itemId, bool isSelected) {
-    setState(() {
-      if (isSelected) {
-        _selectedItems.add(itemId);
-      } else {
-        _selectedItems.remove(itemId);
-      }
-    });
-  }
-
-  void _cancel() {
-    Navigator.pop(context);
-  }
-
-  void _submit() {
-    
-    
-    Navigator.pop(context, _selectedItems);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    /*OTHER: 'other',
-  BULLYING: 'bullying',
-  BADCOMPORTMENT: 'badcomportment',
-  SPAM: 'spam'*/ 
-    List<List<String>> categoriesTable = [
-      ["Harcèlement", "Description du harcèlement"],
-      ["Contenu offensant", "Description du contenu offensant"],
-      ["Spam", "Description du spam"],
-      ["Autre", "Autre description"]
-    ];
-    return AlertDialog(
-      title: const Text('Sélectionnez une raisons de signalement'),
-      content: SingleChildScrollView(
-        child: ListBody(
-          children: List.generate(categoriesTable.length, (index) {
-            return CheckboxListTile(
-              title: Text(categoriesTable[index][0]),
-              value: _selectedItems.contains(categoriesTable[index]
-                  [0]), // Utilisez la catégorie comme identifiant
-              onChanged: (isChecked) {
-                setState(() {
-                  if (isChecked!) {
-                    _selectedItems.add(categoriesTable[index]
-                        [0]); // Ajoutez la catégorie aux élémens sélectionnés
-                  } else {
-                    _selectedItems.remove(categoriesTable[index][0]);
-                  }
-                });
-              },
-            );
-          }),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: _cancel,
-          child: const Text('Annuler'),
-        ),
-        ElevatedButton(
-          onPressed: _submit,
-          child: const Text('Valider'),
-        ),
-      ],
-    );
-  }
-}
-
-
-
-
 

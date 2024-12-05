@@ -145,9 +145,8 @@ class _StayConnectedButtonState extends State<StayConnectedButton> {
             size: 30.0,
           ),
           const SizedBox(width: 8.0),
-          const Text(
-            'Restez connecté',
-            style: TextStyle(color: Colors.black),
+          const H4TextApp(
+           text: 'Restez connecté',
           ),
         ],
       ),
@@ -165,12 +164,15 @@ class LoginButton extends StatelessWidget {
     var data = {
       'email': emailController.text.trim(),
       'password': passwordController.text.trim(),
+      'rememberMe': true
     };
+
     final postclass = PostClass();
     try {
-
       Response response = await postclass.postData(context, data, 'user/login');
+
       final body = jsonDecode(response.body);
+
       if (response.statusCode == 200) {
 
         final getdata = GetClass();
@@ -207,17 +209,38 @@ final writtenToken = await TokenFileManager.readTokenFromFile();
         global.lastName = userData['lastname']?? '';
         global.email = userData['email']?? '';
         global.idimageprofil = userData['picture']?? '';
+
 if (userData.containsKey('classes') && userData['classes'] is List && userData['classes'].isNotEmpty) {
-  // Accédez à la première classe de l'utilisateur
-  Map<String, dynamic> firstClass = userData['classes'][0];
-  global.classe = firstClass['name'] ?? '';
-  global.classeid = firstClass['_id'] ?? '';
+  // Vérifiez que chaque élément de la liste est bien un Map<String, dynamic>
+  List<Map<String, dynamic>> classes = (userData['classes'] as List)
+      .where((element) => element is Map<String, dynamic>)
+      .cast<Map<String, dynamic>>()
+      .toList();
+  
+  if (classes.isNotEmpty) {
+    // Accédez à la première classe de l'utilisateur
+    Map<String, dynamic> firstClass = classes[0];
+    
+    global.classesList = classes;
+    global.classe = firstClass['name'] ?? '';
+    global.classeid = firstClass['_id'] ?? '';
+    
+    // Construire une chaîne de noms de classes séparés par des virgules
+    String classNames = classes.map((classe) => classe['name'] ?? '').join(', ');
+    global.classe = classNames;
+  } else {
+    global.classe = '';
+    global.classeid = '';
+  }
 } else {
-  global.classe= '';
-  global.classeid= '';
+  global.classe = '';
+  global.classeid = '';
 }
+
+
         global.idtoken = userData['_id'];
         global.role = userData['role']['name'];
+        print(global.role);
         // ignore: use_build_context_synchronously
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return const HomeScreen();
@@ -229,7 +252,7 @@ if (userData.containsKey('classes') && userData['classes'] is List && userData['
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('Erreur'),
-              content: Text(body['message']),
+              content: Text("Email ou mot de passe incorrect, veuillez réessayer."),
               actions: [
                 TextButton(
                   child: const Text('OK'),
@@ -250,7 +273,7 @@ if (userData.containsKey('classes') && userData['classes'] is List && userData['
         builder: (BuildContext context) {
           return AlertDialog(
             title:  Text('Erreur'),
-            content: const Text('Une erreur est survenue'),
+            content:  Text("Une erreur est survenue avec le serveur.  Veuillez réessayer plus tard."),
             actions: [
               TextButton(
                 child: const Text('OK'),
@@ -274,7 +297,7 @@ if (userData.containsKey('classes') && userData['classes'] is List && userData['
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.purpleSchood,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(26),
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
       child: const ButtonTextApp(
@@ -291,7 +314,8 @@ class ForgottenPasswordButtonApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return TextButton(
+    return ElevatedButton(
+      
         onPressed: () {
           Navigator.push(
             context,
@@ -299,12 +323,10 @@ class ForgottenPasswordButtonApp extends StatelessWidget {
           );
         },
         child: Text(
-          "Mot de passe oublié ? Cliquez ici",
-          style: GoogleFonts.inter(
-            color: themeProvider.getTextColor(),
-            fontSize: 12,
-          ),
-        ));
+          "Mot de passe oublié ?",
+ style: GoogleFonts.inter(
+          fontSize: 22,
+        )));
   }
 }
 
@@ -318,7 +340,7 @@ class EmailButton extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final Uri _emailLaunchUri = Uri(
       scheme: 'mailto',
-      path: global.email,
+      path: "schood.eip@gmail.com",
       queryParameters: {
         'subject': "[NOUVEAU TICKET] Problème avec l'application",
       },
@@ -330,7 +352,7 @@ class EmailButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.purpleSchood,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(26),
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
       child: ButtonTextApp(
@@ -354,7 +376,7 @@ class LogoutButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.redSchood,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(26),
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
       child: ButtonTextApp(
@@ -379,7 +401,7 @@ class HelpButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.purpleSchood,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(26),
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
       child: ButtonTextApp(
@@ -389,14 +411,11 @@ class HelpButton extends StatelessWidget {
     );
   }
 }
-
 class HelpButtonWithArrow extends StatelessWidget {
-  // ignore: prefer_typing_uninitialized_variables
-  final route;
+  final Widget route;
   final String text;
 
-  const HelpButtonWithArrow(
-      {super.key, required this.route, required this.text});
+  const HelpButtonWithArrow({super.key, required this.route, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -405,12 +424,19 @@ class HelpButtonWithArrow extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.purpleSchood,
-          borderRadius: BorderRadius.circular(26),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: InkWell(
           onTap: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => route));
+              context,
+              MaterialPageRoute(
+                builder: (context) => route,
+                settings: RouteSettings(
+
+                ),
+              ),
+            );
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -441,6 +467,7 @@ class HelpButtonWithArrow extends StatelessWidget {
   }
 }
 
+
 class HelpCallButton extends StatelessWidget {
   final String number;
   const HelpCallButton({super.key, required this.number});
@@ -462,7 +489,7 @@ class HelpCallButton extends StatelessWidget {
       child: Ink(
         decoration: BoxDecoration(
           color: AppColors.purpleSchood,
-          borderRadius: BorderRadius.circular(26),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: InkWell(
           onTap: () {
